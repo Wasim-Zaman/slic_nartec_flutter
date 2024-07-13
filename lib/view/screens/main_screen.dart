@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:slic/utils/assets.dart';
+import 'package:slic/utils/navigation.dart';
+import 'package:slic/view/screens/foreign_po/foreign_po_screen.dart';
 import 'package:slic/view/widgets/menu_card.dart';
 
 class MainScreen extends StatelessWidget {
@@ -23,7 +25,7 @@ class MainScreen extends StatelessWidget {
               title: 'Foreign PO',
               iconPath: AppAssets.foreignPo,
               onTap: () {
-                // Add your onTap action here
+                Navigation.push(context, const ForeignPoScreen());
               },
             ),
             MenuCard(
