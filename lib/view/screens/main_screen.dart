@@ -4,8 +4,43 @@ import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/screens/foreign_po/foreign_po_screen.dart';
 import 'package:slic/view/widgets/menu_card.dart';
 
-class MainScreen extends StatelessWidget {
+class MainScreen extends StatefulWidget {
   const MainScreen({super.key});
+
+  @override
+  State<MainScreen> createState() => _MainScreenState();
+}
+
+class _MainScreenState extends State<MainScreen>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+  late Animation<double> _opacityAnimation;
+  late Animation<double> _scaleAnimation;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      duration: const Duration(milliseconds: 500),
+      vsync: this,
+    );
+
+    _opacityAnimation = Tween<double>(begin: 0.0, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    _scaleAnimation = Tween<double>(begin: 0.8, end: 1.0).animate(
+      CurvedAnimation(parent: _controller, curve: Curves.easeInOut),
+    );
+
+    _controller.forward();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -21,51 +56,68 @@ class MainScreen extends StatelessWidget {
           mainAxisSpacing: 16.0,
           childAspectRatio: 1.3,
           children: [
-            MenuCard(
-              title: 'Foreign PO',
-              iconPath: AppAssets.foreignPo,
-              onTap: () {
-                Navigation.push(context, const ForeignPoScreen());
-              },
-            ),
-            MenuCard(
-              title: 'Sales Order',
-              iconPath: AppAssets.salesOrder,
-              onTap: () {
-                // Add your onTap action here
-              },
-            ),
-            MenuCard(
-              title: 'Direct Sales Return',
-              iconPath: AppAssets.directSalesReturn,
-              onTap: () {
-                // Add your onTap action here
-              },
-            ),
-            MenuCard(
-              title: 'Stocks Transfer',
-              iconPath: AppAssets.stockesTransfer,
-              onTap: () {
-                // Add your onTap action here
-              },
-            ),
-            MenuCard(
-              title: 'Sales Return Invoice',
-              iconPath: AppAssets.salesReturnInvoice,
-              onTap: () {
-                // Add your onTap action here
-              },
-            ),
-            MenuCard(
-              title: 'Goods Issue\n(Production to FG)',
-              iconPath: AppAssets.goodsIssue,
-              onTap: () {
-                // Add your onTap action here
-              },
-            ),
+            for (var menu in [
+              MenuInfo(
+                'Foreign PO',
+                AppAssets.foreignPo,
+                const ForeignPoScreen(),
+              ),
+              MenuInfo(
+                'Sales Order',
+                AppAssets.salesOrder,
+                null,
+              ),
+              MenuInfo(
+                'Direct Sales Return',
+                AppAssets.directSalesReturn,
+                null,
+              ),
+              MenuInfo(
+                'Stocks Transfer',
+                AppAssets.stockesTransfer,
+                null,
+              ),
+              MenuInfo(
+                'Sales Return Invoice',
+                AppAssets.salesReturnInvoice,
+                null,
+              ),
+              MenuInfo(
+                'Goods Issue\n(Production to FG)',
+                AppAssets.goodsIssue,
+                null,
+              ),
+            ])
+              AnimatedBuilder(
+                animation: _controller,
+                builder: (context, child) => Transform.scale(
+                  scale: _scaleAnimation.value,
+                  child: AnimatedOpacity(
+                    opacity: _opacityAnimation.value,
+                    duration: const Duration(milliseconds: 500),
+                    child: MenuCard(
+                      title: menu.title,
+                      iconPath: menu.iconPath,
+                      onTap: () {
+                        if (menu.screen != null) {
+                          Navigation.push(context, menu.screen!);
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ),
           ],
         ),
       ),
     );
   }
+}
+
+class MenuInfo {
+  final String title;
+  final String iconPath;
+  final Widget? screen;
+
+  MenuInfo(this.title, this.iconPath, this.screen);
 }

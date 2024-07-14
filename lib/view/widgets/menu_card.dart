@@ -30,13 +30,13 @@ class MenuCard extends StatelessWidget {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Image.asset(iconPath, height: 40, width: 40),
+              Image.asset(iconPath, height: 60, width: 60),
               const SizedBox(height: 16.0),
               Expanded(
                 child: Text(
                   title,
                   textAlign: TextAlign.center,
-                  style: const TextStyle(fontSize: 12.0),
+                  style: const TextStyle(fontSize: 14.0),
                   maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),

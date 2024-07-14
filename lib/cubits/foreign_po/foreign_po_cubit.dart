@@ -15,6 +15,22 @@ class ForeignPoCubit extends Cubit<ForeignPoState> {
 
   List<POFPOMaster> models = [];
 
+  void updateSearchQuery(String query) {
+    if (query.isEmpty) {
+      // If the search query is empty, restore the original data
+      emit(ForeignPoSearchSuccess(models));
+    } else {
+      // Filter the list based on the query
+      var filteredData = models.where((po) {
+        return po.pONumber!.toLowerCase().contains(query.toLowerCase()) ||
+            po.supplierName!.toLowerCase().contains(query.toLowerCase());
+      }).toList();
+
+      // Emit the filtered data as a new state
+      emit(ForeignPoSearchSuccess(filteredData));
+    }
+  }
+
   void getPaginatedForeignPo() async {
     emit(ForeignPoGetLoading());
     try {

@@ -27,42 +27,53 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
       appBar: AppBar(
         title: const Text('Foreign PO'),
       ),
-      body: Column(
-        children: [
-          Padding(
-            padding: const EdgeInsets.all(8.0),
-            child: TextField(
-              controller: _searchController,
-              decoration: InputDecoration(
-                hintText: 'Search Foreign PO',
-                prefixIcon: const Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8.0),
+      body: SingleChildScrollView(
+        // Wrap the column with SingleChildScrollView
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.all(8.0),
+                child: TextField(
+                  controller: _searchController,
+                  decoration: InputDecoration(
+                    hintText: 'Search Foreign PO',
+                    prefixIcon: const Icon(Icons.search),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(8.0),
+                    ),
+                  ),
+                  onChanged: (value) =>
+                      context.read<ForeignPoCubit>().updateSearchQuery(value),
                 ),
               ),
-              // onChanged: (value) =>
-              //     context.read<ForeignPoCubit>().updateSearchQuery(value),
-            ),
+              SizedBox(
+                height: MediaQuery.of(context).size.height -
+                    AppBar().preferredSize.height -
+                    160, // Dynamic height calculation
+                child: BlocConsumer<ForeignPoCubit, ForeignPoState>(
+                  listener: (context, state) {
+                    if (state is ForeignPoGetSuccess) {
+                      context.read<ForeignPoCubit>().models = state.res.data;
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is ForeignPoGetLoading) {
+                      return const Center(child: CircularProgressIndicator());
+                    } else if (state is ForeignPoGetSuccess) {
+                      return _buildDataTable(state.res.data);
+                    } else if (state is ForeignPoSearchSuccess) {
+                      return _buildDataTable(state.data);
+                    }
+                    return const Text('No data');
+                  },
+                ),
+              ),
+              _buildTotalRow(context),
+            ],
           ),
-          Expanded(
-            child: BlocConsumer<ForeignPoCubit, ForeignPoState>(
-              listener: (context, state) {
-                if (state is ForeignPoGetSuccess) {
-                  context.read<ForeignPoCubit>().models = state.res.data;
-                }
-              },
-              builder: (context, state) {
-                if (state is ForeignPoGetLoading) {
-                  return const Center(child: CircularProgressIndicator());
-                } else if (state is ForeignPoGetSuccess) {
-                  return _buildDataTable(state.res.data);
-                }
-                return const Text('No data');
-              },
-            ),
-          ),
-          _buildTotalRow(context),
-        ],
+        ),
       ),
     );
   }

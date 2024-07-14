@@ -8,6 +8,8 @@ class ForeignPoInitial extends ForeignPoState {}
 
 class ForeignPoGetLoading extends ForeignPoState {}
 
+class ForeignPoSearchLoading extends ForeignPoState {}
+
 // * Success
 
 class ForeignPoGetSuccess extends ForeignPoState {
@@ -16,10 +18,22 @@ class ForeignPoGetSuccess extends ForeignPoState {
   ForeignPoGetSuccess(this.res);
 }
 
+class ForeignPoSearchSuccess extends ForeignPoState {
+  final List<POFPOMaster> data;
+
+  ForeignPoSearchSuccess(this.data);
+}
+
 // ! Error
 
 class ForeignPoGetError extends ForeignPoState {
   final String error;
 
   ForeignPoGetError(this.error);
+}
+
+class ForeignPoSearchError extends ForeignPoState {
+  final String error;
+
+  ForeignPoSearchError(this.error);
 }
