@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
-import 'package:slic/utils/navigation.dart'; // Ensure this is your custom navigation with the right path
+import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/screens/auth/login_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
@@ -21,6 +23,7 @@ class _HomeScreenState extends State<HomeScreen>
   @override
   void initState() {
     super.initState();
+    HomeCubit.get(context).getCompaniesLocations();
     _animationController = AnimationController(
       duration: const Duration(seconds: 1),
       vsync: this,
@@ -59,47 +62,75 @@ class _HomeScreenState extends State<HomeScreen>
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: SlideTransition(
-                position: _slideAnimation,
-                child: Image.asset(AppAssets.wearhouseBanner),
-              ),
-            ),
-            const SizedBox(height: 16.0),
-            buildAnimatedText("Select Company"),
-            const DropdownWidget(
-              items: <String>['Company A', 'Company B'],
-              hint: "Company",
-            ),
-            const SizedBox(height: 8.0),
-            buildAnimatedText("Select Location"),
-            const DropdownWidget(
-              items: <String>['Location A', 'Location B'],
-              hint: "Location",
-            ),
-            const SizedBox(height: 16.0),
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: AppButton(
-                  text: "Proceed",
-                  onPressed: () {
-                    Navigation.push(context, const LoginScreen());
-                  }),
-            ),
-            const SizedBox(height: 16.0),
-            FadeTransition(
-              opacity: _fadeAnimation,
-              child: AppButton(
-                  text: "Close",
-                  onPressed: () {
-                    Navigation.pop(context);
-                  }),
-            ),
-          ],
+        child: BlocConsumer<HomeCubit, HomeState>(
+          listener: (context, state) {
+            print(state);
+            if (state is HomeGetCompanyLocationSuccess) {
+              HomeCubit.get(context).companies =
+                  state.res.data.companies.toList();
+              HomeCubit.get(context).locations =
+                  state.res.data.locations.toList();
+            }
+          },
+          builder: (context, state) {
+            if (state is HomeGetCompanyLocationLoading) {
+              return const Center(child: CircularProgressIndicator());
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: SlideTransition(
+                    position: _slideAnimation,
+                    child: Image.asset(AppAssets.wearhouseBanner),
+                  ),
+                ),
+                const SizedBox(height: 16.0),
+                buildAnimatedText("Select Company"),
+                CustomDropdownButton(
+                  options: HomeCubit.get(context)
+                      .companies
+                      .map((e) => e.companyName.toString())
+                      .toList(),
+                  defaultValue: HomeCubit.get(context).company,
+                  onChanged: (p0) {
+                    HomeCubit.get(context).company = p0.toString();
+                  },
+                ),
+                const SizedBox(height: 8.0),
+                buildAnimatedText("Select Location"),
+                CustomDropdownButton(
+                  options: HomeCubit.get(context)
+                      .locations
+                      .map((e) => e.locationName.toString())
+                      .toList(),
+                  defaultValue: HomeCubit.get(context).location,
+                  onChanged: (p0) {
+                    HomeCubit.get(context).location = p0.toString();
+                  },
+                ),
+                const SizedBox(height: 16.0),
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: AppButton(
+                      text: "Proceed",
+                      onPressed: () {
+                        Navigation.push(context, const LoginScreen());
+                      }),
+                ),
+                const SizedBox(height: 16.0),
+                FadeTransition(
+                  opacity: _fadeAnimation,
+                  child: AppButton(
+                      text: "Close",
+                      onPressed: () {
+                        Navigation.pop(context);
+                      }),
+                ),
+              ],
+            );
+          },
         ),
       ),
     );

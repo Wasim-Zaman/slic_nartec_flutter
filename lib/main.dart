@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/theme.dart';
 import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/shared_storage.dart';
 import 'package:slic/view/screens/home_screen.dart';
 
@@ -19,10 +20,9 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
-        BlocProvider<AuthCubit>(
-          create: (context) => AuthCubit(),
-        ),
-        BlocProvider(create: (context) => ForeignPoCubit()),
+        BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
+        BlocProvider<ForeignPoCubit>(create: (context) => ForeignPoCubit()),
+        BlocProvider<HomeCubit>(create: (context) => HomeCubit()),
       ],
       child: MaterialApp(
         title: 'SLIC',

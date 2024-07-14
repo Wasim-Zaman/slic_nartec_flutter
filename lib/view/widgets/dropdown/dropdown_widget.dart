@@ -1,80 +1,67 @@
 import 'package:flutter/material.dart';
-import 'package:google_fonts/google_fonts.dart';
 import 'package:slic/core/color_pallete.dart';
 
-class DropdownWidget extends StatefulWidget {
-  const DropdownWidget({
+class CustomDropdownButton extends StatefulWidget {
+  final List<String> options;
+  final String? defaultValue;
+  final IconData? icon;
+  final void Function(String?) onChanged;
+
+  const CustomDropdownButton({
     super.key,
-    required this.items,
-    this.hint,
-    this.value,
-    this.onChanged,
+    required this.options,
+    this.defaultValue,
+    this.icon,
+    required this.onChanged,
   });
 
-  final List<String> items;
-  final String? hint;
-  final String? value;
-  final void Function(String?)? onChanged;
   @override
-  State<DropdownWidget> createState() => _DropdownWidgetState();
+  State<CustomDropdownButton> createState() => _CustomDropdownButtonState();
 }
 
-class _DropdownWidgetState extends State<DropdownWidget> {
-  String? value;
+class _CustomDropdownButtonState extends State<CustomDropdownButton> {
+  String? selectedValue;
+
   @override
   void initState() {
-    value = widget.value;
     super.initState();
+    selectedValue = widget.defaultValue;
   }
 
   @override
   Widget build(BuildContext context) {
     return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 10),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.circular(7),
+        color: ColorPallete.field,
+        borderRadius: BorderRadius.circular(20),
+        // border: Border.all(color: ColorPallete.border),
       ),
-      child: DropdownButtonFormField<String>(
-        value: value,
-        hint: widget.hint == null ? null : Text(widget.hint ?? ""),
-        onChanged: widget.onChanged,
-        items: widget.items.map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: FittedBox(
-              child: Text(
-                value,
-                style: GoogleFonts.inter(
-                  textStyle: const TextStyle(
-                    fontSize: 18,
-                    fontWeight: FontWeight.w500,
-                    color: Colors.grey,
-                  ),
-                ),
+      child: DropdownButtonHideUnderline(
+        child: DropdownButton<String>(
+          value: selectedValue,
+          icon: const Icon(Icons.arrow_drop_down, color: ColorPallete.border),
+          style: const TextStyle(color: ColorPallete.black, fontSize: 16),
+          dropdownColor: ColorPallete.background,
+          onChanged: (value) {
+            setState(() {
+              selectedValue = value;
+            });
+            widget.onChanged(value);
+          },
+          items: widget.options.map<DropdownMenuItem<String>>((String value) {
+            return DropdownMenuItem<String>(
+              value: value,
+              child: Row(
+                children: [
+                  if (widget.icon != null)
+                    Icon(widget.icon, color: ColorPallete.black),
+                  const SizedBox(width: 8),
+                  Text(value),
+                ],
               ),
-            ),
-          );
-        }).toList(),
-        decoration: InputDecoration(
-          contentPadding: const EdgeInsets.symmetric(
-            horizontal: 10.0,
-            vertical: 5,
-          ),
-          filled: true,
-          fillColor: ColorPallete.field,
-          enabledBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7.0),
-            borderSide:
-                const BorderSide(color: ColorPallete.border, width: 0.2),
-          ),
-          focusedBorder: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7.0),
-            borderSide:
-                const BorderSide(color: ColorPallete.border, width: 0.2),
-          ),
-          border: OutlineInputBorder(
-            borderRadius: BorderRadius.circular(7.0),
-            borderSide: BorderSide.none,
-          ),
+            );
+          }).toList(),
         ),
       ),
     );

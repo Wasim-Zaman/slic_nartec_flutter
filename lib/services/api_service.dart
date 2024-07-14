@@ -1,5 +1,6 @@
 import 'package:slic/models/api_response.dart';
 import 'package:slic/models/auth.dart';
+import 'package:slic/models/company_location.dart';
 import 'package:slic/models/foreign_po.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
 import 'package:slic/services/http_service.dart';
@@ -51,6 +52,20 @@ class ApiService {
     return ApiResponse.fromJson(
       response,
       (data) => masterList,
+    );
+  }
+
+  // * Location Company Section ***
+  static Future<ApiResponse> getCompaniesLocations() async {
+    const endpoint = "/locationsCompanies/v1/all";
+    final response = await HttpService().request(
+      endpoint,
+      method: "GET",
+    );
+
+    return ApiResponse.fromJson(
+      response,
+      (data) => CompanyLocation.fromJson(response['data']),
     );
   }
 }
