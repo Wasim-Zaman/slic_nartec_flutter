@@ -71,9 +71,18 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
     _DataSource dataSource = _DataSource(data);
     return Container(
       padding: const EdgeInsets.all(8.0),
+      color: Colors.white,
       child: PaginatedDataTable(
         header: const Text('Foreign PO Data'),
-        arrowHeadColor: ColorPallete.accent,
+        headingRowColor: WidgetStateProperty.resolveWith<Color>(
+          (Set<WidgetState> states) {
+            if (states.contains(WidgetState.hovered)) {
+              return ColorPallete.primary.withOpacity(0.3);
+            }
+            return ColorPallete.primary.withOpacity(0.1);
+          },
+        ),
+        arrowHeadColor: ColorPallete.secondary,
         actions: [
           IconButton(
             onPressed: () => context.read<ForeignPoCubit>().getAllForeignPo(),
