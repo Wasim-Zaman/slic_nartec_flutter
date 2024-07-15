@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
+import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/auth/login_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
@@ -116,6 +117,13 @@ class _HomeScreenState extends State<HomeScreen>
                   child: AppButton(
                       text: "Proceed",
                       onPressed: () {
+                        if (HomeCubit.get(context).company == null ||
+                            HomeCubit.get(context).location == null) {
+                          CustomSnackbar.show(
+                              context: context,
+                              message: "Please select company and location");
+                          return;
+                        }
                         Navigation.push(context, const LoginScreen());
                       }),
                 ),
