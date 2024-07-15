@@ -43,6 +43,7 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
           icon: const Icon(Icons.arrow_drop_down, color: ColorPallete.border),
           style: const TextStyle(color: ColorPallete.black, fontSize: 16),
           dropdownColor: ColorPallete.background,
+          isExpanded: true,
           onChanged: (value) {
             setState(() {
               selectedValue = value;
@@ -52,13 +53,15 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
           items: widget.options.map<DropdownMenuItem<String>>((String value) {
             return DropdownMenuItem<String>(
               value: value,
-              child: Row(
-                children: [
-                  if (widget.icon != null)
-                    Icon(widget.icon, color: ColorPallete.black),
-                  const SizedBox(width: 8),
-                  Text(value),
-                ],
+              child: FittedBox(
+                child: Row(
+                  children: [
+                    if (widget.icon != null)
+                      Icon(widget.icon, color: ColorPallete.black),
+                    const SizedBox(width: 8),
+                    Text(value),
+                  ],
+                ),
               ),
             );
           }).toList(),

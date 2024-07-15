@@ -2,6 +2,7 @@ import 'package:slic/models/api_response.dart';
 import 'package:slic/models/auth.dart';
 import 'package:slic/models/company_location.dart';
 import 'package:slic/models/foreign_po.dart';
+import 'package:slic/models/sales_order.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
 import 'package:slic/services/http_service.dart';
 import 'package:slic/utils/shared_storage.dart';
@@ -66,6 +67,23 @@ class ApiService {
     return ApiResponse.fromJson(
       response,
       (data) => CompanyLocation.fromJson(response['data']),
+    );
+  }
+
+  // * Sales Order Section ***
+  static Future<ApiResponse> getSalesOrder() async {
+    const endpoint = "/salesOrders/v1/all";
+    final response = await HttpService().request(
+      endpoint,
+      method: "GET",
+    );
+    final List<SalesOrder> salesOrders = [];
+    response['data'].forEach((data) {
+      salesOrders.add(SalesOrder.fromJson(data));
+    });
+    return ApiResponse.fromJson(
+      response,
+      (data) => salesOrders,
     );
   }
 }

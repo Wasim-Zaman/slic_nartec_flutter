@@ -4,6 +4,7 @@ import 'package:slic/core/theme.dart';
 import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
+import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/utils/shared_storage.dart';
 import 'package:slic/view/screens/home_screen.dart';
 
@@ -23,6 +24,7 @@ class MyApp extends StatelessWidget {
         BlocProvider<AuthCubit>(create: (context) => AuthCubit()),
         BlocProvider<ForeignPoCubit>(create: (context) => ForeignPoCubit()),
         BlocProvider<HomeCubit>(create: (context) => HomeCubit()),
+        BlocProvider<SalesOrderCubit>(create: (context) => SalesOrderCubit()),
       ],
       child: MaterialApp(
         title: 'SLIC',
