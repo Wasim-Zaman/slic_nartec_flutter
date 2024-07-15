@@ -65,7 +65,6 @@ class _HomeScreenState extends State<HomeScreen>
         padding: const EdgeInsets.all(16.0),
         child: BlocConsumer<HomeCubit, HomeState>(
           listener: (context, state) {
-            print(state);
             if (state is HomeGetCompanyLocationSuccess) {
               HomeCubit.get(context).companies =
                   state.res.data.companies.toList();

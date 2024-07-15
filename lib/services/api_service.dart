@@ -2,6 +2,7 @@ import 'package:slic/models/api_response.dart';
 import 'package:slic/models/auth.dart';
 import 'package:slic/models/company_location.dart';
 import 'package:slic/models/foreign_po.dart';
+import 'package:slic/models/line_item.dart';
 import 'package:slic/models/sales_order.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
 import 'package:slic/services/http_service.dart';
@@ -84,6 +85,24 @@ class ApiService {
     return ApiResponse.fromJson(
       response,
       (data) => salesOrders,
+    );
+  }
+
+  // * Line Items Section ***
+  static Future<ApiResponse> getLineItems(headSysId) async {
+    final endpoint = "/lineItems/v1/$headSysId";
+    final response = await HttpService().request(
+      endpoint,
+      method: "GET",
+    );
+
+    List<LineItem> items = [];
+    response['data'].forEach((data) {
+      items.add(LineItem.fromJson(data));
+    });
+    return ApiResponse.fromJson(
+      response,
+      (data) => items,
     );
   }
 }
