@@ -25,4 +25,19 @@ class LineItemCubit extends Cubit<LineItemState> {
       emit(LineItemGetBySysIdError(err.toString()));
     }
   }
+
+  void getLineItemsBySysIds(sysIds) async {
+    emit(LineItemGetBySysIdsLoading());
+    try {
+      final res = await ApiService.getLineItemsBySysIds(sysIds);
+      if (res.success) {
+        lineItems = res.data;
+        emit(LineItemGetBySysIdsSuccess());
+      } else {
+        emit(LineItemGetBySysIdsError(res.message));
+      }
+    } catch (err) {
+      emit(LineItemGetBySysIdsError(err.toString()));
+    }
+  }
 }

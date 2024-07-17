@@ -105,4 +105,23 @@ class ApiService {
       (data) => items,
     );
   }
+
+  static Future<ApiResponse> getLineItemsBySysIds(headSysIds) async {
+    const endpoint = "/lineItems/v1/fetchByMultipleIds";
+    final response = await HttpService().request(
+      endpoint,
+      method: "POST",
+      data: {"headSysIds": headSysIds},
+    );
+
+    List<LineItem> items = [];
+    response['data'].forEach((data) {
+      items.add(LineItem.fromJson(data));
+    });
+    return ApiResponse.fromJson(
+      response,
+          (data) => items,
+    );
+  }
+
 }
