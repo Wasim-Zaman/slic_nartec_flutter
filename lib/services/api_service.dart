@@ -100,10 +100,7 @@ class ApiService {
     response['data'].forEach((data) {
       items.add(LineItem.fromJson(data));
     });
-    return ApiResponse.fromJson(
-      response,
-      (data) => items,
-    );
+    return ApiResponse.fromJson(response, (data) => items);
   }
 
   static Future<ApiResponse> getLineItemsBySysIds(headSysIds) async {
@@ -118,10 +115,6 @@ class ApiService {
     response['data'].forEach((data) {
       items.add(LineItem.fromJson(data));
     });
-    return ApiResponse.fromJson(
-      response,
-          (data) => items,
-    );
+    return ApiResponse.fromJson(response, (data) => items);
   }
-
 }

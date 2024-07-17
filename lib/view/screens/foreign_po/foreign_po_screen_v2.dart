@@ -6,7 +6,6 @@ import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/models/line_item.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
-import 'package:slic/utils/snackbar.dart';
 
 class ForeignPoScreen extends StatefulWidget {
   const ForeignPoScreen({super.key});
@@ -17,7 +16,7 @@ class ForeignPoScreen extends StatefulWidget {
 
 class _ForeignPoScreenState extends State<ForeignPoScreen> {
   final TextEditingController _searchController = TextEditingController();
-  Set<int> _selectedRowIndices = {};
+  Set<int> selectedRowIndices = {};
 
   @override
   void initState() {
@@ -74,23 +73,26 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
               const SizedBox(height: 32),
               SizedBox(
                 child: BlocConsumer<LineItemCubit, LineItemState>(
-                  listener: (context, state) {
-                    if (state is LineItemGetBySysIdError) {
-                      CustomSnackbar.show(
-                        context: context,
-                        message: state.message,
-                      );
-                    }
-                  },
+                  listener: (context, state) {},
                   builder: (context, state) {
                     if (state is LineItemGetBySysIdsLoading) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is LineItemGetBySysIdsSuccess) {
                       return _buildLineItemsTable(
                           LineItemCubit.get(context).lineItems);
+                    } else if (state is LineItemGetBySysIdsError) {
+                      return Container(
+                        height: 40,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorPallete.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(state.message),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
                     }
-                    return _buildLineItemsTable(
-                        LineItemCubit.get(context).lineItems);
                   },
                 ),
               ),
@@ -103,14 +105,14 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
 
   Widget _buildDataTable(List<POFPOMaster> data) {
     _DataSource dataSource =
-        _DataSource(data, _selectedRowIndices, (index, selected) {
+        _DataSource(data, selectedRowIndices, (index, selected) {
       setState(() {
         if (selected) {
-          _selectedRowIndices.add(index);
+          selectedRowIndices.add(index);
           LineItemCubit.get(context)
               .getLineItemsBySysIds(data.map((e) => e.headSYSID).toList());
         } else {
-          _selectedRowIndices.remove(index);
+          selectedRowIndices.remove(index);
         }
       });
     });

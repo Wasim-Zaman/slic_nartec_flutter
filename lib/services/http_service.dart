@@ -47,8 +47,8 @@ class HttpService {
 
   dynamic _processResponse(http.Response response) {
     final data = json.decode(response.body);
+    log(response.body);
     if (data['success'] == true) {
-      log(response.body);
       return json.decode(response.body);
     } else {
       throw Exception(data['message']);

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:slic/core/color_pallete.dart';
 
 class AppButton extends StatelessWidget {
   final String text;
@@ -9,6 +8,6 @@ class AppButton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ElevatedButton(onPressed: onPressed ?? (){}, child: Text(text));
+    return ElevatedButton(onPressed: onPressed ?? () {}, child: Text(text));
   }
 }

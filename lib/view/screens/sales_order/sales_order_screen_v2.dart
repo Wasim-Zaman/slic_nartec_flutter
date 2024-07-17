@@ -5,7 +5,6 @@ import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/models/line_item.dart';
 import 'package:slic/models/sales_order.dart';
-import 'package:slic/utils/snackbar.dart';
 
 class SalesOrderScreen extends StatefulWidget {
   const SalesOrderScreen({super.key});
@@ -16,7 +15,7 @@ class SalesOrderScreen extends StatefulWidget {
 
 class _SalesOrderScreenState extends State<SalesOrderScreen> {
   final TextEditingController _searchController = TextEditingController();
-  Set<int> _selectedRowIndices = {};
+  Set<int> selectedRowIndices = {};
 
   @override
   void initState() {
@@ -68,23 +67,26 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
               const SizedBox(height: 32),
               SizedBox(
                 child: BlocConsumer<LineItemCubit, LineItemState>(
-                  listener: (context, state) {
-                    if (state is LineItemGetBySysIdError) {
-                      CustomSnackbar.show(
-                        context: context,
-                        message: state.message,
-                      );
-                    }
-                  },
+                  listener: (context, state) {},
                   builder: (context, state) {
                     if (state is LineItemGetBySysIdsLoading) {
                       return const Center(child: CircularProgressIndicator());
                     } else if (state is LineItemGetBySysIdsSuccess) {
                       return _buildLineItemsTable(
                           LineItemCubit.get(context).lineItems);
+                    } else if (state is LineItemGetBySysIdsError) {
+                      return Container(
+                        height: 40,
+                        alignment: Alignment.center,
+                        decoration: BoxDecoration(
+                          color: ColorPallete.primary.withOpacity(0.1),
+                          borderRadius: BorderRadius.circular(8.0),
+                        ),
+                        child: Text(state.message),
+                      );
+                    } else {
+                      return const SizedBox.shrink();
                     }
-                    return _buildLineItemsTable(
-                        LineItemCubit.get(context).lineItems);
                   },
                 ),
               ),
@@ -97,14 +99,14 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
 
   Widget _buildDataTable(List<SalesOrder> data) {
     _SalesOrderDataSource dataSource =
-        _SalesOrderDataSource(data, _selectedRowIndices, (index, selected) {
+        _SalesOrderDataSource(data, selectedRowIndices, (index, selected) {
       setState(() {
         if (selected) {
-          _selectedRowIndices.add(index);
+          selectedRowIndices.add(index);
           LineItemCubit.get(context).getLineItemsBySysIds(
               data.map((e) => e.hEADSYSID.toString()).toList());
         } else {
-          _selectedRowIndices.remove(index);
+          selectedRowIndices.remove(index);
         }
       });
     });
