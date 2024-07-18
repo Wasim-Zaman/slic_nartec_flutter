@@ -76,7 +76,7 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
                           LineItemCubit.get(context).lineItems);
                     } else if (state is LineItemGetBySysIdsError) {
                       return Container(
-                        height: 40,
+                        padding: const EdgeInsets.all(8),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: ColorPallete.primary.withOpacity(0.1),
@@ -103,8 +103,14 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
       setState(() {
         if (selected) {
           selectedRowIndices.add(index);
-          LineItemCubit.get(context).getLineItemsBySysIds(
-              data.map((e) => e.hEADSYSID.toString()).toList());
+
+          final selectedSysIds = [];
+
+          for (var index in selectedRowIndices) {
+            selectedSysIds.add(data[index].hEADSYSID);
+          }
+          print(selectedSysIds.length);
+          LineItemCubit.get(context).getLineItemsBySysIds(selectedSysIds);
         } else {
           selectedRowIndices.remove(index);
         }

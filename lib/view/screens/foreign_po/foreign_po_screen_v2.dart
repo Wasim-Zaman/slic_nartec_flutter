@@ -61,10 +61,12 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
                   builder: (context, state) {
                     if (state is ForeignPoGetLoading) {
                       return const Center(child: CircularProgressIndicator());
-                    } else if (state is ForeignPoGetSuccess) {
-                      return _buildDataTable(state.res.data);
-                    } else if (state is ForeignPoSearchSuccess) {
-                      return _buildDataTable(state.data);
+                    } else if (state is ForeignPoGetSuccess ||
+                        state is ForeignPoSearchSuccess) {
+                      final data = state is ForeignPoGetSuccess
+                          ? state.res.data
+                          : (state as ForeignPoSearchSuccess).data;
+                      return _buildDataTable(data);
                     }
                     return const Text('No data');
                   },
@@ -82,7 +84,7 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
                           LineItemCubit.get(context).lineItems);
                     } else if (state is LineItemGetBySysIdsError) {
                       return Container(
-                        height: 40,
+                        padding: const EdgeInsets.all(8),
                         alignment: Alignment.center,
                         decoration: BoxDecoration(
                           color: ColorPallete.primary.withOpacity(0.1),
@@ -109,8 +111,13 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
       setState(() {
         if (selected) {
           selectedRowIndices.add(index);
-          LineItemCubit.get(context)
-              .getLineItemsBySysIds(data.map((e) => e.headSYSID).toList());
+
+          final selectedSysIds = [];
+
+          for (var index in selectedRowIndices) {
+            selectedSysIds.add(data[index].headSYSID);
+          }
+          LineItemCubit.get(context).getLineItemsBySysIds(selectedSysIds);
         } else {
           selectedRowIndices.remove(index);
         }
@@ -179,8 +186,6 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
           DataColumn(label: Text('PO_QTY')),
           DataColumn(label: Text('Received_QTY')),
           DataColumn(label: Text('Item Sys Id')),
-          // DataColumn(label: Text('Created At')),
-          // DataColumn(label: Text('Updated At')),
         ],
         source: dataSource,
         columnSpacing: 20,

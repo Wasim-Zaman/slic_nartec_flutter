@@ -47,6 +47,8 @@ class HttpService {
 
   dynamic _processResponse(http.Response response) {
     final data = json.decode(response.body);
+    // print end point
+    log(response.request!.url.toString());
     log(response.body);
     if (data['success'] == true) {
       return json.decode(response.body);
