@@ -109,7 +109,6 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
           for (var index in selectedRowIndices) {
             selectedSysIds.add(data[index].hEADSYSID);
           }
-          print(selectedSysIds.length);
           LineItemCubit.get(context).getLineItemsBySysIds(selectedSysIds);
         } else {
           selectedRowIndices.remove(index);

@@ -111,9 +111,7 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
       setState(() {
         if (selected) {
           selectedRowIndices.add(index);
-
           final selectedSysIds = [];
-
           for (var index in selectedRowIndices) {
             selectedSysIds.add(data[index].headSYSID);
           }
