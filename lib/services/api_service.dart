@@ -97,7 +97,7 @@ class ApiService {
       "filter": {},
       "M_COMP_CODE": "001",
       "M_USER_ID": "SYSADMIN",
-      "APICODE": "LocationMaster",
+      "APICODE": "CompanyMaster",
       "M_LANG_CODE": "ENG"
     }, headers: {
       "Authorization": "Bearer $slicToken",
