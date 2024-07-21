@@ -2,22 +2,40 @@ part of 'home_cubit.dart';
 
 abstract class HomeState {}
 
-class HomeInitial extends HomeState {}
+final class HomeInitial extends HomeState {}
 
 // Loading
 
-class HomeGetCompanyLocationLoading extends HomeState {}
+final class HomeGetCompanyLocationLoading extends HomeState {}
+
+final class HomeGetSlicCompaniesLoading extends HomeState {}
+
+final class HomeGetSlicLocationsLoading extends HomeState {}
 
 // * Success
 
-class HomeGetCompanyLocationSuccess extends HomeState {
+final class HomeGetCompanyLocationSuccess extends HomeState {
   final ApiResponse res;
   HomeGetCompanyLocationSuccess(this.res);
 }
 
+final class HomeGetSlicCompaniesSuccess extends HomeState {}
+
+final class HomeGetSlicLocationsSuccess extends HomeState {}
+
 // ! Error
 
-class HomeGetCompanyLocationError extends HomeState {
+final class HomeGetCompanyLocationError extends HomeState {
   final String message;
   HomeGetCompanyLocationError(this.message);
+}
+
+final class HomeGetSlicCompaniesError extends HomeState {
+  final String message;
+  HomeGetSlicCompaniesError(this.message);
+}
+
+final class HomeGetSlicLocationsError extends HomeState {
+  final String message;
+  HomeGetSlicLocationsError(this.message);
 }

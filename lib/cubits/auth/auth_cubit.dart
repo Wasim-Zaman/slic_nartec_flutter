@@ -23,8 +23,17 @@ class AuthCubit extends Cubit<AuthState> {
         emit(AuthLoginError(response.message));
       }
     } catch (e) {
-      print(e);
       emit(AuthLoginError(e.toString()));
+    }
+  }
+
+  Future<void> slicLogin() async {
+    emit(AuthSlicLoginLoading());
+    try {
+      await ApiService.slicLogin();
+      emit(AuthSlicLoginSuccess());
+    } catch (e) {
+      emit(AuthSlicLoginError(e.toString()));
     }
   }
 }

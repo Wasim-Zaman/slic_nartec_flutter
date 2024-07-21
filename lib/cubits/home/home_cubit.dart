@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/api_response.dart';
+import 'package:slic/models/company.dart';
 import 'package:slic/models/company_location.dart';
+import 'package:slic/models/location.dart';
 import 'package:slic/services/api_service.dart';
 
 part 'home_states.dart';
@@ -12,6 +14,9 @@ class HomeCubit extends Cubit<HomeState> {
 
   List<Company> companies = [];
   List<Location> locations = [];
+
+  List<CompanyModel> slicCompanies = [];
+  List<LocationModel> slicLocations = [];
 
   String? company, location;
 
@@ -25,8 +30,27 @@ class HomeCubit extends Cubit<HomeState> {
         emit(HomeGetCompanyLocationError(response.message));
       }
     } catch (error) {
-      print(error);
       emit(HomeGetCompanyLocationError(error.toString()));
+    }
+  }
+
+  void getSlicCompanies() async {
+    emit(HomeGetSlicCompaniesLoading());
+    try {
+      slicCompanies = await ApiService.getSlicCompanies();
+      emit(HomeGetSlicCompaniesSuccess());
+    } catch (error) {
+      emit(HomeGetSlicCompaniesError(error.toString()));
+    }
+  }
+
+  void getSlicLocations() async {
+    emit(HomeGetSlicLocationsLoading());
+    try {
+      slicLocations = await ApiService.getSlicLocations();
+      emit(HomeGetSlicLocationsSuccess());
+    } catch (error) {
+      emit(HomeGetSlicLocationsError(error.toString()));
     }
   }
 }

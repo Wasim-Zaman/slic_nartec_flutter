@@ -7,7 +7,7 @@ import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/utils/shared_storage.dart';
-import 'package:slic/view/screens/home_screen.dart';
+import 'package:slic/view/screens/home_screen_v2.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();

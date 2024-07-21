@@ -4,7 +4,13 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 
 class HttpService {
-  final String _baseUrl = 'http://gs1ksa.org:8080/api';
+  String _baseUrl = 'http://gs1ksa.org:8080/api';
+
+  HttpService();
+
+  HttpService.baseUrl(String? baseUrl) {
+    _baseUrl = baseUrl ?? _baseUrl;
+  }
 
   Future<http.Response> _performRequest(
     String url, {
@@ -31,11 +37,13 @@ class HttpService {
   }
 
   Future<dynamic> request(String endpoint,
-      {dynamic data, String method = 'GET'}) async {
+      {dynamic data,
+      String method = 'GET',
+      Map<String, String>? headers}) async {
     try {
       var response = await _performRequest(
         endpoint,
-        headers: {'Content-Type': 'application/json'},
+        headers: headers ?? {'Content-Type': 'application/json'},
         body: data,
         method: method,
       );
@@ -50,7 +58,9 @@ class HttpService {
     // print end point
     log(response.request!.url.toString());
     log(response.body);
-    if (data['success'] == true) {
+    if (response.statusCode == 200 ||
+        response.statusCode == 201 ||
+        data['success'] == true) {
       return json.decode(response.body);
     } else {
       throw Exception(data['message']);

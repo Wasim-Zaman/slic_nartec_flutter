@@ -1,8 +1,10 @@
 import 'package:slic/models/api_response.dart';
 import 'package:slic/models/auth.dart';
+import 'package:slic/models/company.dart';
 import 'package:slic/models/company_location.dart';
 import 'package:slic/models/foreign_po.dart';
 import 'package:slic/models/line_item.dart';
+import 'package:slic/models/location.dart';
 import 'package:slic/models/sales_order.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
 import 'package:slic/services/http_service.dart';
@@ -26,6 +28,21 @@ class ApiService {
       response,
       (data) => AuthModel.fromJson(response['data']),
     );
+  }
+
+  static Future<void> slicLogin() async {
+    const endpoint = "/oneerpauth/api/login";
+    final response =
+        await HttpService.baseUrl("http://slicuat05api.oneerpcloud.com")
+            .request(endpoint, method: "POST", data: {
+      "apiKey":
+          "b4d21674cd474705f6caa07d618b389ddc7ebc25a77a0dc591f49e9176beda01",
+    }, headers: {
+      'Content-Type': 'application/json',
+      'X-tenanttype': 'live'
+    });
+
+    await SharedStorage.setSlicToken(response['token'].toString());
   }
 
   // * POFPOPMaster Section ***
@@ -69,6 +86,52 @@ class ApiService {
       response,
       (data) => CompanyLocation.fromJson(response['data']),
     );
+  }
+
+  static Future<List<CompanyModel>> getSlicCompanies() async {
+    const endpoint = "/oneerpreport/api/getapi";
+    final slicToken = SharedStorage.getSlicToken();
+    final response =
+        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
+            .request(endpoint, method: "POST", data: {
+      "filter": {},
+      "M_COMP_CODE": "001",
+      "M_USER_ID": "SYSADMIN",
+      "APICODE": "LocationMaster",
+      "M_LANG_CODE": "ENG"
+    }, headers: {
+      "Authorization": "Bearer $slicToken",
+      'Content-Type': 'application/json',
+    });
+
+    List<CompanyModel> companies = [];
+    response.forEach((data) {
+      companies.add(CompanyModel.fromJson(data));
+    });
+    return companies;
+  }
+
+  static Future<List<LocationModel>> getSlicLocations() async {
+    const endpoint = "/oneerpreport/api/getapi";
+    final slicToken = SharedStorage.getSlicToken();
+    final response =
+        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
+            .request(endpoint, method: "POST", data: {
+      "filter": {},
+      "M_COMP_CODE": "001",
+      "M_USER_ID": "SYSADMIN",
+      "APICODE": "LocationMaster",
+      "M_LANG_CODE": "ENG"
+    }, headers: {
+      "Authorization": "Bearer $slicToken",
+      'Content-Type': 'application/json',
+    });
+
+    List<LocationModel> locations = [];
+    response.forEach((data) {
+      locations.add(LocationModel.fromJson(data));
+    });
+    return locations;
   }
 
   // * Sales Order Section ***
