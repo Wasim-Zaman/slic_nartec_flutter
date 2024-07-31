@@ -128,22 +128,6 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
       padding: const EdgeInsets.all(8.0),
       color: Colors.white,
       child: PaginatedDataTable(
-        header: const Text('Foreign PO Data'),
-        headingRowColor: WidgetStateProperty.resolveWith<Color>(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.hovered)) {
-              return ColorPallete.primary.withOpacity(0.3);
-            }
-            return ColorPallete.primary.withOpacity(0.1);
-          },
-        ),
-        arrowHeadColor: ColorPallete.secondary,
-        actions: [
-          IconButton(
-            onPressed: () => context.read<ForeignPoCubit>().getAllForeignPo(),
-            icon: const Icon(Icons.refresh),
-          ),
-        ],
         columns: const [
           DataColumn(label: Text('hEADSYSID')),
           DataColumn(label: Text('dOCNO')),
@@ -179,6 +163,17 @@ class _DataSource extends DataTableSource {
           _onSelectRow(index, selected);
         }
       },
+      color: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
+            return ColorPallete.primary.withOpacity(0.3);
+          }
+          if (index.isEven) {
+            return ColorPallete.background;
+          }
+          return ColorPallete.background;
+        },
+      ),
       cells: <DataCell>[
         DataCell(Text(data.listOfPO?.hEADSYSID ?? '')),
         DataCell(Text(data.listOfPO?.dOCNO ?? '')),

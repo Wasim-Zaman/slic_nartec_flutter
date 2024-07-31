@@ -2,10 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/models/slic_po_model.dart';
 import 'package:slic/utils/navigation.dart';
+import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/foreign_po/update_line_item_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
@@ -80,9 +82,32 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                                   border: Border.all(
                                 color: ColorPallete.primary,
                               )),
-                              child: Text("Total"),
+                              child: const Text("Total"),
                             ),
-                            AppButton(text: "Submit GRN"),
+                            BlocConsumer<LineItemCubit, LineItemState>(
+                              listener: (context, state) {
+                                if (state is LineItemPOToGRNSuccess) {
+                                  CustomSnackbar.show(
+                                    context: context,
+                                    message: state.message,
+                                  );
+                                  Navigation.pop(context);
+                                }
+                              },
+                              builder: (context, state) {
+                                if (state is LineItemPOToGRNLoading) {
+                                  return const LoadingWidget();
+                                }
+                                return AppButton(
+                                  text: "Submit GRN",
+                                  onPressed: () {
+                                    LineItemCubit.get(context).poToGRN(
+                                      HomeCubit.get(context).locationCode,
+                                    );
+                                  },
+                                );
+                              },
+                            ),
                           ],
                         ),
                         const SizedBox(height: 16),
@@ -98,7 +123,7 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                                   border: Border.all(
                                 color: ColorPallete.primary,
                               )),
-                              child: Text("Total"),
+                              child: const Text("Total"),
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -170,15 +195,6 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
       padding: const EdgeInsets.all(8.0),
       color: Colors.white,
       child: PaginatedDataTable(
-        header: const Text('Line Items'),
-        headingRowColor: WidgetStateProperty.resolveWith<Color>(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.hovered)) {
-              return ColorPallete.primary.withOpacity(0.3);
-            }
-            return ColorPallete.primary.withOpacity(0.1);
-          },
-        ),
         columns: const [
           DataColumn(label: Text('gRADE')),
           DataColumn(label: Text('iTEMSYSID')),
@@ -216,6 +232,17 @@ class _DataSource extends DataTableSource {
           _onSelectRow(index, selected);
         }
       },
+      color: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
+            return ColorPallete.primary.withOpacity(0.3);
+          }
+          if (index.isEven) {
+            return ColorPallete.background;
+          }
+          return ColorPallete.background;
+        },
+      ),
       cells: <DataCell>[
         DataCell(Text(data.listOfPO?.hEADSYSID ?? '')),
         DataCell(Text(data.listOfPO?.dOCNO ?? '')),
@@ -245,6 +272,17 @@ class LineItemSource extends DataTableSource {
     final SlicLineItemModel data = _data[index];
     return DataRow.byIndex(
       index: index,
+      color: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
+            return ColorPallete.primary.withOpacity(0.3);
+          }
+          if (index.isEven) {
+            return ColorPallete.background;
+          }
+          return ColorPallete.background;
+        },
+      ),
       cells: <DataCell>[
         DataCell(
           GestureDetector(

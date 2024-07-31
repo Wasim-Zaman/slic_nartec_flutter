@@ -82,7 +82,7 @@ class LineItemCubit extends Cubit<LineItemState> {
     }
   }
 
-  void poToGRN() async {
+  void poToGRN(locationCode) async {
     emit(LineItemPOToGRNLoading());
     try {
       var body = {
@@ -90,26 +90,28 @@ class LineItemCubit extends Cubit<LineItemState> {
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": [
           {
-            "SessionId": "102202216451",
+            "SessionId": DateTime.now().toIso8601String(),
             "Company": "001",
-            "HeadSysId": "5064660",
+            "HeadSysId": selectedSysId.toString(),
             "TransactionCode": "FPO",
             "TransactionNo": "2017000002",
-            "LocationCode": "FG101",
+            "LocationCode": locationCode.toString(),
             "SystemId": "SYSADMIN",
-            "Item": [
-              {
-                "SessionId": "102202216451",
-                "HeadSysId": "5064660",
-                "ItemSysId": "13401622",
-                "Item-Code": "FB0174",
-                "ItemDescription": "Steel Toe Caps MAL 9",
-                "Size": "NA",
-                "UnitCode": "PAIR",
-                "ReceivedQty": "1",
-                "SystemId": "SYSADMIN"
-              }
-            ]
+            "Item": slicLineItems
+                .map(
+                  (e) => {
+                    "SessionId": DateTime.now().toIso8601String(),
+                    "HeadSysId": selectedSysId.toString(),
+                    "ItemSysId": e.listOfPOItem?.iTEMSYSID,
+                    "Item-Code": e.listOfPOItem?.iTEMCODE,
+                    "ItemDescription": e.listOfPOItem?.iTEMNAME,
+                    "Size": e.listOfPOItem?.gRADE,
+                    "UnitCode": e.listOfPOItem?.uOM,
+                    "ReceivedQty": e.listOfPOItem?.rECEIVEDQTY,
+                    "SystemId": "SYSADMIN"
+                  },
+                )
+                .toList(),
           }
         ],
         "COMPANY": "SLIC",
@@ -119,11 +121,7 @@ class LineItemCubit extends Cubit<LineItemState> {
       };
 
       final res = await ApiService.slicPostData(body);
-      if (res.success) {
-        emit(LineItemPOToGRNSuccess());
-      } else {
-        emit(LineItemPOToGRNError(res.message));
-      }
+      emit(LineItemPOToGRNSuccess(res['message']));
     } catch (err) {
       emit(LineItemPOToGRNError(err.toString()));
     }

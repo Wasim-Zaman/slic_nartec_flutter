@@ -4,6 +4,7 @@ import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
+import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/auth/login_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
@@ -90,10 +91,18 @@ class _HomeScreenState extends State<HomeScreen>
                           .where((element) =>
                               element.companyMaster?.cOMPNAME != null)
                           .map((e) => e.companyMaster!.cOMPNAME.toString())
+                          .toSet()
                           .toList(),
                       defaultValue: HomeCubit.get(context).company,
                       onChanged: (p0) {
                         HomeCubit.get(context).company = p0.toString();
+                        HomeCubit.get(context).companyCode =
+                            HomeCubit.get(context)
+                                .slicCompanies
+                                .firstWhere((element) =>
+                                    element.companyMaster!.cOMPNAME == p0)
+                                .companyMaster!
+                                .cOMPCODE;
                       },
                     );
                   },
@@ -108,10 +117,18 @@ class _HomeScreenState extends State<HomeScreen>
                           .where((element) =>
                               element.locationMaster?.lOCNNAME != null)
                           .map((e) => e.locationMaster!.lOCNNAME.toString())
+                          .toSet()
                           .toList(),
                       defaultValue: HomeCubit.get(context).location,
                       onChanged: (p0) {
                         HomeCubit.get(context).location = p0.toString();
+                        HomeCubit.get(context).locationCode =
+                            HomeCubit.get(context)
+                                .slicLocations
+                                .firstWhere((element) =>
+                                    element.locationMaster!.lOCNNAME == p0)
+                                .locationMaster!
+                                .lOCNCODE;
                       },
                     );
                   },
@@ -122,13 +139,13 @@ class _HomeScreenState extends State<HomeScreen>
                   child: AppButton(
                       text: "Proceed",
                       onPressed: () {
-                        // if (HomeCubit.get(context).company == null ||
-                        //     HomeCubit.get(context).location == null) {
-                        //   CustomSnackbar.show(
-                        //       context: context,
-                        //       message: "Please select company and location");
-                        //   return;
-                        // }
+                        if (HomeCubit.get(context).company == null ||
+                            HomeCubit.get(context).location == null) {
+                          CustomSnackbar.show(
+                              context: context,
+                              message: "Please select company and location");
+                          return;
+                        }
                         Navigation.push(context, const LoginScreen());
                       }),
                 ),

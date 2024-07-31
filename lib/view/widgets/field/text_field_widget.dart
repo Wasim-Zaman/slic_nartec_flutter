@@ -7,6 +7,8 @@ class TextFieldWidget extends StatefulWidget {
   final TextEditingController? controller;
   final Widget? suffixIcon;
   final String? Function(String?)? validator;
+  final bool? readOnly;
+  final Color? filledColor;
 
   const TextFieldWidget({
     super.key,
@@ -15,6 +17,8 @@ class TextFieldWidget extends StatefulWidget {
     this.controller,
     this.suffixIcon,
     this.validator,
+    this.readOnly = false,
+    this.filledColor,
   });
 
   @override
@@ -36,10 +40,11 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       controller: widget.controller,
       obscureText: obscureText ?? widget.passwordField,
       validator: widget.validator,
+      readOnly: widget.readOnly ?? false,
       obscuringCharacter: '*',
       decoration: InputDecoration(
         filled: true,
-        fillColor: ColorPallete.field,
+        fillColor: widget.filledColor ?? ColorPallete.field,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4.0),
           borderSide: BorderSide.none,

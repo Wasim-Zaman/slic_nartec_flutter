@@ -18,7 +18,11 @@ class LineItemGetBySysIdSuccess extends LineItemState {}
 
 class LineItemGetBySysIdsSuccess extends LineItemState {}
 
-class LineItemPOToGRNSuccess extends LineItemState {}
+class LineItemPOToGRNSuccess extends LineItemState {
+  final String message;
+
+  LineItemPOToGRNSuccess(this.message);
+}
 
 // ! Error
 
