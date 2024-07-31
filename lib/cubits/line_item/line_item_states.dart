@@ -7,12 +7,18 @@ class LineItemInitial extends LineItemState {}
 // ? Loading
 
 class LineItemGetBySysIdLoading extends LineItemState {}
+
 class LineItemGetBySysIdsLoading extends LineItemState {}
+
+class LineItemPOToGRNLoading extends LineItemState {}
 
 // * Success
 
 class LineItemGetBySysIdSuccess extends LineItemState {}
+
 class LineItemGetBySysIdsSuccess extends LineItemState {}
+
+class LineItemPOToGRNSuccess extends LineItemState {}
 
 // ! Error
 
@@ -21,8 +27,15 @@ class LineItemGetBySysIdError extends LineItemState {
 
   LineItemGetBySysIdError(this.message);
 }
+
 class LineItemGetBySysIdsError extends LineItemState {
   final String message;
 
   LineItemGetBySysIdsError(this.message);
+}
+
+class LineItemPOToGRNError extends LineItemState {
+  final String message;
+
+  LineItemPOToGRNError(this.message);
 }

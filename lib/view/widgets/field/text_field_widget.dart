@@ -6,6 +6,7 @@ class TextFieldWidget extends StatefulWidget {
   final bool passwordField;
   final TextEditingController? controller;
   final Widget? suffixIcon;
+  final String? Function(String?)? validator;
 
   const TextFieldWidget({
     super.key,
@@ -13,6 +14,7 @@ class TextFieldWidget extends StatefulWidget {
     this.passwordField = false,
     this.controller,
     this.suffixIcon,
+    this.validator,
   });
 
   @override
@@ -30,9 +32,10 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return TextField(
+    return TextFormField(
       controller: widget.controller,
       obscureText: obscureText ?? widget.passwordField,
+      validator: widget.validator,
       obscuringCharacter: '*',
       decoration: InputDecoration(
         filled: true,

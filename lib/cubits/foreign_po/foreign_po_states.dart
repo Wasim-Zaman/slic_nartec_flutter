@@ -10,6 +10,8 @@ class ForeignPoGetLoading extends ForeignPoState {}
 
 class ForeignPoSearchLoading extends ForeignPoState {}
 
+class ForiegnPoGetSlicPOListLoading extends ForeignPoState {}
+
 // * Success
 
 class ForeignPoGetSuccess extends ForeignPoState {
@@ -24,6 +26,18 @@ class ForeignPoSearchSuccess extends ForeignPoState {
   ForeignPoSearchSuccess(this.data);
 }
 
+class ForeignPoSlicPoSearchSuccess extends ForeignPoState {
+  final List<SlicPOModel> data;
+
+  ForeignPoSlicPoSearchSuccess(this.data);
+}
+
+class ForeignPoGetSlicPOListSuccess extends ForeignPoState {
+  final List<SlicPOModel> data;
+
+  ForeignPoGetSlicPOListSuccess(this.data);
+}
+
 // ! Error
 
 class ForeignPoGetError extends ForeignPoState {
@@ -36,4 +50,10 @@ class ForeignPoSearchError extends ForeignPoState {
   final String error;
 
   ForeignPoSearchError(this.error);
+}
+
+class ForeignPiGetSlicPOListError extends ForeignPoState {
+  final String error;
+
+  ForeignPiGetSlicPOListError(this.error);
 }

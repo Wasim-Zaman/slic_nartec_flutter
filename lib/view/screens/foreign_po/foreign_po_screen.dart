@@ -106,7 +106,7 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
       setState(() {
         _selectedRowIndex = index;
         LineItemCubit.get(context)
-            .getLineItemsBySysId(data[index].headSYSID ?? '');
+            .slicLineItemsById(data[index].headSYSID ?? '');
       });
     });
     return Container(

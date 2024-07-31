@@ -6,6 +6,8 @@ import 'package:slic/models/foreign_po.dart';
 import 'package:slic/models/line_item.dart';
 import 'package:slic/models/location.dart';
 import 'package:slic/models/sales_order.dart';
+import 'package:slic/models/slic_line_item_model.dart';
+import 'package:slic/models/slic_po_model.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
 import 'package:slic/services/http_service.dart';
 import 'package:slic/utils/shared_storage.dart';
@@ -46,6 +48,7 @@ class ApiService {
   }
 
   // * POFPOPMaster Section ***
+
   static Future<ApiResponse> getPaginatedforeignPO(int page, int limit) async {
     final endpoint = "/POFPOPMaster/v1/getforeignPO?page=$page&limit=$limit";
     final response = await HttpService().request(
@@ -72,6 +75,64 @@ class ApiService {
       response,
       (data) => masterList,
     );
+  }
+
+  static Future<List<SlicPOModel>> getPoList() async {
+    const url = "/oneerpreport/api/getapi";
+    final slicToken = SharedStorage.getSlicToken();
+    final response =
+        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
+            .request(
+      url,
+      data: {
+        "filter": {},
+        "M_COMP_CODE": "SLIC",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "ListOfPO",
+        "M_LANG_CODE": "ENG"
+      },
+      headers: {
+        "Authorization": "Bearer $slicToken",
+        'Content-Type': 'application/json',
+      },
+      method: "POST",
+    );
+
+    List<SlicPOModel> poList = [];
+
+    response.forEach((data) {
+      poList.add(SlicPOModel.fromJson(data));
+    });
+    return poList;
+  }
+
+  static Future<List<SlicLineItemModel>> getPoLineItems(sysId) async {
+    const url = "/oneerpreport/api/getapi";
+    final slicToken = SharedStorage.getSlicToken();
+    final response =
+        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
+            .request(
+      url,
+      data: {
+        "filter": {"P_PI_PH_SYS_ID": sysId},
+        "M_COMP_CODE": "SLIC",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "ListOfPOItem",
+        "M_LANG_CODE": "ENG"
+      },
+      headers: {
+        "Authorization": "Bearer $slicToken",
+        'Content-Type': 'application/json',
+      },
+      method: "POST",
+    );
+
+    List<SlicLineItemModel> lineItems = [];
+
+    response.forEach((data) {
+      lineItems.add(SlicLineItemModel.fromJson(data));
+    });
+    return lineItems;
   }
 
   // * Location Company Section ***
@@ -179,5 +240,18 @@ class ApiService {
       items.add(LineItem.fromJson(data));
     });
     return ApiResponse.fromJson(response, (data) => items);
+  }
+
+  // * SLIC APIs Section ***
+  static Future<dynamic> slicPostData(var body) async {
+    const endpoint = "/oneerpreport/api/postdata";
+    final slicToken = SharedStorage.getSlicToken();
+    final response =
+        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
+            .request(endpoint, method: "POST", data: body, headers: {
+      "Authorization": "Bearer $slicToken",
+      'Content-Type': 'application/json',
+    });
+    return response;
   }
 }

@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
-import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/auth/login_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
+import 'package:slic/view/widgets/loading/loading_widget.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -88,7 +87,9 @@ class _HomeScreenState extends State<HomeScreen>
                     return CustomDropdownButton(
                       options: HomeCubit.get(context)
                           .slicCompanies
-                          .map((e) => e.cOMPNAME.toString())
+                          .where((element) =>
+                              element.companyMaster?.cOMPNAME != null)
+                          .map((e) => e.companyMaster!.cOMPNAME.toString())
                           .toList(),
                       defaultValue: HomeCubit.get(context).company,
                       onChanged: (p0) {
@@ -104,7 +105,9 @@ class _HomeScreenState extends State<HomeScreen>
                     return CustomDropdownButton(
                       options: HomeCubit.get(context)
                           .slicLocations
-                          .map((e) => e.lOCNNAME.toString())
+                          .where((element) =>
+                              element.locationMaster?.lOCNNAME != null)
+                          .map((e) => e.locationMaster!.lOCNNAME.toString())
                           .toList(),
                       defaultValue: HomeCubit.get(context).location,
                       onChanged: (p0) {
@@ -119,13 +122,13 @@ class _HomeScreenState extends State<HomeScreen>
                   child: AppButton(
                       text: "Proceed",
                       onPressed: () {
-                        if (HomeCubit.get(context).company == null ||
-                            HomeCubit.get(context).location == null) {
-                          CustomSnackbar.show(
-                              context: context,
-                              message: "Please select company and location");
-                          return;
-                        }
+                        // if (HomeCubit.get(context).company == null ||
+                        //     HomeCubit.get(context).location == null) {
+                        //   CustomSnackbar.show(
+                        //       context: context,
+                        //       message: "Please select company and location");
+                        //   return;
+                        // }
                         Navigation.push(context, const LoginScreen());
                       }),
                 ),
@@ -157,12 +160,7 @@ class _HomeScreenState extends State<HomeScreen>
                   current is AuthSlicLoginSuccess,
               builder: (context, state) {
                 if (state is AuthSlicLoginLoading) {
-                  return const Center(
-                    child: CircleAvatar(
-                      backgroundColor: ColorPallete.accent,
-                      child: CircularProgressIndicator(),
-                    ),
-                  );
+                  return const LoadingWidget();
                 }
                 return const SizedBox.shrink();
               },
