@@ -87,11 +87,30 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                             BlocConsumer<LineItemCubit, LineItemState>(
                               listener: (context, state) {
                                 if (state is LineItemPOToGRNSuccess) {
+                                  showDialog(
+                                      context: context,
+                                      builder: (context) {
+                                        return AlertDialog(
+                                          title: const Text(
+                                            "GRN submitted successfully",
+                                            textAlign: TextAlign.center,
+                                          ),
+                                          content: Text(state.message),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () {
+                                                Navigator.of(context).pop();
+                                              },
+                                              child: const Text("OK"),
+                                            ),
+                                          ],
+                                        );
+                                      });
+                                } else if (state is LineItemPOToGRNError) {
                                   CustomSnackbar.show(
                                     context: context,
                                     message: state.message,
                                   );
-                                  Navigation.pop(context);
                                 }
                               },
                               builder: (context, state) {
@@ -103,6 +122,8 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                                   onPressed: () {
                                     LineItemCubit.get(context).poToGRN(
                                       HomeCubit.get(context).locationCode,
+                                      selectedPOs: ForeignPoCubit.get(context)
+                                          .selectedPOList,
                                     );
                                   },
                                 );
