@@ -8,15 +8,16 @@ class LineItem {
   String? rECEIVEDQTY;
   int? iTEMSYSID;
 
-  LineItem(
-      {this.hEADSYSID,
-      this.iTEMCODE,
-      this.iTEMNAME,
-      this.gRADE,
-      this.uOM,
-      this.pOQTY,
-      this.rECEIVEDQTY,
-      this.iTEMSYSID});
+  LineItem({
+    this.hEADSYSID,
+    this.iTEMCODE,
+    this.iTEMNAME,
+    this.gRADE,
+    this.uOM,
+    this.pOQTY,
+    this.rECEIVEDQTY,
+    this.iTEMSYSID,
+  });
 
   LineItem.fromJson(Map<String, dynamic> json) {
     hEADSYSID = json['HEAD_SYS_ID'];

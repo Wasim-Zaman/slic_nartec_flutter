@@ -24,8 +24,9 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
   void initState() {
     super.initState();
     context.read<ForeignPoCubit>().getSlicPoList();
-    LineItemCubit.get(context).lineItems = [];
-    LineItemCubit.get(context).slicLineItemsMap = {};
+    LineItemCubit.get(context).lineItems.clear();
+    LineItemCubit.get(context).slicLineItemsMap.clear();
+    ForeignPoCubit.get(context).selectedPOList.clear();
   }
 
   @override
@@ -34,27 +35,28 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
       appBar: AppBar(
         title: const Text('Foreign PO'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  controller: _searchController,
-                  decoration: InputDecoration(
-                    hintText: 'Search Foreign PO',
-                    prefixIcon: const Icon(Icons.search),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(8.0),
-                    ),
+      body: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
+        child: Column(
+          children: [
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: TextField(
+                controller: _searchController,
+                decoration: InputDecoration(
+                  hintText: 'Search Foreign PO',
+                  prefixIcon: const Icon(Icons.search),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(8.0),
                   ),
-                  onChanged: (value) =>
-                      context.read<ForeignPoCubit>().updateSearchQuery(value),
                 ),
+                onChanged: (value) =>
+                    context.read<ForeignPoCubit>().updateSearchQuery(value),
               ),
-              SizedBox(
+            ),
+            Expanded(
+              child: Container(
+                color: ColorPallete.background,
                 child: BlocConsumer<ForeignPoCubit, ForeignPoState>(
                   listener: (context, state) {
                     if (state is ForeignPoGetSuccess) {
@@ -76,31 +78,30 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
                   },
                 ),
               ),
-              const SizedBox(height: 8.0),
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    AppButton(
-                      text: "Proceed",
-                      onPressed: () {
-                        // save selected tables rows in the following list
-                        // LineItemCubit.get(context).getLineItemsBySysIds(
-                        //   ForeignPoCubit.get(context).selectedSysIds,
-                        // );
-                        if (ForeignPoCubit.get(context)
-                            .selectedPOList
-                            .isNotEmpty) {
-                          Navigation.push(context, const SelectedPoScreen());
-                        }
-                      },
-                    ),
-                  ],
-                ),
+            ),
+            Padding(
+              padding: const EdgeInsets.all(8.0),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  AppButton(
+                    text: "Proceed",
+                    onPressed: () {
+                      // save selected tables rows in the following list
+                      // LineItemCubit.get(context).getLineItemsBySysIds(
+                      //   ForeignPoCubit.get(context).selectedSysIds,
+                      // );
+                      if (ForeignPoCubit.get(context)
+                          .selectedPOList
+                          .isNotEmpty) {
+                        Navigation.push(context, const SelectedPoScreen());
+                      }
+                    },
+                  ),
+                ],
               ),
-            ],
-          ),
+            ),
+          ],
         ),
       ),
     );
@@ -127,8 +128,10 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
     });
     return Container(
       padding: const EdgeInsets.all(8.0),
-      color: Colors.white,
+      color: ColorPallete.background,
       child: PaginatedDataTable(
+        primary: true,
+        header: const Text('PO List'),
         columns: const [
           DataColumn(label: Text('hEADSYSID')),
           DataColumn(label: Text('dOCNO')),

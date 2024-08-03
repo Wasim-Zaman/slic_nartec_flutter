@@ -9,16 +9,22 @@ class TextFieldWidget extends StatefulWidget {
   final String? Function(String?)? validator;
   final bool? readOnly;
   final Color? filledColor;
+  final void Function(String)? onChanged;
+  final void Function()? onEditingComplete;
+  final String? initialValue;
 
   const TextFieldWidget({
     super.key,
-    required this.hintText,
+    this.hintText = '',
     this.passwordField = false,
     this.controller,
     this.suffixIcon,
     this.validator,
     this.readOnly = false,
     this.filledColor,
+    this.onChanged,
+    this.onEditingComplete,
+    this.initialValue,
   });
 
   @override
@@ -38,9 +44,15 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
   Widget build(BuildContext context) {
     return TextFormField(
       controller: widget.controller,
+      initialValue: widget.initialValue,
       obscureText: obscureText ?? widget.passwordField,
       validator: widget.validator,
       readOnly: widget.readOnly ?? false,
+      onChanged: widget.onChanged,
+      onEditingComplete: widget.onEditingComplete,
+      onFieldSubmitted: (value) {
+        FocusScope.of(context).nextFocus();
+      },
       obscuringCharacter: '*',
       decoration: InputDecoration(
         filled: true,

@@ -7,6 +7,7 @@ import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/main_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
+import 'package:slic/view/widgets/loading/loading_widget.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -59,7 +60,10 @@ class LoginScreen extends StatelessWidget {
               },
               builder: (context, state) {
                 if (state is AuthLoginLoading) {
-                  return const Center(child: CircularProgressIndicator());
+                  return const SizedBox(
+                    width: double.infinity,
+                    child: LoadingWidget(),
+                  );
                 }
                 return AppButton(
                   text: 'Login',

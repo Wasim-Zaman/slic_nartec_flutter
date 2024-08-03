@@ -25,10 +25,11 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
   @override
   void initState() {
     super.initState();
-    LineItemCubit.get(context).slicLineItems = [];
-    LineItemCubit.get(context).slicLineItemsMap = {};
+    LineItemCubit.get(context).slicLineItems.clear();
     LineItemCubit.get(context).selectedSysId = null;
     LineItemCubit.get(context).counter.clear();
+    LineItemCubit.get(context).lineItems.clear();
+    LineItemCubit.get(context).slicLineItemsMap.clear();
   }
 
   @override
@@ -37,9 +38,9 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
       appBar: AppBar(
         title: const Text('Foreign PO'),
       ),
-      body: SingleChildScrollView(
-        child: Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
+      body: Padding(
+        padding: const EdgeInsets.all(8.0),
+        child: SingleChildScrollView(
           child: Column(
             children: [
               SizedBox(
@@ -53,7 +54,8 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                   listener: (context, state) {},
                   builder: (context, state) {
                     if (state is LineItemGetBySysIdLoading) {
-                      return const LoadingWidget();
+                      // return const LoadingWidget();
+                      return _buildLineItemsTable([]);
                     }
                     return _buildLineItemsTable(
                       LineItemCubit.get(context).slicLineItems,

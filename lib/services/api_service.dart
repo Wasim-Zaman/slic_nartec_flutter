@@ -3,6 +3,7 @@ import 'package:slic/models/auth.dart';
 import 'package:slic/models/company.dart';
 import 'package:slic/models/company_location.dart';
 import 'package:slic/models/foreign_po.dart';
+import 'package:slic/models/item_code.dart';
 import 'package:slic/models/line_item.dart';
 import 'package:slic/models/location.dart';
 import 'package:slic/models/sales_order.dart';
@@ -253,5 +254,19 @@ class ApiService {
       'Content-Type': 'application/json',
     });
     return response;
+  }
+
+  // * Item Codes Section ***
+  static Future<ApiResponse> getItemCodesByGtin(String gtin) async {
+    final endpoint = "/itemCodes/v2/searchByGTIN?GTIN=$gtin";
+    final response = await HttpService().request(
+      endpoint,
+      method: "GET",
+    );
+
+    return ApiResponse.fromJson(
+      response,
+      (data) => ItemCode.fromJson(response['data']),
+    );
   }
 }
