@@ -29,11 +29,6 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
   }
 
   @override
-  void dispose() {
-    super.dispose();
-  }
-
-  @override
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
