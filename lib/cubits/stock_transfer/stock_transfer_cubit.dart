@@ -7,7 +7,8 @@ part 'stock_transfer_states.dart';
 class StockTransferCubit extends Cubit<StockTransferState> {
   StockTransferCubit() : super(StockTransferInitial());
 
-  static StockTransferCubit get(context) => BlocProvider.of(context);
+  static StockTransferCubit get(context) =>
+      BlocProvider.of<StockTransferCubit>(context);
 
   // Variables
   List<ItemCode> itemCodes = [];

@@ -23,8 +23,13 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
   }
 
   @override
-  void dispose() {
+  void didChangeDependencies() {
     StockTransferCubit.get(context).dispose();
+    super.didChangeDependencies();
+  }
+
+  @override
+  void dispose() {
     super.dispose();
   }
 
