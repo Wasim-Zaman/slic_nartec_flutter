@@ -256,6 +256,18 @@ class ApiService {
     return response;
   }
 
+  static Future<dynamic> slicGetData(var body) async {
+    const endpoint = "/oneerpreport/api/getapi";
+    final slicToken = SharedStorage.getSlicToken();
+    final response =
+        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
+            .request(endpoint, method: "POST", data: body, headers: {
+      "Authorization": "Bearer $slicToken",
+      'Content-Type': 'application/json',
+    });
+    return response;
+  }
+
   // * Item Codes Section ***
   static Future<ApiResponse> getItemCodesByGtin(String gtin) async {
     final endpoint = "/itemCodes/v2/searchByGTIN?GTIN=$gtin";

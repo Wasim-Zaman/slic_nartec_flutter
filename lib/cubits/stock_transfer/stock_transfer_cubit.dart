@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/item_code.dart';
+import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
 
 part 'stock_transfer_states.dart';
@@ -11,7 +12,11 @@ class StockTransferCubit extends Cubit<StockTransferState> {
       BlocProvider.of<StockTransferCubit>(context);
 
   // Variables
+
+  // Lists
   List<ItemCode> itemCodes = [];
+  List<TransactionCodeModel> transactionCodes = [];
+
   String? gtin;
   String? transaction;
   String? fromLocation;
@@ -20,6 +25,10 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   String size = "37";
   String type = "U";
   double total = 0;
+
+  // Selected values
+  String? transactionName;
+  String? transactionCode;
 
   void dispose() {
     itemCodes.clear();
@@ -31,6 +40,27 @@ class StockTransferCubit extends Cubit<StockTransferState> {
     size = "37";
     type = "U";
     total = 0;
+  }
+
+  void getTransactionCodes() async {
+    emit(StockTransferTransactionCodesLoading());
+    try {
+      final response = await ApiService.slicGetData({
+        "filter": {"P_TXN_TYPE": "LTRFO"},
+        "M_COMP_CODE": "SLIC",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "ListOfTransactionCode",
+        "M_LANG_CODE": "ENG"
+      });
+
+      response.forEach((element) {
+        transactionCodes.add(TransactionCodeModel.fromJson(element));
+      });
+
+      emit(StockTransferTransactionCodesSuccess());
+    } catch (error) {
+      emit(StockTransferTransactionCodesError(errorMessage: error.toString()));
+    }
   }
 
   void transferStock() async {
@@ -64,7 +94,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
       });
       emit(StockTransferPostSuccess());
     } catch (e) {
-      emit(StockTransferPostError());
+      emit(StockTransferPostError(errorMessage: e.toString()));
     }
   }
 }

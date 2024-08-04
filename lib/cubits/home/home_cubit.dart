@@ -18,8 +18,8 @@ class HomeCubit extends Cubit<HomeState> {
   List<CompanyModel> slicCompanies = [];
   List<LocationModel> slicLocations = [];
 
-  String? company, location;
-  String? companyCode, locationCode;
+  String? company, location, fromLocation, toLocation;
+  String? companyCode, locationCode, fromLocationCode, toLocationCode;
 
   void getCompaniesLocations() async {
     emit(HomeGetCompanyLocationLoading());

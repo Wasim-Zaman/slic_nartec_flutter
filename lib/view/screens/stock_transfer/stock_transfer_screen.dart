@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/item_code/item_code_cubit.dart';
 import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
+import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 
 class StockTransferScreen extends StatefulWidget {
@@ -18,6 +20,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
 
   @override
   void initState() {
+    StockTransferCubit.get(context).getTransactionCodes();
     ItemCodeCubit.get(context).itemCodes.clear();
     super.initState();
   }
@@ -41,61 +44,85 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              DropdownButtonFormField<String>(
-                value: StockTransferCubit.get(context).transaction,
-                decoration: const InputDecoration(labelText: "Transaction"),
-                items: <String>['Element 1', 'Element 2', 'Element 3']
-                    .map((String value) {
-                  return DropdownMenuItem<String>(
-                    value: value,
-                    child: Text(value),
+              BlocBuilder<StockTransferCubit, StockTransferState>(
+                builder: (context, state) {
+                  return CustomDropdownButton(
+                    options: StockTransferCubit.get(context)
+                        .transactionCodes
+                        .where((element) =>
+                            element.listOfTransactionCod?.tXNNAME != null)
+                        .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
+                        .toSet()
+                        .toList(),
+                    defaultValue:
+                        StockTransferCubit.get(context).transactionName,
+                    onChanged: (p0) {
+                      StockTransferCubit.get(context).transactionName =
+                          p0.toString();
+                      StockTransferCubit.get(context).transactionCode =
+                          StockTransferCubit.get(context)
+                              .transactionCodes
+                              .firstWhere((element) =>
+                                  element.listOfTransactionCod!.tXNNAME == p0)
+                              .listOfTransactionCod!
+                              .tXNCODE;
+                    },
                   );
-                }).toList(),
-                onChanged: (String? newValue) {
-                  setState(() {
-                    StockTransferCubit.get(context).transaction = newValue;
-                  });
                 },
               ),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: StockTransferCubit.get(context).fromLocation,
-                      decoration:
-                          const InputDecoration(labelText: "From Location"),
-                      items: <String>['Location 1', 'Location 2', 'Location 3']
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
+                    child: BlocBuilder<HomeCubit, HomeState>(
+                      builder: (context, state) {
+                        return CustomDropdownButton(
+                          options: HomeCubit.get(context)
+                              .slicLocations
+                              .where((element) =>
+                                  element.locationMaster?.lOCNNAME != null)
+                              .map((e) => e.locationMaster!.lOCNNAME.toString())
+                              .toSet()
+                              .toList(),
+                          defaultValue: HomeCubit.get(context).fromLocation,
+                          onChanged: (p0) {
+                            HomeCubit.get(context).fromLocation = p0.toString();
+                            HomeCubit.get(context).fromLocationCode =
+                                HomeCubit.get(context)
+                                    .slicLocations
+                                    .firstWhere((element) =>
+                                        element.locationMaster!.lOCNNAME == p0)
+                                    .locationMaster!
+                                    .lOCNCODE;
+                          },
                         );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          StockTransferCubit.get(context).fromLocation =
-                              newValue;
-                        });
                       },
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: StockTransferCubit.get(context).toLocation,
-                      decoration:
-                          const InputDecoration(labelText: "To Location"),
-                      items: <String>['Location A', 'Location B', 'Location C']
-                          .map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
+                    child: BlocBuilder<HomeCubit, HomeState>(
+                      builder: (context, state) {
+                        return CustomDropdownButton(
+                          options: HomeCubit.get(context)
+                              .slicLocations
+                              .where((element) =>
+                                  element.locationMaster?.lOCNNAME != null)
+                              .map((e) => e.locationMaster!.lOCNNAME.toString())
+                              .toSet()
+                              .toList(),
+                          defaultValue: HomeCubit.get(context).toLocation,
+                          onChanged: (p0) {
+                            HomeCubit.get(context).toLocation = p0.toString();
+                            HomeCubit.get(context).toLocationCode =
+                                HomeCubit.get(context)
+                                    .slicLocations
+                                    .firstWhere((element) =>
+                                        element.locationMaster!.lOCNNAME == p0)
+                                    .locationMaster!
+                                    .lOCNCODE;
+                          },
                         );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          StockTransferCubit.get(context).toLocation = newValue;
-                        });
                       },
                     ),
                   ),
