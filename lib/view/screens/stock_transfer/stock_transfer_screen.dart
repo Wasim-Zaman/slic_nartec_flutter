@@ -315,10 +315,20 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              const Row(
+              Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  AppButton(text: "Save & Submit"),
+                  AppButton(
+                    text: "Save & Submit",
+                    onPressed: () {
+                      StockTransferCubit.get(context).transferStock(
+                        itemCodes: ItemCodeCubit.get(context).itemCodes,
+                        fromLocationCode:
+                            HomeCubit.get(context).fromLocationCode,
+                        toLocationCode: HomeCubit.get(context).toLocation,
+                      );
+                    },
+                  ),
                 ],
               ),
             ],

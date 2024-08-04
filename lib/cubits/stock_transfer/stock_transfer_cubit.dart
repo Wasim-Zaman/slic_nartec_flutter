@@ -18,9 +18,6 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   List<TransactionCodeModel> transactionCodes = [];
 
   String? gtin;
-  String? transaction;
-  String? fromLocation;
-  String? toLocation;
   int boxQuantity = 1;
   int size = 1;
   String type = "U";
@@ -34,9 +31,6 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   void dispose() {
     itemCodes.clear();
     gtin = null;
-    transaction = null;
-    fromLocation = null;
-    toLocation = null;
     boxQuantity = 1;
     size = 1;
     type = "U";
@@ -64,7 +58,11 @@ class StockTransferCubit extends Cubit<StockTransferState> {
     }
   }
 
-  void transferStock() async {
+  void transferStock({
+    required List<ItemCode> itemCodes,
+    String? fromLocationCode,
+    String? toLocationCode,
+  }) async {
     emit(StockTransferPostLoading());
     try {
       // * API Call
@@ -74,18 +72,20 @@ class StockTransferCubit extends Cubit<StockTransferState> {
         "data": [
           {
             "Company": "SLIC",
-            "TransactionCode": "LDTO",
-            "FromLocation-Code": "FG101",
-            "ToLocation-Code": "FG102",
+            "TransactionCode": transactionCode.toString(),
+            "FromLocation-Code": fromLocationCode.toString(),
+            "ToLocation-Code": toLocationCode.toString(),
             "UserId": "SYSADMIN",
-            "Item": [
-              {
-                "ItemCode": "4415",
-                "Size": "37",
-                "Qty": "10",
-                "UserId": "SYSADMIN"
-              }
-            ]
+            "Item": itemCodes
+                .map(
+                  (e) => {
+                    "ItemCode": e.itemCode.toString(),
+                    "Size": "${e.size}",
+                    "Qty": "${e.itemQty}",
+                    "UserId": "SYSADMIN"
+                  },
+                )
+                .toList(),
           }
         ],
         "COMPANY": "SLIC",
