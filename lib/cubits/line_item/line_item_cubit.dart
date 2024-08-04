@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/line_item.dart';
 import 'package:slic/models/slic_line_item_model.dart';
@@ -206,7 +203,6 @@ class LineItemCubit extends Cubit<LineItemState> {
         "LANG": "ENG"
       };
 
-      log(jsonEncode(body));
       final res = await ApiService.slicPostData(body);
       // if message key exists in the response, then emit success state
       if (res.containsKey('message')) {

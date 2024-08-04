@@ -12,7 +12,10 @@ final class StockTransferTransactionCodesLoading extends StockTransferState {}
 
 // * Success
 
-final class StockTransferPostSuccess extends StockTransferState {}
+final class StockTransferPostSuccess extends StockTransferState {
+  final String message;
+  StockTransferPostSuccess({required this.message});
+}
 
 final class StockTransferTransactionCodesSuccess extends StockTransferState {}
 

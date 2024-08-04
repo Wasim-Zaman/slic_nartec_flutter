@@ -305,7 +305,12 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  BlocBuilder<StockTransferCubit, StockTransferState>(
+                  BlocConsumer<StockTransferCubit, StockTransferState>(
+                    listener: (context, state) {
+                      if (state is StockTransferPostSuccess) {}
+                    },
+                    buildWhen: (previous, current) =>
+                        current is StockTransferPostLoading,
                     builder: (context, state) {
                       if (state is StockTransferPostLoading) {
                         return const LoadingWidget();
