@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
@@ -19,7 +22,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
 
   String? gtin;
   int boxQuantity = 1;
-  int size = 1;
+  int size = 37;
   String type = "U";
   double total = 0;
 
@@ -92,6 +95,8 @@ class StockTransferCubit extends Cubit<StockTransferState> {
         "APICODE": "STOCKTRANSFER",
         "LANG": "ENG"
       };
+
+      log(jsonEncode(body));
       final response = await ApiService.slicPostData(body);
       emit(StockTransferPostSuccess());
     } catch (e) {

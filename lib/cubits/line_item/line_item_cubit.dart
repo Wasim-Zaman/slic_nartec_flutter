@@ -168,29 +168,31 @@ class LineItemCubit extends Cubit<LineItemState> {
         "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": selectedPOs
             .map(
-              (e) => {
+              (po) => {
                 "SessionId": DateTime.now().toIso8601String(),
                 "Company": "SLIC",
-                "HeadSysId": selectedSysId.toString(),
+                "HeadSysId": po.listOfPO?.hEADSYSID,
                 "TransactionCode": "FPO",
                 "TransactionNo": "2017000002",
                 "LocationCode": locationCode.toString(),
                 "SystemId": "SYSADMIN",
                 "Item": slicLineItemsMap.isEmpty
                     ? []
-                    : slicLineItemsMap[e.listOfPO?.hEADSYSID] == null
+                    : slicLineItemsMap[po.listOfPO?.hEADSYSID] == null
                         ? []
-                        : slicLineItemsMap[e.listOfPO?.hEADSYSID]!
+                        : slicLineItemsMap[po.listOfPO?.hEADSYSID]!
                             .map(
-                              (e) => {
+                              (lineItem) => {
                                 "SessionId": DateTime.now().toIso8601String(),
-                                "HeadSysId": selectedSysId.toString(),
-                                "ItemSysId": e.listOfPOItem?.iTEMSYSID,
-                                "Item-Code": e.listOfPOItem?.iTEMCODE,
-                                "ItemDescription": e.listOfPOItem?.iTEMNAME,
-                                "Size": e.listOfPOItem?.gRADE,
-                                "UnitCode": e.listOfPOItem?.uOM,
-                                "ReceivedQty": e.listOfPOItem?.rECEIVEDQTY,
+                                "HeadSysId": po.listOfPO?.hEADSYSID,
+                                "ItemSysId": lineItem.listOfPOItem?.iTEMSYSID,
+                                "Item-Code": lineItem.listOfPOItem?.iTEMCODE,
+                                "ItemDescription":
+                                    lineItem.listOfPOItem?.iTEMNAME,
+                                "Size": lineItem.listOfPOItem?.gRADE,
+                                "UnitCode": lineItem.listOfPOItem?.uOM,
+                                "ReceivedQty":
+                                    lineItem.listOfPOItem?.rECEIVEDQTY,
                                 "SystemId": "SYSADMIN"
                               },
                             )

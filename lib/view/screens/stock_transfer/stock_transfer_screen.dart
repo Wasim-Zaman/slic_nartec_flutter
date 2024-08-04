@@ -74,82 +74,68 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              Row(
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("From Location"),
-                        BlocBuilder<HomeCubit, HomeState>(
-                          builder: (context, state) {
-                            return CustomDropdownButton(
-                              options: HomeCubit.get(context)
+                  const Text("From Location"),
+                  BlocBuilder<HomeCubit, HomeState>(
+                    builder: (context, state) {
+                      return CustomDropdownButton(
+                        options: HomeCubit.get(context)
+                            .slicLocations
+                            .where((element) =>
+                                element.locationMaster?.lOCNNAME != null)
+                            .map((e) => e.locationMaster!.lOCNNAME.toString())
+                            .toSet()
+                            .toList(),
+                        defaultValue: HomeCubit.get(context).fromLocation,
+                        onChanged: (p0) {
+                          HomeCubit.get(context).fromLocation = p0.toString();
+                          HomeCubit.get(context).fromLocationCode =
+                              HomeCubit.get(context)
                                   .slicLocations
-                                  .where((element) =>
-                                      element.locationMaster?.lOCNNAME != null)
-                                  .map((e) =>
-                                      e.locationMaster!.lOCNNAME.toString())
-                                  .toSet()
-                                  .toList(),
-                              defaultValue: HomeCubit.get(context).fromLocation,
-                              onChanged: (p0) {
-                                HomeCubit.get(context).fromLocation =
-                                    p0.toString();
-                                HomeCubit.get(context).fromLocationCode =
-                                    HomeCubit.get(context)
-                                        .slicLocations
-                                        .firstWhere((element) =>
-                                            element.locationMaster!.lOCNNAME ==
-                                            p0)
-                                        .locationMaster!
-                                        .lOCNCODE;
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("To Location"),
-                        BlocBuilder<HomeCubit, HomeState>(
-                          builder: (context, state) {
-                            return CustomDropdownButton(
-                              options: HomeCubit.get(context)
-                                  .slicLocations
-                                  .where((element) =>
-                                      element.locationMaster?.lOCNNAME != null)
-                                  .map((e) =>
-                                      e.locationMaster!.lOCNNAME.toString())
-                                  .toSet()
-                                  .toList(),
-                              defaultValue: HomeCubit.get(context).toLocation,
-                              onChanged: (p0) {
-                                HomeCubit.get(context).toLocation =
-                                    p0.toString();
-                                HomeCubit.get(context).toLocationCode =
-                                    HomeCubit.get(context)
-                                        .slicLocations
-                                        .firstWhere((element) =>
-                                            element.locationMaster!.lOCNNAME ==
-                                            p0)
-                                        .locationMaster!
-                                        .lOCNCODE;
-                              },
-                            );
-                          },
-                        ),
-                      ],
-                    ),
+                                  .firstWhere((element) =>
+                                      element.locationMaster!.lOCNNAME == p0)
+                                  .locationMaster!
+                                  .lOCNCODE;
+                        },
+                      );
+                    },
                   ),
                 ],
               ),
-              const SizedBox(height: 8),
+              const SizedBox(height: 16),
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  const Text("To Location"),
+                  BlocBuilder<HomeCubit, HomeState>(
+                    builder: (context, state) {
+                      return CustomDropdownButton(
+                        options: HomeCubit.get(context)
+                            .slicLocations
+                            .where((element) =>
+                                element.locationMaster?.lOCNNAME != null)
+                            .map((e) => e.locationMaster!.lOCNNAME.toString())
+                            .toSet()
+                            .toList(),
+                        defaultValue: HomeCubit.get(context).toLocation,
+                        onChanged: (p0) {
+                          HomeCubit.get(context).toLocation = p0.toString();
+                          HomeCubit.get(context).toLocationCode =
+                              HomeCubit.get(context)
+                                  .slicLocations
+                                  .firstWhere((element) =>
+                                      element.locationMaster!.lOCNNAME == p0)
+                                  .locationMaster!
+                                  .lOCNCODE;
+                        },
+                      );
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
@@ -331,7 +317,8 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                             itemCodes: ItemCodeCubit.get(context).itemCodes,
                             fromLocationCode:
                                 HomeCubit.get(context).fromLocationCode,
-                            toLocationCode: HomeCubit.get(context).toLocation,
+                            toLocationCode:
+                                HomeCubit.get(context).toLocationCode,
                           );
                         },
                       );
