@@ -7,6 +7,7 @@ import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
+import 'package:slic/view/widgets/loading/loading_widget.dart';
 
 class StockTransferScreen extends StatefulWidget {
   const StockTransferScreen({super.key});
@@ -318,14 +319,21 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  AppButton(
-                    text: "Save & Submit",
-                    onPressed: () {
-                      StockTransferCubit.get(context).transferStock(
-                        itemCodes: ItemCodeCubit.get(context).itemCodes,
-                        fromLocationCode:
-                            HomeCubit.get(context).fromLocationCode,
-                        toLocationCode: HomeCubit.get(context).toLocation,
+                  BlocBuilder<StockTransferCubit, StockTransferState>(
+                    builder: (context, state) {
+                      if (state is StockTransferPostLoading) {
+                        return const LoadingWidget();
+                      }
+                      return AppButton(
+                        text: "Save & Submit",
+                        onPressed: () {
+                          StockTransferCubit.get(context).transferStock(
+                            itemCodes: ItemCodeCubit.get(context).itemCodes,
+                            fromLocationCode:
+                                HomeCubit.get(context).fromLocationCode,
+                            toLocationCode: HomeCubit.get(context).toLocation,
+                          );
+                        },
                       );
                     },
                   ),

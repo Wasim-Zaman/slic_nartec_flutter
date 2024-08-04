@@ -61,7 +61,7 @@ class HttpService {
     if (response.statusCode == 200 ||
         response.statusCode == 201 ||
         data['success'] == true) {
-      return json.decode(response.body);
+      return data;
     } else {
       throw Exception(data['message']);
     }

@@ -65,8 +65,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   }) async {
     emit(StockTransferPostLoading());
     try {
-      // * API Call
-      final response = await ApiService.slicPostData({
+      final body = {
         "_keyword_": "LTO",
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": [
@@ -92,9 +91,11 @@ class StockTransferCubit extends Cubit<StockTransferState> {
         "USERID": "SYSADMIN",
         "APICODE": "STOCKTRANSFER",
         "LANG": "ENG"
-      });
+      };
+      final response = await ApiService.slicPostData(body);
       emit(StockTransferPostSuccess());
     } catch (e) {
+      print(e);
       emit(StockTransferPostError(errorMessage: e.toString()));
     }
   }
