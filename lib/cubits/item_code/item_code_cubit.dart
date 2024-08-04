@@ -12,18 +12,21 @@ class ItemCodeCubit extends Cubit<ItemCodeState> {
   List<ItemCode> itemCodes = [];
   String? gtin;
 
-  void getItemCodeByGtin() async {
+  void getItemCodeByGtin({required int qty, required int size}) async {
     emit(ItemCodeLoading());
     try {
       final res = await ApiService.getItemCodesByGtin(gtin.toString());
       if (res.success) {
-        itemCodes.add(res.data);
+        ItemCode itemCode = res.data;
+        itemCode.itemQty = qty;
+        itemCode.size = size;
+
+        itemCodes.add(itemCode);
         emit(ItemCodeSuccess());
       } else {
         emit(ItemCodeError(res.message));
       }
     } catch (error) {
-      print(error);
       emit(ItemCodeError(error.toString()));
     }
   }

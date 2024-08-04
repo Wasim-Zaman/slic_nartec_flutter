@@ -22,13 +22,14 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   String? fromLocation;
   String? toLocation;
   int boxQuantity = 1;
-  String size = "37";
+  int size = 1;
   String type = "U";
   double total = 0;
 
   // Selected values
   String? transactionName;
   String? transactionCode;
+  int quantity = 1;
 
   void dispose() {
     itemCodes.clear();
@@ -37,7 +38,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
     fromLocation = null;
     toLocation = null;
     boxQuantity = 1;
-    size = "37";
+    size = 1;
     type = "U";
     total = 0;
   }

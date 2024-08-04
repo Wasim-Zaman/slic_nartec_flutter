@@ -44,6 +44,8 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              const Text("Transaction"),
+              const SizedBox(height: 4),
               BlocBuilder<StockTransferCubit, StockTransferState>(
                 builder: (context, state) {
                   return CustomDropdownButton(
@@ -74,56 +76,74 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: BlocBuilder<HomeCubit, HomeState>(
-                      builder: (context, state) {
-                        return CustomDropdownButton(
-                          options: HomeCubit.get(context)
-                              .slicLocations
-                              .where((element) =>
-                                  element.locationMaster?.lOCNNAME != null)
-                              .map((e) => e.locationMaster!.lOCNNAME.toString())
-                              .toSet()
-                              .toList(),
-                          defaultValue: HomeCubit.get(context).fromLocation,
-                          onChanged: (p0) {
-                            HomeCubit.get(context).fromLocation = p0.toString();
-                            HomeCubit.get(context).fromLocationCode =
-                                HomeCubit.get(context)
-                                    .slicLocations
-                                    .firstWhere((element) =>
-                                        element.locationMaster!.lOCNNAME == p0)
-                                    .locationMaster!
-                                    .lOCNCODE;
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("From Location"),
+                        BlocBuilder<HomeCubit, HomeState>(
+                          builder: (context, state) {
+                            return CustomDropdownButton(
+                              options: HomeCubit.get(context)
+                                  .slicLocations
+                                  .where((element) =>
+                                      element.locationMaster?.lOCNNAME != null)
+                                  .map((e) =>
+                                      e.locationMaster!.lOCNNAME.toString())
+                                  .toSet()
+                                  .toList(),
+                              defaultValue: HomeCubit.get(context).fromLocation,
+                              onChanged: (p0) {
+                                HomeCubit.get(context).fromLocation =
+                                    p0.toString();
+                                HomeCubit.get(context).fromLocationCode =
+                                    HomeCubit.get(context)
+                                        .slicLocations
+                                        .firstWhere((element) =>
+                                            element.locationMaster!.lOCNNAME ==
+                                            p0)
+                                        .locationMaster!
+                                        .lOCNCODE;
+                              },
+                            );
                           },
-                        );
-                      },
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: BlocBuilder<HomeCubit, HomeState>(
-                      builder: (context, state) {
-                        return CustomDropdownButton(
-                          options: HomeCubit.get(context)
-                              .slicLocations
-                              .where((element) =>
-                                  element.locationMaster?.lOCNNAME != null)
-                              .map((e) => e.locationMaster!.lOCNNAME.toString())
-                              .toSet()
-                              .toList(),
-                          defaultValue: HomeCubit.get(context).toLocation,
-                          onChanged: (p0) {
-                            HomeCubit.get(context).toLocation = p0.toString();
-                            HomeCubit.get(context).toLocationCode =
-                                HomeCubit.get(context)
-                                    .slicLocations
-                                    .firstWhere((element) =>
-                                        element.locationMaster!.lOCNNAME == p0)
-                                    .locationMaster!
-                                    .lOCNCODE;
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("To Location"),
+                        BlocBuilder<HomeCubit, HomeState>(
+                          builder: (context, state) {
+                            return CustomDropdownButton(
+                              options: HomeCubit.get(context)
+                                  .slicLocations
+                                  .where((element) =>
+                                      element.locationMaster?.lOCNNAME != null)
+                                  .map((e) =>
+                                      e.locationMaster!.lOCNNAME.toString())
+                                  .toSet()
+                                  .toList(),
+                              defaultValue: HomeCubit.get(context).toLocation,
+                              onChanged: (p0) {
+                                HomeCubit.get(context).toLocation =
+                                    p0.toString();
+                                HomeCubit.get(context).toLocationCode =
+                                    HomeCubit.get(context)
+                                        .slicLocations
+                                        .firstWhere((element) =>
+                                            element.locationMaster!.lOCNNAME ==
+                                            p0)
+                                        .locationMaster!
+                                        .lOCNCODE;
+                              },
+                            );
                           },
-                        );
-                      },
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -132,48 +152,67 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               Row(
                 children: [
                   Expanded(
-                    child: TextFieldWidget(
-                      initialValue: StockTransferCubit.get(context)
-                          .boxQuantity
-                          .toString(),
-                      // keyboardType: TextInputType.number,
-                      filledColor: ColorPallete.accent.withOpacity(0.7),
-                      onChanged: (value) {
-                        setState(() {
-                          StockTransferCubit.get(context).boxQuantity =
-                              int.tryParse(value) ?? 1;
-                        });
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Box Quantity"),
+                        TextFieldWidget(
+                          initialValue: StockTransferCubit.get(context)
+                              .boxQuantity
+                              .toString(),
+                          // keyboardType: TextInputType.number,
+                          filledColor: ColorPallete.accent.withOpacity(0.7),
+                          onChanged: (value) {
+                            setState(() {
+                              StockTransferCubit.get(context).boxQuantity =
+                                  int.tryParse(value) ?? 1;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: TextFieldWidget(
-                      initialValue: StockTransferCubit.get(context).size,
-                      onChanged: (value) {
-                        setState(() {
-                          StockTransferCubit.get(context).size = value;
-                        });
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Size"),
+                        TextFieldWidget(
+                          initialValue:
+                              StockTransferCubit.get(context).size.toString(),
+                          onChanged: (value) {
+                            setState(() {
+                              StockTransferCubit.get(context).size =
+                                  int.tryParse(value) ?? 1;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: DropdownButtonFormField<String>(
-                      value: StockTransferCubit.get(context).type,
-                      decoration: const InputDecoration(labelText: "Type"),
-                      items:
-                          <String>['U', 'Type1', 'Type2'].map((String value) {
-                        return DropdownMenuItem<String>(
-                          value: value,
-                          child: Text(value),
-                        );
-                      }).toList(),
-                      onChanged: (String? newValue) {
-                        setState(() {
-                          StockTransferCubit.get(context).type = newValue!;
-                        });
-                      },
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Text("Type"),
+                        DropdownButtonFormField<String>(
+                          value: StockTransferCubit.get(context).type,
+                          items: <String>['U', 'Type1', 'Type2']
+                              .map((String value) {
+                            return DropdownMenuItem<String>(
+                              value: value,
+                              child: Text(value),
+                            );
+                          }).toList(),
+                          onChanged: (String? newValue) {
+                            setState(() {
+                              StockTransferCubit.get(context).type = newValue!;
+                            });
+                          },
+                        ),
+                      ],
                     ),
                   ),
                 ],
@@ -186,7 +225,41 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                   ItemCodeCubit.get(context).gtin = value;
                 },
                 onEditingComplete: () {
-                  ItemCodeCubit.get(context).getItemCodeByGtin();
+                  // show dialog to get quantity
+                  showAdaptiveDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: const Text("Enter Quantity"),
+                          content: TextFieldWidget(
+                            hintText: "Enter Quantity",
+                            filledColor: ColorPallete.accent.withOpacity(0.7),
+                            onChanged: (value) {
+                              StockTransferCubit.get(context).quantity =
+                                  int.tryParse(value) ?? 1;
+                            },
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                              },
+                              child: const Text("Cancel"),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.pop(context);
+                                ItemCodeCubit.get(context).getItemCodeByGtin(
+                                  qty: StockTransferCubit.get(context).quantity,
+                                  size: StockTransferCubit.get(context).size,
+                                );
+                              },
+                              child: const Text("Submit"),
+                            ),
+                          ],
+                        );
+                      });
+                  // ItemCodeCubit.get(context).getItemCodeByGtin();
                 },
               ),
               const SizedBox(height: 16),
@@ -229,7 +302,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                               return DataRow(
                                 cells: [
                                   DataCell(Text(e.itemCode ?? '')),
-                                  const DataCell(Text("")),
+                                  DataCell(Text(e.size.toString())),
                                   DataCell(Text(e.itemQty.toString())),
                                 ],
                               );

@@ -7,6 +7,7 @@ class ItemCode {
   String? expiryDate;
   String? sERIALnUMBER;
   int? itemQty;
+  int? size;
   String? wHLocation;
   String? binLocation;
   String? qRCodeInternational;
@@ -29,6 +30,7 @@ class ItemCode {
     this.expiryDate,
     this.sERIALnUMBER,
     this.itemQty,
+    this.size,
     this.wHLocation,
     this.binLocation,
     this.qRCodeInternational,
@@ -52,6 +54,7 @@ class ItemCode {
     expiryDate = json['ExpiryDate'];
     sERIALnUMBER = json['sERIALnUMBER'];
     itemQty = json['ItemQty'];
+    size = json['Size'];
     wHLocation = json['WHLocation'];
     binLocation = json['BinLocation'];
     qRCodeInternational = json['QRCodeInternational'];
@@ -76,6 +79,7 @@ class ItemCode {
     data['ExpiryDate'] = expiryDate;
     data['sERIALnUMBER'] = sERIALnUMBER;
     data['ItemQty'] = itemQty;
+    data['Size'] = size;
     data['WHLocation'] = wHLocation;
     data['BinLocation'] = binLocation;
     data['QRCodeInternational'] = qRCodeInternational;
