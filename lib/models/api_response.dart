@@ -2,7 +2,7 @@ class ApiResponse<T> {
   final String message;
   final int status;
   final bool success;
-  final T data;
+  final T? data;
 
   ApiResponse({
     required this.message,
@@ -17,7 +17,7 @@ class ApiResponse<T> {
       message: json['message'] as String,
       status: json['status'] as int,
       success: json['success'] as bool,
-      data: fromJsonT(json['data']),
+      data: json['data'] != null ? fromJsonT(json['data']) : null,
     );
   }
 }
