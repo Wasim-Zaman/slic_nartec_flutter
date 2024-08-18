@@ -21,19 +21,154 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
 
   @override
   void initState() {
-    StockTransferCubit.get(context).getTransactionCodes();
-    ItemCodeCubit.get(context).itemCodes.clear();
     super.initState();
+    _initializeData();
+  }
+
+  void _initializeData() {
+    final stockTransferCubit = StockTransferCubit.get(context);
+    stockTransferCubit.getTransactionCodes();
+    ItemCodeCubit.get(context).itemCodes.clear();
   }
 
   @override
   void didChangeDependencies() {
-    StockTransferCubit.get(context).dispose();
     super.didChangeDependencies();
+    StockTransferCubit.get(context).dispose();
+  }
+
+  Widget _buildDropdown({
+    required String title,
+    required List<String> options,
+    required String? defaultValue,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        const SizedBox(height: 4),
+        CustomDropdownButton(
+          options: options,
+          defaultValue: defaultValue,
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildTextField({
+    required String title,
+    required String initialValue,
+    required ValueChanged<String> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        TextFieldWidget(
+          initialValue: initialValue,
+          filledColor: ColorPallete.accent.withOpacity(0.6),
+          onChanged: onChanged,
+        ),
+      ],
+    );
+  }
+
+  Widget _buildDataTable() {
+    return BlocBuilder<ItemCodeCubit, ItemCodeState>(
+      buildWhen: (previous, current) => current is ItemCodeSuccess,
+      builder: (context, state) {
+        return Expanded(
+          child: Container(
+            width: double.infinity,
+            alignment: Alignment.topCenter,
+            child: SingleChildScrollView(
+              scrollDirection: Axis.horizontal,
+              child: DataTable(
+                headingRowColor: WidgetStateProperty.all(Colors.blueGrey),
+                dataRowColor: WidgetStateProperty.all(Colors.lightBlue[50]),
+                columns: const <DataColumn>[
+                  DataColumn(
+                    label:
+                        Text('ITEMCODE', style: TextStyle(color: Colors.white)),
+                  ),
+                  DataColumn(
+                    label: Text('Size', style: TextStyle(color: Colors.white)),
+                  ),
+                  DataColumn(
+                    label: Text('Qty', style: TextStyle(color: Colors.white)),
+                  ),
+                ],
+                rows: ItemCodeCubit.get(context).itemCodes.map(
+                  (e) {
+                    return DataRow(
+                      cells: [
+                        DataCell(Text(e.itemCode ?? '')),
+                        DataCell(Text(e.size.toString())),
+                        DataCell(Text(e.itemQty.toString())),
+                      ],
+                    );
+                  },
+                ).toList(),
+              ),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  void _showQuantityDialog(BuildContext context) {
+    showAdaptiveDialog(
+      context: context,
+      builder: (context) {
+        return AlertDialog(
+          title: const Text("Enter Quantity"),
+          content: TextFieldWidget(
+            hintText: "Enter Quantity",
+            filledColor: ColorPallete.accent.withOpacity(0.6),
+            onChanged: (value) {
+              StockTransferCubit.get(context).quantity =
+                  int.tryParse(value) ?? 1;
+            },
+          ),
+          actions: [
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+              },
+              child: const Text("Cancel"),
+            ),
+            TextButton(
+              onPressed: () {
+                Navigator.pop(context);
+                ItemCodeCubit.get(context).getItemCodeByGtin(
+                  qty: StockTransferCubit.get(context).quantity,
+                  size: StockTransferCubit.get(context).size,
+                );
+              },
+              child: const Text("Submit"),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  void _handleSubmit() {
+    StockTransferCubit.get(context).transferStock(
+      itemCodes: ItemCodeCubit.get(context).itemCodes,
+      fromLocationCode: HomeCubit.get(context).fromLocationCode,
+      toLocationCode: HomeCubit.get(context).toLocationCode,
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    final stockTransferCubit = StockTransferCubit.get(context);
+    final homeCubit = HomeCubit.get(context);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Stock Transfer"),
@@ -45,137 +180,94 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              const Text("Transaction"),
-              const SizedBox(height: 4),
-              BlocBuilder<StockTransferCubit, StockTransferState>(
-                builder: (context, state) {
-                  return CustomDropdownButton(
-                    options: StockTransferCubit.get(context)
+              _buildDropdown(
+                title: "Transaction",
+                options: stockTransferCubit.transactionCodes
+                    .where((element) =>
+                        element.listOfTransactionCod?.tXNNAME != null)
+                    .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
+                    .toSet()
+                    .toList(),
+                defaultValue: stockTransferCubit.transactionName,
+                onChanged: (value) {
+                  setState(() {
+                    stockTransferCubit.transactionName = value!;
+                    stockTransferCubit.transactionCode = stockTransferCubit
                         .transactionCodes
-                        .where((element) =>
-                            element.listOfTransactionCod?.tXNNAME != null)
-                        .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
-                        .toSet()
-                        .toList(),
-                    defaultValue:
-                        StockTransferCubit.get(context).transactionName,
-                    onChanged: (p0) {
-                      StockTransferCubit.get(context).transactionName =
-                          p0.toString();
-                      StockTransferCubit.get(context).transactionCode =
-                          StockTransferCubit.get(context)
-                              .transactionCodes
-                              .firstWhere((element) =>
-                                  element.listOfTransactionCod!.tXNNAME == p0)
-                              .listOfTransactionCod!
-                              .tXNCODE;
-                    },
-                  );
+                        .firstWhere((element) =>
+                            element.listOfTransactionCod!.tXNNAME == value)
+                        .listOfTransactionCod!
+                        .tXNCODE;
+                  });
                 },
               ),
               const SizedBox(height: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("From Location"),
-                  BlocBuilder<HomeCubit, HomeState>(
-                    builder: (context, state) {
-                      return CustomDropdownButton(
-                        options: HomeCubit.get(context)
-                            .slicLocations
-                            .where((element) =>
-                                element.locationMaster?.lOCNNAME != null)
-                            .map((e) => e.locationMaster!.lOCNNAME.toString())
-                            .toSet()
-                            .toList(),
-                        defaultValue: HomeCubit.get(context).fromLocation,
-                        onChanged: (p0) {
-                          HomeCubit.get(context).fromLocation = p0.toString();
-                          HomeCubit.get(context).fromLocationCode =
-                              HomeCubit.get(context)
-                                  .slicLocations
-                                  .firstWhere((element) =>
-                                      element.locationMaster!.lOCNNAME == p0)
-                                  .locationMaster!
-                                  .lOCNCODE;
-                        },
-                      );
-                    },
-                  ),
-                ],
+              _buildDropdown(
+                title: "From Location",
+                options: homeCubit.slicLocations
+                    .where(
+                        (element) => element.locationMaster?.lOCNNAME != null)
+                    .map((e) => e.locationMaster!.lOCNNAME.toString())
+                    .toSet()
+                    .toList(),
+                defaultValue: homeCubit.fromLocation,
+                onChanged: (value) {
+                  setState(() {
+                    homeCubit.fromLocation = value!;
+                    homeCubit.fromLocationCode = homeCubit.slicLocations
+                        .firstWhere((element) =>
+                            element.locationMaster!.lOCNNAME == value)
+                        .locationMaster!
+                        .lOCNCODE;
+                  });
+                },
               ),
               const SizedBox(height: 16),
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  const Text("To Location"),
-                  BlocBuilder<HomeCubit, HomeState>(
-                    builder: (context, state) {
-                      return CustomDropdownButton(
-                        options: HomeCubit.get(context)
-                            .slicLocations
-                            .where((element) =>
-                                element.locationMaster?.lOCNNAME != null)
-                            .map((e) => e.locationMaster!.lOCNNAME.toString())
-                            .toSet()
-                            .toList(),
-                        defaultValue: HomeCubit.get(context).toLocation,
-                        onChanged: (p0) {
-                          HomeCubit.get(context).toLocation = p0.toString();
-                          HomeCubit.get(context).toLocationCode =
-                              HomeCubit.get(context)
-                                  .slicLocations
-                                  .firstWhere((element) =>
-                                      element.locationMaster!.lOCNNAME == p0)
-                                  .locationMaster!
-                                  .lOCNCODE;
-                        },
-                      );
-                    },
-                  ),
-                ],
+              _buildDropdown(
+                title: "To Location",
+                options: homeCubit.slicLocations
+                    .where(
+                        (element) => element.locationMaster?.lOCNNAME != null)
+                    .map((e) => e.locationMaster!.lOCNNAME.toString())
+                    .toSet()
+                    .toList(),
+                defaultValue: homeCubit.toLocation,
+                onChanged: (value) {
+                  setState(() {
+                    homeCubit.toLocation = value!;
+                    homeCubit.toLocationCode = homeCubit.slicLocations
+                        .firstWhere((element) =>
+                            element.locationMaster!.lOCNNAME == value)
+                        .locationMaster!
+                        .lOCNCODE;
+                  });
+                },
               ),
               const SizedBox(height: 16),
               Row(
                 children: [
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Box Quantity"),
-                        TextFieldWidget(
-                          initialValue: StockTransferCubit.get(context)
-                              .boxQuantity
-                              .toString(),
-                          // keyboardType: TextInputType.number,
-                          filledColor: ColorPallete.accent.withOpacity(0.7),
-                          onChanged: (value) {
-                            setState(() {
-                              StockTransferCubit.get(context).boxQuantity =
-                                  int.tryParse(value) ?? 1;
-                            });
-                          },
-                        ),
-                      ],
+                    child: _buildTextField(
+                      title: "Box Quantity",
+                      initialValue: stockTransferCubit.boxQuantity.toString(),
+                      onChanged: (value) {
+                        setState(() {
+                          stockTransferCubit.boxQuantity =
+                              int.tryParse(value) ?? 1;
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(width: 16),
                   Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Size"),
-                        TextFieldWidget(
-                          initialValue:
-                              StockTransferCubit.get(context).size.toString(),
-                          onChanged: (value) {
-                            setState(() {
-                              StockTransferCubit.get(context).size =
-                                  int.tryParse(value) ?? 1;
-                            });
-                          },
-                        ),
-                      ],
+                    child: _buildTextField(
+                      title: "Size",
+                      initialValue: stockTransferCubit.size.toString(),
+                      onChanged: (value) {
+                        setState(() {
+                          stockTransferCubit.size = int.tryParse(value) ?? 1;
+                        });
+                      },
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -185,7 +277,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                       children: [
                         const Text("Type"),
                         DropdownButtonFormField<String>(
-                          value: StockTransferCubit.get(context).type,
+                          value: stockTransferCubit.type,
                           items: <String>['U', 'Type1', 'Type2']
                               .map((String value) {
                             return DropdownMenuItem<String>(
@@ -195,7 +287,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                           }).toList(),
                           onChanged: (String? newValue) {
                             setState(() {
-                              StockTransferCubit.get(context).type = newValue!;
+                              stockTransferCubit.type = newValue!;
                             });
                           },
                         ),
@@ -207,107 +299,23 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               const SizedBox(height: 16),
               TextFieldWidget(
                 hintText: "Search GTIN number",
-                filledColor: ColorPallete.accent.withOpacity(0.7),
+                filledColor: ColorPallete.accent.withOpacity(0.6),
                 onChanged: (value) {
                   ItemCodeCubit.get(context).gtin = value;
                 },
-                onEditingComplete: () {
-                  // show dialog to get quantity
-                  showAdaptiveDialog(
-                      context: context,
-                      builder: (context) {
-                        return AlertDialog(
-                          title: const Text("Enter Quantity"),
-                          content: TextFieldWidget(
-                            hintText: "Enter Quantity",
-                            filledColor: ColorPallete.accent.withOpacity(0.7),
-                            onChanged: (value) {
-                              StockTransferCubit.get(context).quantity =
-                                  int.tryParse(value) ?? 1;
-                            },
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                              },
-                              child: const Text("Cancel"),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.pop(context);
-                                ItemCodeCubit.get(context).getItemCodeByGtin(
-                                  qty: StockTransferCubit.get(context).quantity,
-                                  size: StockTransferCubit.get(context).size,
-                                );
-                              },
-                              child: const Text("Submit"),
-                            ),
-                          ],
-                        );
-                      });
-                  // ItemCodeCubit.get(context).getItemCodeByGtin();
-                },
+                onEditingComplete: () => _showQuantityDialog(context),
               ),
               const SizedBox(height: 16),
-              BlocBuilder<ItemCodeCubit, ItemCodeState>(
-                buildWhen: (previous, current) => current is ItemCodeSuccess,
-                builder: (context, state) {
-                  return Expanded(
-                    child: Container(
-                      width: double.infinity,
-                      alignment: Alignment.topCenter,
-                      child: SingleChildScrollView(
-                        scrollDirection: Axis.horizontal,
-                        child: DataTable(
-                          headingRowColor:
-                              WidgetStateProperty.all(Colors.blueGrey),
-                          dataRowColor:
-                              WidgetStateProperty.all(Colors.lightBlue[50]),
-                          columns: const <DataColumn>[
-                            DataColumn(
-                              label: Text(
-                                'ITEMCODE',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Size',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                            DataColumn(
-                              label: Text(
-                                'Qty',
-                                style: TextStyle(color: Colors.white),
-                              ),
-                            ),
-                          ],
-                          rows: ItemCodeCubit.get(context).itemCodes.map(
-                            (e) {
-                              return DataRow(
-                                cells: [
-                                  DataCell(Text(e.itemCode ?? '')),
-                                  DataCell(Text(e.size.toString())),
-                                  DataCell(Text(e.itemQty.toString())),
-                                ],
-                              );
-                            },
-                          ).toList(),
-                        ),
-                      ),
-                    ),
-                  );
-                },
-              ),
+              _buildDataTable(),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
                   BlocConsumer<StockTransferCubit, StockTransferState>(
                     listener: (context, state) {
-                      if (state is StockTransferPostSuccess) {}
+                      if (state is StockTransferPostSuccess) {
+                        // Handle success state
+                      }
                     },
                     buildWhen: (previous, current) =>
                         current is StockTransferPostLoading,
@@ -317,15 +325,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                       }
                       return AppButton(
                         text: "Save & Submit",
-                        onPressed: () {
-                          StockTransferCubit.get(context).transferStock(
-                            itemCodes: ItemCodeCubit.get(context).itemCodes,
-                            fromLocationCode:
-                                HomeCubit.get(context).fromLocationCode,
-                            toLocationCode:
-                                HomeCubit.get(context).toLocationCode,
-                          );
-                        },
+                        onPressed: _handleSubmit,
                       );
                     },
                   ),

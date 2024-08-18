@@ -12,6 +12,7 @@ class TextFieldWidget extends StatefulWidget {
   final void Function(String)? onChanged;
   final void Function()? onEditingComplete;
   final String? initialValue;
+  final Color? hintColor;
 
   const TextFieldWidget({
     super.key,
@@ -25,6 +26,7 @@ class TextFieldWidget extends StatefulWidget {
     this.onChanged,
     this.onEditingComplete,
     this.initialValue,
+    this.hintColor,
   });
 
   @override
@@ -62,6 +64,9 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
           borderSide: BorderSide.none,
         ),
         hintText: widget.hintText,
+        hintStyle: TextStyle(
+          color: widget.hintColor,
+        ),
         suffixIcon: widget.passwordField
             ? IconButton(
                 icon: Icon(
