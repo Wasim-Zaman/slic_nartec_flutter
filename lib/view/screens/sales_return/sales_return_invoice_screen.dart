@@ -7,14 +7,15 @@ import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 
-class SalesReturnScreen extends StatefulWidget {
-  const SalesReturnScreen({super.key});
+class SalesReturnInvoiceScreen extends StatefulWidget {
+  const SalesReturnInvoiceScreen({super.key});
 
   @override
-  State<SalesReturnScreen> createState() => _SalesReturnScreenState();
+  State<SalesReturnInvoiceScreen> createState() =>
+      _SalesReturnInvoiceScreenState();
 }
 
-class _SalesReturnScreenState extends State<SalesReturnScreen> {
+class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
