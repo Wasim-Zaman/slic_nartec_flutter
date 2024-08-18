@@ -6,20 +6,18 @@ import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
 
-part 'stock_transfer_states.dart';
+part 'goods_issue_state.dart';
 
-class StockTransferCubit extends Cubit<StockTransferState> {
-  StockTransferCubit() : super(StockTransferInitial());
+class GoodsIssueCubit extends Cubit<GoodsIssueState> {
+  GoodsIssueCubit() : super(GoodsIssueInitia());
 
-  static StockTransferCubit get(context) =>
-      BlocProvider.of<StockTransferCubit>(context);
-
-  // Variables
+  static GoodsIssueCubit get(context) => BlocProvider.of(context);
 
   // Lists
   List<ItemCode> itemCodes = [];
   List<TransactionCodeModel> transactionCodes = [];
 
+  String? transactionName, transactionCode;
   String? gtin;
   int boxQuantity = 1;
   int size = 37;
@@ -27,9 +25,8 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   double total = 0;
 
   // Selected values
-  String? transactionName;
-  String? transactionCode;
   int quantity = 1;
+  // Add your cubit methods here
 
   void dispose() {
     itemCodes.clear();
@@ -41,7 +38,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   }
 
   getTransactionCodes() async {
-    emit(StockTransferTransactionCodesLoading());
+    emit(GoodsIssueTransactionCodesLoading());
     try {
       final response = await ApiService.slicGetData({
         "filter": {"P_TXN_TYPE": "LTRFO"},
@@ -55,9 +52,9 @@ class StockTransferCubit extends Cubit<StockTransferState> {
         transactionCodes.add(TransactionCodeModel.fromJson(element));
       });
 
-      emit(StockTransferTransactionCodesSuccess());
+      emit(GoodsIssueTransactionCodesSuccess());
     } catch (error) {
-      emit(StockTransferTransactionCodesError(errorMessage: error.toString()));
+      emit(GoodsIssueTransactionCodesError(errorMessage: error.toString()));
     }
   }
 
@@ -66,7 +63,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
     String? fromLocationCode,
     String? toLocationCode,
   }) async {
-    emit(StockTransferPostLoading());
+    emit(GoodsIssuePostLoading());
     try {
       final body = {
         "_keyword_": "LTO",
@@ -101,10 +98,10 @@ class StockTransferCubit extends Cubit<StockTransferState> {
 
       log(jsonEncode(body));
       final response = await ApiService.slicPostData(body);
-      emit(StockTransferPostSuccess(message: response.toString()));
+      emit(GoodsIssuePostSuccess(message: response.toString()));
     } catch (e) {
       print(e);
-      emit(StockTransferPostError(errorMessage: e.toString()));
+      emit(GoodsIssuePostError(errorMessage: e.toString()));
     }
   }
 }

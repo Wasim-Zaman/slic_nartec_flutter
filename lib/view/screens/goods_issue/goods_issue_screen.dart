@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
+import 'package:slic/cubits/goods_issue/goods_issue_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/item_code/item_code_cubit.dart';
 import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
@@ -11,14 +12,14 @@ import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
 
-class StockTransferScreen extends StatefulWidget {
-  const StockTransferScreen({super.key});
+class GoodsIssueScreen extends StatefulWidget {
+  const GoodsIssueScreen({super.key});
 
   @override
-  State<StockTransferScreen> createState() => _StockTransferScreenState();
+  State<GoodsIssueScreen> createState() => _GoodsIssueScreenState();
 }
 
-class _StockTransferScreenState extends State<StockTransferScreen> {
+class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
   final _formKey = GlobalKey<FormState>();
 
   @override
@@ -28,8 +29,8 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
   }
 
   void _initializeData() async {
-    final stockTransferCubit = StockTransferCubit.get(context);
-    await stockTransferCubit.getTransactionCodes();
+    final goodsIssueCubit = GoodsIssueCubit.get(context);
+    await goodsIssueCubit.getTransactionCodes();
     setState(() {
       ItemCodeCubit.get(context).itemCodes.clear();
     });
@@ -161,21 +162,21 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
   void _handleSubmit() {
     // unfocus keyboard
     FocusManager.instance.primaryFocus?.unfocus();
-    StockTransferCubit.get(context).transferStock(
-      itemCodes: ItemCodeCubit.get(context).itemCodes,
-      fromLocationCode: HomeCubit.get(context).fromLocationCode,
-      toLocationCode: HomeCubit.get(context).toLocationCode,
-    );
+    // StockTransferCubit.get(context).transferStock(
+    //   itemCodes: ItemCodeCubit.get(context).itemCodes,
+    //   fromLocationCode: HomeCubit.get(context).fromLocationCode,
+    //   toLocationCode: HomeCubit.get(context).toLocationCode,
+    // );
   }
 
   @override
   Widget build(BuildContext context) {
-    final stockTransferCubit = StockTransferCubit.get(context);
     final homeCubit = HomeCubit.get(context);
+    final goodsIssueCubit = GoodsIssueCubit.get(context);
 
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Stock Transfer"),
+        title: const Text("Goods Issue"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -187,17 +188,17 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
             children: [
               _buildDropdown(
                 title: "Transaction",
-                options: stockTransferCubit.transactionCodes
+                options: goodsIssueCubit.transactionCodes
                     .where((element) =>
                         element.listOfTransactionCod?.tXNNAME != null)
                     .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
                     .toSet()
                     .toList(),
-                defaultValue: stockTransferCubit.transactionName,
+                defaultValue: goodsIssueCubit.transactionName,
                 onChanged: (value) {
                   setState(() {
-                    stockTransferCubit.transactionName = value!;
-                    stockTransferCubit.transactionCode = stockTransferCubit
+                    goodsIssueCubit.transactionName = value!;
+                    goodsIssueCubit.transactionCode = goodsIssueCubit
                         .transactionCodes
                         .firstWhere((element) =>
                             element.listOfTransactionCod!.tXNNAME == value)
@@ -251,13 +252,27 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
+                  const Text("Date"),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFieldWidget(
+                      initialValue: DateTime.now().toUtc().toIso8601String(),
+                    ),
+                  ),
+                  IconButton(
+                      onPressed: () {}, icon: const Icon(Icons.calendar_today)),
+                ],
+              ),
+              const SizedBox(height: 16),
+              Row(
+                children: [
                   Expanded(
                     child: _buildTextField(
                       title: "Box Quantity",
-                      initialValue: stockTransferCubit.boxQuantity.toString(),
+                      initialValue: goodsIssueCubit.boxQuantity.toString(),
                       onChanged: (value) {
                         setState(() {
-                          stockTransferCubit.boxQuantity =
+                          goodsIssueCubit.boxQuantity =
                               int.tryParse(value) ?? 1;
                         });
                       },
@@ -267,10 +282,10 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                   Expanded(
                     child: _buildTextField(
                       title: "Size",
-                      initialValue: stockTransferCubit.size.toString(),
+                      initialValue: goodsIssueCubit.size.toString(),
                       onChanged: (value) {
                         setState(() {
-                          stockTransferCubit.size = int.tryParse(value) ?? 1;
+                          goodsIssueCubit.size = int.tryParse(value) ?? 1;
                         });
                       },
                     ),
@@ -282,7 +297,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                       children: [
                         const Text("Type"),
                         DropdownButtonFormField<String>(
-                          value: stockTransferCubit.type,
+                          value: goodsIssueCubit.type,
                           items: <String>['U', 'Type1', 'Type2']
                               .map((String value) {
                             return DropdownMenuItem<String>(
@@ -292,7 +307,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                           }).toList(),
                           onChanged: (String? newValue) {
                             setState(() {
-                              stockTransferCubit.type = newValue!;
+                              goodsIssueCubit.type = newValue!;
                             });
                           },
                         ),
@@ -316,10 +331,10 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
-                  BlocConsumer<StockTransferCubit, StockTransferState>(
+                  BlocConsumer<GoodsIssueCubit, GoodsIssueState>(
                     listener: (context, state) {
                       print(state);
-                      if (state is StockTransferPostSuccess) {
+                      if (state is GoodsIssuePostSuccess) {
                         // Handle success state
                         CustomSnackbar.show(
                           context: context,
@@ -329,9 +344,9 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                       }
                     },
                     buildWhen: (previous, current) =>
-                        current is StockTransferPostLoading,
+                        current is GoodsIssuePostLoading,
                     builder: (context, state) {
-                      if (state is StockTransferPostLoading) {
+                      if (state is GoodsIssuePostLoading) {
                         return const LoadingWidget();
                       }
                       return AppButton(
