@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:slic/core/color_pallete.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/screens/foreign_po/foreign_po_screen_v3.dart';
 import 'package:slic/view/screens/goods_issue/goods_issue_screen.dart';
 import 'package:slic/view/screens/sales_order/sales_order_screen_v2.dart';
-import 'package:slic/view/screens/sales_return/direct_sales_return_screen.dart';
 import 'package:slic/view/screens/sales_return/sales_return_invoice_screen.dart';
 import 'package:slic/view/screens/stock_transfer/stock_transfer_screen.dart';
 import 'package:slic/view/widgets/menu_card.dart';
@@ -59,7 +59,7 @@ class _MainScreenState extends State<MainScreen>
           crossAxisCount: 2,
           crossAxisSpacing: 16.0,
           mainAxisSpacing: 16.0,
-          childAspectRatio: 1.3,
+          childAspectRatio: 1,
           children: [
             for (var menu in [
               MenuInfo(
@@ -75,7 +75,9 @@ class _MainScreenState extends State<MainScreen>
               MenuInfo(
                 'Direct Sales Return',
                 AppAssets.directSalesReturn,
-                const DirectSalesReturnScreen(),
+                // const DirectSalesReturnScreen(),
+                null,
+                color: ColorPallete.border,
               ),
               MenuInfo(
                 'Stocks Transfer',
@@ -108,6 +110,7 @@ class _MainScreenState extends State<MainScreen>
                           Navigation.push(context, menu.screen!);
                         }
                       },
+                      bgColor: menu.color,
                     ),
                   ),
                 ),
@@ -123,6 +126,7 @@ class MenuInfo {
   final String title;
   final String iconPath;
   final Widget? screen;
+  final Color? color;
 
-  MenuInfo(this.title, this.iconPath, this.screen);
+  MenuInfo(this.title, this.iconPath, this.screen, {this.color});
 }

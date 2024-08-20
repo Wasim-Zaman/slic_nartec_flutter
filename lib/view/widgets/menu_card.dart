@@ -5,12 +5,14 @@ class MenuCard extends StatelessWidget {
   final String title;
   final String iconPath;
   final VoidCallback onTap;
+  final Color? bgColor;
 
   const MenuCard({
     super.key,
     required this.title,
     required this.iconPath,
     required this.onTap,
+    this.bgColor,
   });
 
   @override
@@ -19,6 +21,7 @@ class MenuCard extends StatelessWidget {
       onTap: onTap,
       child: Container(
         decoration: BoxDecoration(
+          color: bgColor,
           borderRadius: BorderRadius.circular(8.0),
           border: Border.all(
             color: ColorPallete.border,

@@ -20,6 +20,7 @@ class ItemCodeCubit extends Cubit<ItemCodeState> {
         ItemCode itemCode = res.data;
         itemCode.itemQty = qty;
         itemCode.size = size;
+        // itemCode.size = int.tryParse(itemCode.productSize.toString()) ?? 0;
 
         itemCodes.add(itemCode);
         emit(ItemCodeSuccess());

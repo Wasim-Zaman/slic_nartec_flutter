@@ -4,7 +4,6 @@ import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/goods_issue/goods_issue_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/item_code/item_code_cubit.dart';
-import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
@@ -39,7 +38,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
-    StockTransferCubit.get(context).dispose();
+    GoodsIssueCubit.get(context).dispose();
   }
 
   Widget _buildDropdown({
@@ -109,7 +108,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                   return DataRow(
                     cells: [
                       DataCell(Text(e.itemCode ?? '')),
-                      DataCell(Text(e.size.toString())),
+                      DataCell(Text(e.productSize.toString())),
                       DataCell(Text(e.itemQty.toString())),
                     ],
                   );
@@ -132,8 +131,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
             hintText: "Enter Quantity",
             filledColor: ColorPallete.accent.withOpacity(0.6),
             onChanged: (value) {
-              StockTransferCubit.get(context).quantity =
-                  int.tryParse(value) ?? 1;
+              GoodsIssueCubit.get(context).quantity = int.tryParse(value) ?? 1;
             },
           ),
           actions: [
@@ -147,8 +145,8 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
               onPressed: () {
                 Navigator.pop(context);
                 ItemCodeCubit.get(context).getItemCodeByGtin(
-                  qty: StockTransferCubit.get(context).quantity,
-                  size: StockTransferCubit.get(context).size,
+                  qty: GoodsIssueCubit.get(context).quantity,
+                  size: GoodsIssueCubit.get(context).size,
                 );
               },
               child: const Text("Submit"),
@@ -162,11 +160,11 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
   void _handleSubmit() {
     // unfocus keyboard
     FocusManager.instance.primaryFocus?.unfocus();
-    // StockTransferCubit.get(context).transferStock(
-    //   itemCodes: ItemCodeCubit.get(context).itemCodes,
-    //   fromLocationCode: HomeCubit.get(context).fromLocationCode,
-    //   toLocationCode: HomeCubit.get(context).toLocationCode,
-    // );
+    GoodsIssueCubit.get(context).submitGoods(
+      itemCodes: ItemCodeCubit.get(context).itemCodes,
+      fromLocationCode: HomeCubit.get(context).fromLocationCode,
+      toLocationCode: HomeCubit.get(context).toLocationCode,
+    );
   }
 
   @override
@@ -256,11 +254,11 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                   const SizedBox(width: 8),
                   Expanded(
                     child: TextFieldWidget(
-                      initialValue: DateTime.now().toUtc().toIso8601String(),
+                      initialValue: GoodsIssueCubit.get(context).date,
                     ),
                   ),
-                  IconButton(
-                      onPressed: () {}, icon: const Icon(Icons.calendar_today)),
+                  const SizedBox(width: 8),
+                  const Icon(Icons.calendar_today),
                 ],
               ),
               const SizedBox(height: 16),
@@ -298,8 +296,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                         const Text("Type"),
                         DropdownButtonFormField<String>(
                           value: goodsIssueCubit.type,
-                          items: <String>['U', 'Type1', 'Type2']
-                              .map((String value) {
+                          items: <String>['U'].map((String value) {
                             return DropdownMenuItem<String>(
                               value: value,
                               child: Text(value),
@@ -331,9 +328,19 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
                 children: [
+                  // Container(
+                  //   padding: const EdgeInsets.all(8.0),
+                  //   decoration: const BoxDecoration(
+                  //     borderRadius: BorderRadius.all(Radius.circular(8)),
+                  //     color: Colors.white,
+                  //   ),
+                  //   child: Text(
+                  //     "Total ${GoodsIssueCubit.get(context).total}",
+                  //   ),
+                  // ),
+                  // const Spacer(),
                   BlocConsumer<GoodsIssueCubit, GoodsIssueState>(
                     listener: (context, state) {
-                      print(state);
                       if (state is GoodsIssuePostSuccess) {
                         // Handle success state
                         CustomSnackbar.show(

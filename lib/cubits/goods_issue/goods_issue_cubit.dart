@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
@@ -14,22 +15,21 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
   static GoodsIssueCubit get(context) => BlocProvider.of(context);
 
   // Lists
-  List<ItemCode> itemCodes = [];
   List<TransactionCodeModel> transactionCodes = [];
 
   String? transactionName, transactionCode;
   String? gtin;
   int boxQuantity = 1;
-  int size = 37;
+  int size = 1;
   String type = "U";
-  double total = 0;
+  int total = 0;
+  var date = DateFormat.yMd().format(DateTime.now().toUtc());
 
   // Selected values
   int quantity = 1;
   // Add your cubit methods here
 
   void dispose() {
-    itemCodes.clear();
     gtin = null;
     boxQuantity = 1;
     size = 1;
@@ -58,7 +58,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
     }
   }
 
-  void transferStock({
+  void submitGoods({
     required List<ItemCode> itemCodes,
     String? fromLocationCode,
     String? toLocationCode,
@@ -66,25 +66,29 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
     emit(GoodsIssuePostLoading());
     try {
       final body = {
-        "_keyword_": "LTO",
+        "_keyword_": "Production",
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": [
           {
             "Company": "SLIC",
-            "TransactionCode": transactionCode.toString(),
             "FromLocation-Code": fromLocationCode.toString(),
             "ToLocation-Code": toLocationCode.toString(),
             "UserId": "SYSADMIN",
+            "TransactionCode": transactionCode.toString(),
+            "LocationCode": fromLocationCode.toString(),
+            "UserID": "SYSADMIN",
+            "ProductionDate": date.toString(),
             "CustomerName": "ABC",
             "MobileNo": 805630,
             "Remarks": "good",
             "Item": itemCodes
                 .map(
                   (e) => {
-                    "ItemCode": e.itemCode.toString(),
-                    "Size": "${e.size}",
+                    "Item-Code": e.itemCode.toString(),
+                    // "Size": "${e.size}",
+                    "Size": "${e.productSize}",
                     "Qty": "${e.itemQty}",
-                    "UserId": "SYSADMIN"
+                    "UserID": "SYSADMIN"
                   },
                 )
                 .toList(),
@@ -92,7 +96,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
         ],
         "COMPANY": "SLIC",
         "USERID": "SYSADMIN",
-        "APICODE": "STOCKTRANSFER",
+        "APICODE": "PRODUCTIONWO",
         "LANG": "ENG"
       };
 
