@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:intl/intl.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
@@ -23,18 +22,22 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
   int size = 1;
   String type = "U";
   int total = 0;
-  var date = DateFormat.yMd().format(DateTime.now().toUtc());
+  String? date;
 
   // Selected values
   int quantity = 1;
   // Add your cubit methods here
 
   void dispose() {
+    emit(GoodsIssueInitia());
     gtin = null;
     boxQuantity = 1;
     size = 1;
     type = "U";
     total = 0;
+    transactionName = null;
+    transactionCode = null;
+    date = null;
   }
 
   getTransactionCodes() async {
@@ -71,16 +74,16 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
         "data": [
           {
             "Company": "SLIC",
-            "FromLocation-Code": fromLocationCode.toString(),
-            "ToLocation-Code": toLocationCode.toString(),
+            // "FromLocation-Code": fromLocationCode.toString(),
+            // "ToLocation-Code": toLocationCode.toString(),
             "UserId": "SYSADMIN",
             "TransactionCode": transactionCode.toString(),
             "LocationCode": fromLocationCode.toString(),
             "UserID": "SYSADMIN",
             "ProductionDate": date.toString(),
-            "CustomerName": "ABC",
-            "MobileNo": 805630,
-            "Remarks": "good",
+            // "CustomerName": "ABC",
+            // "MobileNo": 805630,
+            // "Remarks": "good",
             "Item": itemCodes
                 .map(
                   (e) => {

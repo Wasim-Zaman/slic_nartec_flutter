@@ -6,6 +6,7 @@ import 'package:slic/models/foreign_po.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/line_item.dart';
 import 'package:slic/models/location.dart';
+import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/models/sales_order.dart';
 import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/models/slic_po_model.dart';
@@ -280,5 +281,22 @@ class ApiService {
       response,
       (data) => ItemCode.fromJson(response['data']),
     );
+  }
+
+  // * POS-INVOICE SECTION ***
+  static Future<ApiResponse> getPOSDetailsByTransactionCode(trxCode) async {
+    final endpoint = "/invoice/v1/invoice-details/$trxCode";
+    final response = await HttpService().request(
+      endpoint,
+      method: "GET",
+    );
+
+    List<POSInvoiceModel> invoices = [];
+
+    response['data'].forEach((data) {
+      invoices.add(POSInvoiceModel.fromJson(data));
+    });
+
+    return ApiResponse.fromJson(response, (data) => invoices);
   }
 }

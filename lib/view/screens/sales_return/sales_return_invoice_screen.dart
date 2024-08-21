@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/item_code/item_code_cubit.dart';
+import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
+import 'package:slic/models/slic_line_item_model.dart';
+import 'package:slic/utils/navigation.dart';
+import 'package:slic/view/screens/foreign_po/update_line_item_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
@@ -58,48 +63,6 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
     );
   }
 
-  Widget _buildDataTable() {
-    return BlocBuilder<ItemCodeCubit, ItemCodeState>(
-      buildWhen: (previous, current) => current is ItemCodeSuccess,
-      builder: (context, state) {
-        return Container(
-          width: double.infinity,
-          alignment: Alignment.topCenter,
-          child: SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: DataTable(
-              headingRowColor: WidgetStateProperty.all(Colors.blueGrey),
-              dataRowColor: WidgetStateProperty.all(Colors.lightBlue[50]),
-              columns: const <DataColumn>[
-                DataColumn(
-                  label:
-                      Text('ITEMCODE', style: TextStyle(color: Colors.white)),
-                ),
-                DataColumn(
-                  label: Text('Size', style: TextStyle(color: Colors.white)),
-                ),
-                DataColumn(
-                  label: Text('Qty', style: TextStyle(color: Colors.white)),
-                ),
-              ],
-              rows: ItemCodeCubit.get(context).itemCodes.map(
-                (e) {
-                  return DataRow(
-                    cells: [
-                      DataCell(Text(e.itemCode ?? '')),
-                      DataCell(Text(e.size.toString())),
-                      DataCell(Text(e.itemQty.toString())),
-                    ],
-                  );
-                },
-              ).toList(),
-            ),
-          ),
-        );
-      },
-    );
-  }
-
   void _handleSubmit() {
     // unfocus keyboard
     FocusManager.instance.primaryFocus?.unfocus();
@@ -148,18 +111,30 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                 children: [
                   Expanded(
                     child: TextFieldWidget(
-                      hintText: "Search GTIN number",
                       onChanged: (value) {
                         ItemCodeCubit.get(context).gtin = value;
                       },
+                      onEditingComplete: () {},
                     ),
                   ),
                   const SizedBox(width: 8),
                   IconButton(onPressed: () {}, icon: const Icon(Icons.logout)),
                 ],
               ),
-              const SizedBox(height: 16),
-              _buildDataTable(),
+              SizedBox(
+                child: BlocConsumer<LineItemCubit, LineItemState>(
+                  listener: (context, state) {},
+                  builder: (context, state) {
+                    if (state is LineItemGetBySysIdLoading) {
+                      // return const LoadingWidget();
+                      return _buildLineItemsTable([]);
+                    }
+                    return _buildLineItemsTable(
+                      LineItemCubit.get(context).slicLineItems,
+                    );
+                  },
+                ),
+              ),
               const SizedBox(height: 16),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,
@@ -176,4 +151,109 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
       ),
     );
   }
+
+  Widget _buildLineItemsTable(List<SlicLineItemModel> data) {
+    LineItemSource dataSource = LineItemSource(data, (SlicLineItemModel item) {
+      Navigation.push(context, UpdateLineItemScreen(lineItem: item));
+    });
+    return Container(
+      padding: const EdgeInsets.all(8.0),
+      color: Colors.white,
+      child: PaginatedDataTable(
+        columns: const [
+          DataColumn(label: Text('gRADE')),
+          DataColumn(label: Text('iTEMSYSID')),
+          DataColumn(label: Text('iTEMNAME')),
+          DataColumn(label: Text('iTEMCODE')),
+          DataColumn(label: Text('pOQTY')),
+          DataColumn(label: Text('rECEIVEDQTY')),
+          DataColumn(label: Text('uOM')),
+        ],
+        source: dataSource,
+        columnSpacing: 20,
+        horizontalMargin: 10,
+        rowsPerPage: 3,
+        showCheckboxColumn: true,
+      ),
+    );
+  }
+}
+
+class LineItemSource extends DataTableSource {
+  final List<SlicLineItemModel> _data;
+  final void Function(SlicLineItemModel) onDoubleTap;
+
+  LineItemSource(this._data, this.onDoubleTap);
+
+  @override
+  DataRow getRow(int index) {
+    final SlicLineItemModel data = _data[index];
+    return DataRow.byIndex(
+      index: index,
+      color: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
+            return ColorPallete.primary.withOpacity(0.3);
+          }
+          if (index.isEven) {
+            return ColorPallete.background;
+          }
+          return ColorPallete.background;
+        },
+      ),
+      cells: <DataCell>[
+        DataCell(
+          GestureDetector(
+            onDoubleTap: () => onDoubleTap(data),
+            child: Text(data.listOfPOItem?.gRADE ?? ''),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onDoubleTap: () => onDoubleTap(data),
+            child: Text(data.listOfPOItem!.iTEMSYSID.toString()),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onDoubleTap: () => onDoubleTap(data),
+            child: Text(data.listOfPOItem!.iTEMNAME.toString()),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onDoubleTap: () => onDoubleTap(data),
+            child: Text(data.listOfPOItem!.iTEMCODE.toString()),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onDoubleTap: () => onDoubleTap(data),
+            child: Text(data.listOfPOItem!.pOQTY.toString()),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onDoubleTap: () => onDoubleTap(data),
+            child: Text(data.listOfPOItem!.rECEIVEDQTY.toString()),
+          ),
+        ),
+        DataCell(
+          GestureDetector(
+            onDoubleTap: () => onDoubleTap(data),
+            child: Text(data.listOfPOItem!.uOM.toString()),
+          ),
+        ),
+      ],
+    );
+  }
+
+  @override
+  int get rowCount => _data.length;
+
+  @override
+  bool get isRowCountApproximate => false;
+
+  @override
+  int get selectedRowCount => 0;
 }

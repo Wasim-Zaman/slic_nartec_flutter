@@ -7,9 +7,13 @@ final class SalesReturnInitial extends SalesReturnState {}
 //? Loading
 final class SalesReturnTransactionCodesLoading extends SalesReturnState {}
 
+final class SalesReturnPOSInvoiceLoading extends SalesReturnState {}
+
 //* Success
 
 final class SalesReturnTransactionCodesSuccess extends SalesReturnState {}
+
+final class SalesReturnPOSInvoiceSuccess extends SalesReturnState {}
 
 //! Error
 
@@ -17,4 +21,10 @@ final class SalesReturnTransactionCodesError extends SalesReturnState {
   final String errorMessage;
 
   SalesReturnTransactionCodesError({required this.errorMessage});
+}
+
+final class SalesReturnPOSInvoiceError extends SalesReturnState {
+  final String errorMessage;
+
+  SalesReturnPOSInvoiceError({required this.errorMessage});
 }

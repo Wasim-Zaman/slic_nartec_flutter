@@ -1,5 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:slic/models/item_code.dart';
+import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
 
@@ -11,17 +11,29 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   static SalesReturnCubit get(context) =>
       BlocProvider.of<SalesReturnCubit>(context);
 
-  // Variables
-
   // Lists
-  List<ItemCode> itemCodes = [];
   List<TransactionCodeModel> transactionCodes = [];
-
-  String? gtin;
+  List<POSInvoiceModel> invoices = [];
 
   // Selected values
   String? transactionName;
   String? transactionCode;
+
+  void getPOSInvoice() async {
+    emit(SalesReturnPOSInvoiceLoading());
+    try {
+      final response =
+          await ApiService.getPOSDetailsByTransactionCode(transactionCode);
+
+      if (response.status == 200) {
+        emit(SalesReturnPOSInvoiceSuccess());
+      } else {
+        emit(SalesReturnPOSInvoiceError(errorMessage: response.message));
+      }
+    } catch (error) {
+      emit(SalesReturnPOSInvoiceError(errorMessage: error.toString()));
+    }
+  }
 
   getTransactionCodes() async {
     emit(SalesReturnTransactionCodesLoading());

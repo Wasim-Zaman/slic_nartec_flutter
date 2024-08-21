@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/goods_issue/goods_issue_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
@@ -30,7 +31,10 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
   void _initializeData() async {
     final goodsIssueCubit = GoodsIssueCubit.get(context);
     await goodsIssueCubit.getTransactionCodes();
+
     setState(() {
+      GoodsIssueCubit.get(context).date =
+          DateFormat.yMd().format(DateTime.now().toUtc());
       ItemCodeCubit.get(context).itemCodes.clear();
     });
   }
@@ -345,7 +349,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                         // Handle success state
                         CustomSnackbar.show(
                           context: context,
-                          message: "Stock transfer submitted ",
+                          message: "Data saved successfully",
                         );
                         Navigation.pop(context);
                       }
