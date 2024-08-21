@@ -4,6 +4,8 @@ abstract class GoodsIssueState {}
 
 class GoodsIssueInitia extends GoodsIssueState {}
 
+final class GoodsIssueDateChanged extends GoodsIssueState {}
+
 // ? Loading
 
 final class GoodsIssuePostLoading extends GoodsIssueState {}

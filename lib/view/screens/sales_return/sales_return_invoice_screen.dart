@@ -6,6 +6,8 @@ import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
+import 'package:slic/view/widgets/field/text_field_widget.dart';
+import 'package:slic/view/widgets/loading/loading_widget.dart';
 
 class SalesReturnInvoiceScreen extends StatefulWidget {
   const SalesReturnInvoiceScreen({super.key});
@@ -25,8 +27,10 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
   }
 
   void _initializeData() async {
-    final cubit = SalesReturnCubit.get(context).getTransactionCodes();
+    final cubit = SalesReturnCubit.get(context);
     await cubit.getTransactionCodes();
+    setState(
+        () {}); // Trigger a rebuild to refresh the dropdown with fetched data
   }
 
   void _handleSubmit() {
@@ -81,17 +85,18 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                 onChanged: (value) {
                   setState(() {
                     stockTransferCubit.transactionName = value!;
-                    stockTransferCubit.transactionCode.text = stockTransferCubit
+                    stockTransferCubit.transactionCode = stockTransferCubit
                             .transactionCodes
                             .firstWhere((element) =>
                                 element.listOfTransactionCod!.tXNNAME == value)
                             .listOfTransactionCod!
                             .tXNCODE ??
                         '';
-                    stockTransferCubit.getPOSInvoice();
+                    // stockTransferCubit.getPOSInvoice();
                   });
                 },
               ),
+              const SizedBox(height: 16),
               BlocConsumer<SalesReturnCubit, SalesReturnState>(
                 listener: (context, state) {
                   if (state is SalesReturnPOSInvoiceError) {
@@ -104,17 +109,14 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Enter Transaction Code"),
+                      const Text("Enter Transaction Number"),
                       Row(
                         children: [
                           Expanded(
-                            child: TextField(
-                              controller:
-                                  SalesReturnCubit.get(context).transactionCode,
+                            child: TextFieldWidget(
                               onChanged: (value) {
                                 SalesReturnCubit.get(context)
-                                    .transactionCode
-                                    .text = value;
+                                    .transactionNumber = value;
                               },
                               onEditingComplete: _handleSubmit,
                             ),
@@ -128,7 +130,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                       ),
                       const SizedBox(height: 16),
                       if (state is SalesReturnPOSInvoiceLoading)
-                        const Center(child: CircularProgressIndicator()),
+                        const LoadingWidget(),
                       if (state is SalesReturnPOSInvoiceSuccess)
                         _buildInvoiceTable(
                           SalesReturnCubit.get(context).invoices,
@@ -195,9 +197,9 @@ class InvoiceDataSource extends DataTableSource {
     final POSInvoiceModel data = _data[index];
     return DataRow.byIndex(
       index: index,
-      color: WidgetStateProperty.resolveWith<Color>(
-        (Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
+      color: MaterialStateProperty.resolveWith<Color>(
+        (Set<MaterialState> states) {
+          if (states.contains(MaterialState.selected)) {
             return ColorPallete.primary.withOpacity(0.3);
           }
           if (index.isEven) {

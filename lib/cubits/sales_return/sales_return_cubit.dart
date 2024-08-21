@@ -1,4 +1,3 @@
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/models/transaction_code_model.dart';
@@ -18,13 +17,14 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
 
   // Selected values
   String? transactionName;
-  final transactionCode = TextEditingController();
+  String? transactionCode;
+  String? transactionNumber;
 
   void getPOSInvoice() async {
     emit(SalesReturnPOSInvoiceLoading());
     try {
       final response =
-          await ApiService.getPOSDetailsByTransactionCode(transactionCode.text);
+          await ApiService.getPOSDetailsByTransactionCode(transactionNumber);
 
       if (response.success) {
         invoices = response.data;

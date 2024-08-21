@@ -1,7 +1,9 @@
 import 'dart:convert';
 import 'dart:developer';
 
+import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
@@ -22,7 +24,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
   int size = 1;
   String type = "U";
   int total = 0;
-  String? date;
+  final date = TextEditingController();
 
   // Selected values
   int quantity = 1;
@@ -37,7 +39,12 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
     total = 0;
     transactionName = null;
     transactionCode = null;
-    date = null;
+    date.clear();
+  }
+
+  setDate() {
+    date.text = DateFormat.yMd().format(DateTime.now().toUtc());
+    emit(GoodsIssueDateChanged());
   }
 
   getTransactionCodes() async {
@@ -80,7 +87,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
             "TransactionCode": transactionCode.toString(),
             "LocationCode": fromLocationCode.toString(),
             "UserID": "SYSADMIN",
-            "ProductionDate": date.toString(),
+            "ProductionDate": date.text.toString(),
             // "CustomerName": "ABC",
             // "MobileNo": 805630,
             // "Remarks": "good",
