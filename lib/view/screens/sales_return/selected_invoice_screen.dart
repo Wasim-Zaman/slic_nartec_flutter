@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:slic/core/color_pallete.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
+import 'package:slic/view/widgets/field/text_field_widget.dart';
 
 class SelectedInvoiceScreen extends StatelessWidget {
   const SelectedInvoiceScreen({super.key});
@@ -17,83 +19,71 @@ class SelectedInvoiceScreen extends StatelessWidget {
           children: [
             const Text('Select Transaction Code'),
             const SizedBox(height: 8),
-            const TextField(
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                hintText: 'Enter Transaction Code',
-              ),
-            ),
+            const TextFieldWidget(readOnly: true),
             const SizedBox(height: 16),
-            const TextField(
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'SO Date',
-              ),
-            ),
+            const Text('SO Date'),
+            const SizedBox(height: 8),
+            const TextFieldWidget(readOnly: true),
             const SizedBox(height: 16),
-            const TextField(
-              readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Customer',
-              ),
-            ),
+            const Text('Customer'),
+            const SizedBox(height: 8),
+            const TextFieldWidget(readOnly: true),
             const SizedBox(height: 16),
             const Row(
               children: [
                 Expanded(
-                  child: TextField(
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Item Code',
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Item Code'),
+                      SizedBox(height: 8),
+                      TextFieldWidget(readOnly: true),
+                    ],
                   ),
                 ),
                 SizedBox(width: 16),
                 Expanded(
-                  child: TextField(
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Size',
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Size'),
+                      SizedBox(height: 8),
+                      TextFieldWidget(readOnly: true),
+                    ],
                   ),
                 ),
               ],
             ),
             const SizedBox(height: 16),
-            const TextField(
+            const Text('Description'),
+            const SizedBox(height: 8),
+            const TextFieldWidget(
               readOnly: true,
-              decoration: InputDecoration(
-                border: OutlineInputBorder(),
-                labelText: 'Description',
-              ),
-              maxLines: 3,
             ),
             const SizedBox(height: 16),
             Row(
               children: [
                 const Expanded(
-                  child: TextField(
-                    readOnly: true,
-                    decoration: InputDecoration(
-                      border: OutlineInputBorder(),
-                      labelText: 'Invoice Quantity',
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text('Invoice Quantity'),
+                      SizedBox(height: 8),
+                      TextFieldWidget(readOnly: true),
+                    ],
                   ),
                 ),
                 const SizedBox(width: 16),
                 Expanded(
-                  child: TextField(
-                    decoration: InputDecoration(
-                      filled: true,
-                      fillColor: Colors.yellow[100],
-                      border: const OutlineInputBorder(),
-                      labelText: 'Return Quantity',
-                    ),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text('Return Quantity'),
+                      const SizedBox(height: 8),
+                      TextFieldWidget(
+                        filledColor: ColorPallete.accent.withOpacity(0.6),
+                      ),
+                    ],
                   ),
                 ),
               ],
