@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/models/pos_invoice_model.dart';
+import 'package:slic/view/screens/sales_return/selected_invoice_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
@@ -157,11 +158,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
   }
 
   Widget _buildInvoiceTable(List<POSInvoiceModel> data) {
-    final dataSource = InvoiceDataSource(data, (POSInvoiceModel invoice) {
-      // Handle double-click, e.g., navigate to another screen
-      // For now, just print the invoice details
-      print(invoice.invoiceNo);
-    });
+    final dataSource = InvoiceDataSource(data, context);
 
     return Container(
       padding: const EdgeInsets.all(8.0),
@@ -188,9 +185,9 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
 
 class InvoiceDataSource extends DataTableSource {
   final List<POSInvoiceModel> _data;
-  final void Function(POSInvoiceModel) onDoubleTap;
+  final BuildContext context;
 
-  InvoiceDataSource(this._data, this.onDoubleTap);
+  InvoiceDataSource(this._data, this.context);
 
   @override
   DataRow getRow(int index) {
@@ -211,43 +208,43 @@ class InvoiceDataSource extends DataTableSource {
       cells: <DataCell>[
         DataCell(
           GestureDetector(
-            onDoubleTap: () => onDoubleTap(data),
+            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
             child: Text(data.invoiceNo ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
-            onDoubleTap: () => onDoubleTap(data),
+            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
             child: Text(data.transactionCode ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
-            onDoubleTap: () => onDoubleTap(data),
+            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
             child: Text(data.customerCode ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
-            onDoubleTap: () => onDoubleTap(data),
+            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
             child: Text(data.itemSKU ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
-            onDoubleTap: () => onDoubleTap(data),
+            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
             child: Text(data.itemPrice?.toString() ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
-            onDoubleTap: () => onDoubleTap(data),
+            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
             child: Text(data.itemQry?.toString() ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
-            onDoubleTap: () => onDoubleTap(data),
+            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
             child: DateTime.tryParse(data.transactionDate.toString()) == null
                 ? null
                 : Text(DateFormat.yMEd()
@@ -255,6 +252,15 @@ class InvoiceDataSource extends DataTableSource {
           ),
         ),
       ],
+    );
+  }
+
+  void _navigateToSelectedInvoiceScreen(POSInvoiceModel invoice) {
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (context) => const SelectedInvoiceScreen(),
+      ),
     );
   }
 
