@@ -1,16 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:slic/core/color_pallete.dart';
-import 'package:slic/cubits/item_code/item_code_cubit.dart';
-import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
-import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
-import 'package:slic/models/slic_line_item_model.dart';
-import 'package:slic/utils/navigation.dart';
-import 'package:slic/view/screens/foreign_po/update_line_item_screen.dart';
+import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
-import 'package:slic/view/widgets/field/text_field_widget.dart';
 
 class SalesReturnInvoiceScreen extends StatefulWidget {
   const SalesReturnInvoiceScreen({super.key});
@@ -30,17 +25,13 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
   }
 
   void _initializeData() async {
-    final cubit = SalesReturnCubit.get(context);
+    final cubit = SalesReturnCubit.get(context).getTransactionCodes();
     await cubit.getTransactionCodes();
-    setState(() {
-      ItemCodeCubit.get(context).itemCodes.clear();
-    });
   }
 
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    StockTransferCubit.get(context).dispose();
+  void _handleSubmit() {
+    FocusManager.instance.primaryFocus?.unfocus();
+    SalesReturnCubit.get(context).getPOSInvoice();
   }
 
   Widget _buildDropdown({
@@ -63,15 +54,9 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
     );
   }
 
-  void _handleSubmit() {
-    // unfocus keyboard
-    FocusManager.instance.primaryFocus?.unfocus();
-  }
-
   @override
   Widget build(BuildContext context) {
-    final stockTransferCubit = StockTransferCubit.get(context);
-
+    final stockTransferCubit = SalesReturnCubit.get(context);
     return Scaffold(
       appBar: AppBar(
         title: const Text("Sales Return"),
@@ -96,44 +81,61 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                 onChanged: (value) {
                   setState(() {
                     stockTransferCubit.transactionName = value!;
-                    stockTransferCubit.transactionCode = stockTransferCubit
-                        .transactionCodes
-                        .firstWhere((element) =>
-                            element.listOfTransactionCod!.tXNNAME == value)
-                        .listOfTransactionCod!
-                        .tXNCODE;
+                    stockTransferCubit.transactionCode.text = stockTransferCubit
+                            .transactionCodes
+                            .firstWhere((element) =>
+                                element.listOfTransactionCod!.tXNNAME == value)
+                            .listOfTransactionCod!
+                            .tXNCODE ??
+                        '';
+                    stockTransferCubit.getPOSInvoice();
                   });
                 },
               ),
-              const SizedBox(height: 16),
-              const Text("Enter Transaction Code"),
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFieldWidget(
-                      onChanged: (value) {
-                        ItemCodeCubit.get(context).gtin = value;
-                      },
-                      onEditingComplete: () {},
-                    ),
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(onPressed: () {}, icon: const Icon(Icons.logout)),
-                ],
-              ),
-              SizedBox(
-                child: BlocConsumer<LineItemCubit, LineItemState>(
-                  listener: (context, state) {},
-                  builder: (context, state) {
-                    if (state is LineItemGetBySysIdLoading) {
-                      // return const LoadingWidget();
-                      return _buildLineItemsTable([]);
-                    }
-                    return _buildLineItemsTable(
-                      LineItemCubit.get(context).slicLineItems,
+              BlocConsumer<SalesReturnCubit, SalesReturnState>(
+                listener: (context, state) {
+                  if (state is SalesReturnPOSInvoiceError) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text(state.errorMessage)),
                     );
-                  },
-                ),
+                  }
+                },
+                builder: (context, state) {
+                  return Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      const Text("Enter Transaction Code"),
+                      Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller:
+                                  SalesReturnCubit.get(context).transactionCode,
+                              onChanged: (value) {
+                                SalesReturnCubit.get(context)
+                                    .transactionCode
+                                    .text = value;
+                              },
+                              onEditingComplete: _handleSubmit,
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          IconButton(
+                            onPressed: _handleSubmit,
+                            icon: const Icon(Icons.search),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 16),
+                      if (state is SalesReturnPOSInvoiceLoading)
+                        const Center(child: CircularProgressIndicator()),
+                      if (state is SalesReturnPOSInvoiceSuccess)
+                        _buildInvoiceTable(
+                          SalesReturnCubit.get(context).invoices,
+                        ),
+                    ],
+                  );
+                },
               ),
               const SizedBox(height: 16),
               Row(
@@ -152,42 +154,45 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
     );
   }
 
-  Widget _buildLineItemsTable(List<SlicLineItemModel> data) {
-    LineItemSource dataSource = LineItemSource(data, (SlicLineItemModel item) {
-      Navigation.push(context, UpdateLineItemScreen(lineItem: item));
+  Widget _buildInvoiceTable(List<POSInvoiceModel> data) {
+    final dataSource = InvoiceDataSource(data, (POSInvoiceModel invoice) {
+      // Handle double-click, e.g., navigate to another screen
+      // For now, just print the invoice details
+      print(invoice.invoiceNo);
     });
+
     return Container(
       padding: const EdgeInsets.all(8.0),
       color: Colors.white,
       child: PaginatedDataTable(
         columns: const [
-          DataColumn(label: Text('gRADE')),
-          DataColumn(label: Text('iTEMSYSID')),
-          DataColumn(label: Text('iTEMNAME')),
-          DataColumn(label: Text('iTEMCODE')),
-          DataColumn(label: Text('pOQTY')),
-          DataColumn(label: Text('rECEIVEDQTY')),
-          DataColumn(label: Text('uOM')),
+          DataColumn(label: Text('Invoice No')),
+          DataColumn(label: Text('Transaction Code')),
+          DataColumn(label: Text('Customer Code')),
+          DataColumn(label: Text('Item SKU')),
+          DataColumn(label: Text('Item Price')),
+          DataColumn(label: Text('Item Quantity')),
+          DataColumn(label: Text('Transaction Date')),
         ],
         source: dataSource,
         columnSpacing: 20,
         horizontalMargin: 10,
-        rowsPerPage: 3,
-        showCheckboxColumn: true,
+        rowsPerPage: 10,
+        showCheckboxColumn: false,
       ),
     );
   }
 }
 
-class LineItemSource extends DataTableSource {
-  final List<SlicLineItemModel> _data;
-  final void Function(SlicLineItemModel) onDoubleTap;
+class InvoiceDataSource extends DataTableSource {
+  final List<POSInvoiceModel> _data;
+  final void Function(POSInvoiceModel) onDoubleTap;
 
-  LineItemSource(this._data, this.onDoubleTap);
+  InvoiceDataSource(this._data, this.onDoubleTap);
 
   @override
   DataRow getRow(int index) {
-    final SlicLineItemModel data = _data[index];
+    final POSInvoiceModel data = _data[index];
     return DataRow.byIndex(
       index: index,
       color: WidgetStateProperty.resolveWith<Color>(
@@ -198,50 +203,53 @@ class LineItemSource extends DataTableSource {
           if (index.isEven) {
             return ColorPallete.background;
           }
-          return ColorPallete.background;
+          return Colors.white;
         },
       ),
       cells: <DataCell>[
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem?.gRADE ?? ''),
+            child: Text(data.invoiceNo ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.iTEMSYSID.toString()),
+            child: Text(data.transactionCode ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.iTEMNAME.toString()),
+            child: Text(data.customerCode ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.iTEMCODE.toString()),
+            child: Text(data.itemSKU ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.pOQTY.toString()),
+            child: Text(data.itemPrice?.toString() ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.rECEIVEDQTY.toString()),
+            child: Text(data.itemQry?.toString() ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.uOM.toString()),
+            child: DateTime.tryParse(data.transactionDate.toString()) == null
+                ? null
+                : Text(DateFormat.yMEd()
+                    .format(DateTime.parse(data.transactionDate.toString()))),
           ),
         ),
       ],

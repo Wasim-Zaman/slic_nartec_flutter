@@ -1,8 +1,8 @@
 class POSInvoiceModel {
   String? id;
-  int? recNum;
-  int? tblSysNoID;
-  int? sNo;
+  num? recNum;
+  num? tblSysNoID;
+  num? sNo;
   String? deliveryLocationCode;
   String? itemSysID;
   String? invoiceNo;
@@ -16,9 +16,9 @@ class POSInvoiceModel {
   String? itemSKU;
   String? itemUnit;
   String? itemSize;
-  int? iTEMRATE;
-  int? itemPrice;
-  int? itemQry;
+  num? iTEMRATE;
+  num? itemPrice;
+  num? itemQry;
   String? transactionDate;
 
   POSInvoiceModel({

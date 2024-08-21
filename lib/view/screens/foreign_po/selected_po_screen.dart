@@ -84,7 +84,8 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                                   border: Border.all(
                                 color: ColorPallete.primary,
                               )),
-                              child: const Text("Total"),
+                              child: Text(
+                                  "Total: ${ForeignPoCubit.get(context).selectedPOList.length}"),
                             ),
                             BlocConsumer<LineItemCubit, LineItemState>(
                               listener: (context, state) {
@@ -146,7 +147,8 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                                   border: Border.all(
                                 color: ColorPallete.primary,
                               )),
-                              child: const Text("Total"),
+                              child: Text(
+                                  "Total: ${LineItemCubit.get(context).slicLineItems.length}"),
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
