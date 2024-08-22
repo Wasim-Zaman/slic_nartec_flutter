@@ -4,15 +4,15 @@ import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 
-class UpdateLineItemScreen extends StatefulWidget {
+class UpdateSoLineItemScreen extends StatefulWidget {
   final SlicLineItemModel lineItem;
-  const UpdateLineItemScreen({super.key, required this.lineItem});
+  const UpdateSoLineItemScreen({super.key, required this.lineItem});
 
   @override
-  State<UpdateLineItemScreen> createState() => _UpdateLineItemScreenState();
+  State<UpdateSoLineItemScreen> createState() => _UpdateSoLineItemScreenState();
 }
 
-class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
+class _UpdateSoLineItemScreenState extends State<UpdateSoLineItemScreen> {
   final gradeController = TextEditingController();
   final itemSysIdController = TextEditingController();
   final itemNameController = TextEditingController();

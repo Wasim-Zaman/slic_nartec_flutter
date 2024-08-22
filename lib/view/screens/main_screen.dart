@@ -4,7 +4,7 @@ import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/screens/foreign_po/foreign_po_screen_v3.dart';
 import 'package:slic/view/screens/goods_issue/goods_issue_screen.dart';
-import 'package:slic/view/screens/sales_order/sales_order_screen_v2.dart';
+import 'package:slic/view/screens/sales_order/sales_order_screen_v3.dart';
 import 'package:slic/view/screens/sales_return/sales_return_invoice_screen.dart';
 import 'package:slic/view/screens/stock_transfer/stock_transfer_screen.dart';
 import 'package:slic/view/widgets/menu_card.dart';
