@@ -18,13 +18,13 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   // Selected values
   String? transactionName;
   String? transactionCode;
-  String? transactionNumber;
+  String? invoiceNumber;
 
   void getPOSInvoice() async {
     emit(SalesReturnPOSInvoiceLoading());
     try {
       final response =
-          await ApiService.getPOSDetailsByTransactionCode(transactionNumber);
+          await ApiService.getPOSDetailsByInvoice(invoiceNumber, invoiceNumber);
 
       if (response.success) {
         invoices = response.data;

@@ -302,8 +302,9 @@ class ApiService {
   }
 
   // * POS-INVOICE SECTION ***
-  static Future<ApiResponse> getPOSDetailsByTransactionCode(trxCode) async {
-    final endpoint = "/invoice/v1/invoice-details/$trxCode";
+  static Future<ApiResponse> getPOSDetailsByInvoice(invoiceNO, trxCode) async {
+    final endpoint =
+        "/invoice/v1/invoice-details/?invoiceNo=2024003516&transactionCode=DCIN";
     final response = await HttpService().request(
       endpoint,
       method: "GET",

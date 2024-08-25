@@ -125,8 +125,8 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                           Expanded(
                             child: TextFieldWidget(
                               onChanged: (value) {
-                                SalesReturnCubit.get(context)
-                                    .transactionNumber = value;
+                                SalesReturnCubit.get(context).invoiceNumber =
+                                    value;
                               },
                               onEditingComplete: _handleSubmit,
                             ),
