@@ -10,6 +10,7 @@ import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
+import 'package:slic/cubits/trx/trx_cubit.dart';
 import 'package:slic/utils/shared_storage.dart';
 import 'package:slic/view/screens/home_screen_v2.dart';
 
@@ -35,6 +36,7 @@ class MyApp extends StatelessWidget {
         BlocProvider(create: (context) => ItemCodeCubit()),
         BlocProvider(create: (context) => GoodsIssueCubit()),
         BlocProvider(create: (context) => SalesReturnCubit()),
+        BlocProvider(create: (context) => TrxCubit()),
       ],
       child: MaterialApp(
         title: 'SLIC',

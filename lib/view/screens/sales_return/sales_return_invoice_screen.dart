@@ -2,7 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:slic/core/color_pallete.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
+import 'package:slic/cubits/trx/trx_cubit.dart';
 import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/view/screens/sales_return/selected_invoice_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
@@ -28,6 +30,8 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
   }
 
   void _initializeData() async {
+    TrxCubit.get(context)
+        .getTrxByLocationCode(HomeCubit.get(context).locationCode);
     final cubit = SalesReturnCubit.get(context);
     await cubit.getTransactionCodes();
     setState(
@@ -74,27 +78,32 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDropdown(
-                title: "Select Transaction Code",
-                options: stockTransferCubit.transactionCodes
-                    .where((element) =>
-                        element.listOfTransactionCod?.tXNNAME != null)
-                    .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
-                    .toSet()
-                    .toList(),
-                defaultValue: stockTransferCubit.transactionName,
-                onChanged: (value) {
-                  setState(() {
-                    stockTransferCubit.transactionName = value!;
-                    stockTransferCubit.transactionCode = stockTransferCubit
-                            .transactionCodes
-                            .firstWhere((element) =>
-                                element.listOfTransactionCod!.tXNNAME == value)
-                            .listOfTransactionCod!
-                            .tXNCODE ??
-                        '';
-                    // stockTransferCubit.getPOSInvoice();
-                  });
+              BlocBuilder<TrxCubit, TrxState>(
+                builder: (context, state) {
+                  return _buildDropdown(
+                    title: "Select Transaction Code",
+                    options: TrxCubit.get(context)
+                        .filteredTransactions
+                        .where((element) => element.tXNNAME != null)
+                        .map((e) => e.tXNNAME.toString())
+                        .toSet()
+                        .toList(),
+                    defaultValue: stockTransferCubit.transactionCode,
+                    onChanged: (value) {
+                      setState(() {
+                        stockTransferCubit.transactionName = value!;
+                        stockTransferCubit.transactionCode = stockTransferCubit
+                                .transactionCodes
+                                .firstWhere((element) =>
+                                    element.listOfTransactionCod!.tXNNAME ==
+                                    value)
+                                .listOfTransactionCod!
+                                .tXNCODE ??
+                            '';
+                        // stockTransferCubit.getPOSInvoice();
+                      });
+                    },
+                  );
                 },
               ),
               const SizedBox(height: 16),
@@ -110,7 +119,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      const Text("Enter Transaction Number"),
+                      const Text("Enter Invoice Number"),
                       Row(
                         children: [
                           Expanded(
@@ -194,9 +203,9 @@ class InvoiceDataSource extends DataTableSource {
     final POSInvoiceModel data = _data[index];
     return DataRow.byIndex(
       index: index,
-      color: MaterialStateProperty.resolveWith<Color>(
-        (Set<MaterialState> states) {
-          if (states.contains(MaterialState.selected)) {
+      color: WidgetStateProperty.resolveWith<Color>(
+        (Set<WidgetState> states) {
+          if (states.contains(WidgetState.selected)) {
             return ColorPallete.primary.withOpacity(0.3);
           }
           if (index.isEven) {

@@ -11,6 +11,7 @@ import 'package:slic/models/sales_order.dart';
 import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/models/slic_po_model.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
+import 'package:slic/models/trx_codes_model.dart';
 import 'package:slic/services/http_service.dart';
 import 'package:slic/utils/shared_storage.dart';
 
@@ -281,6 +282,23 @@ class ApiService {
       response,
       (data) => ItemCode.fromJson(response['data']),
     );
+  }
+
+  // * Transaction Code Section ***
+  static Future<ApiResponse> getTrx(locationCode) async {
+    final endpoint = "/transactions/v1/byLocationCode?locationCode=DCIN";
+    final response = await HttpService().request(
+      endpoint,
+      method: "GET",
+    );
+
+    List<TrxCodesModel> transactions = [];
+
+    response['data'].forEach((data) {
+      transactions.add(TrxCodesModel.fromJson(data));
+    });
+
+    return ApiResponse.fromJson(response, (data) => transactions);
   }
 
   // * POS-INVOICE SECTION ***
