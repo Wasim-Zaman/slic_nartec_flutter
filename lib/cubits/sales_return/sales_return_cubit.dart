@@ -19,6 +19,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   String? transactionName;
   String? transactionCode;
   String? invoiceNumber;
+  num? returnQty;
 
   void getPOSInvoice() async {
     emit(SalesReturnPOSInvoiceLoading());
@@ -55,6 +56,22 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
       emit(SalesReturnTransactionCodesSuccess());
     } catch (error) {
       emit(SalesReturnTransactionCodesError(errorMessage: error.toString()));
+    }
+  }
+
+  void updateInvoiceTemp(itemSysID, itemCode) async {
+    try {
+      emit(SalesReturnUpdateTempLoading());
+      final response =
+          await ApiService.updateInvoiceTemp(itemSysID, itemCode, returnQty);
+
+      if (response.success) {
+        emit(SalesReturnUpdateTempSuccess());
+      } else {
+        emit(SalesReturnUpdateTempError(errorMessage: response.message));
+      }
+    } catch (error) {
+      emit(SalesReturnUpdateTempError(errorMessage: error.toString()));
     }
   }
 }

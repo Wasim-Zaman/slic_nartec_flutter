@@ -84,8 +84,8 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                     title: "Select Transaction Code",
                     options: TrxCubit.get(context)
                         .filteredTransactions
-                        .where((element) => element.tXNNAME != null)
-                        .map((e) => e.tXNNAME.toString())
+                        .where((element) => element.tXNCODE != null)
+                        .map((e) => e.tXNCODE.toString())
                         .toSet()
                         .toList(),
                     defaultValue: stockTransferCubit.transactionCode,

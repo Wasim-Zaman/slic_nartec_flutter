@@ -286,7 +286,8 @@ class ApiService {
 
   // * Transaction Code Section ***
   static Future<ApiResponse> getTrx(locationCode) async {
-    final endpoint = "/transactions/v1/byLocationCode?locationCode=DCIN";
+    final endpoint =
+        "/transactions/v1/byLocationCode?locationCode=$locationCode";
     final response = await HttpService().request(
       endpoint,
       method: "GET",
@@ -304,7 +305,7 @@ class ApiService {
   // * POS-INVOICE SECTION ***
   static Future<ApiResponse> getPOSDetailsByInvoice(invoiceNO, trxCode) async {
     final endpoint =
-        "/invoice/v1/invoice-details/?invoiceNo=2024003516&transactionCode=DCIN";
+        "/invoice/v1/invoice-details/?invoiceNo=$invoiceNO&transactionCode=$trxCode";
     final response = await HttpService().request(
       endpoint,
       method: "GET",
@@ -317,5 +318,19 @@ class ApiService {
     });
 
     return ApiResponse.fromJson(response, (data) => invoices);
+  }
+
+  static Future<ApiResponse> updateInvoiceTemp(
+      itemSysID, itemCode, num? returnQty) async {
+    const endpoint = "/invoice/v1/update-invoice-temp";
+    final response = await HttpService().request(endpoint,
+        method: "PUT",
+        data: {
+          "ItemSysID": itemSysID,
+          "ItemCode": itemCode,
+          "ReturnQty": returnQty
+        });
+
+    return ApiResponse.fromJson(response, (data) => null);
   }
 }

@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
+import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/models/pos_invoice_model.dart';
+import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
+import 'package:slic/view/widgets/loading/loading_widget.dart';
 
 class SelectedInvoiceScreen extends StatelessWidget {
   final POSInvoiceModel model;
@@ -85,8 +89,8 @@ class SelectedInvoiceScreen extends StatelessWidget {
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Invoice Quantity'),
-                      SizedBox(height: 8),
+                      const Text('Invoice Quantity'),
+                      const SizedBox(height: 8),
                       TextFieldWidget(
                         readOnly: true,
                         initialValue: model.itemQry.toString(),
@@ -106,6 +110,8 @@ class SelectedInvoiceScreen extends StatelessWidget {
                         initialValue: model.itemQry.toString(),
                         onChanged: (value) {
                           // update return quantity
+                          SalesReturnCubit.get(context).returnQty =
+                              num.tryParse(value);
                         },
                       ),
                     ],
@@ -114,14 +120,50 @@ class SelectedInvoiceScreen extends StatelessWidget {
               ],
             ),
             const Spacer(),
-            const Row(
+            Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Expanded(
-                  child: AppButton(text: "Back", backgroundColor: Colors.red),
+                  child: AppButton(
+                    text: "Back",
+                    backgroundColor: Colors.red,
+                    onPressed: () {
+                      Navigation.pop(context);
+                    },
+                  ),
                 ),
-                SizedBox(width: 16),
-                Expanded(child: AppButton(text: "Save")),
+                const SizedBox(width: 16),
+                Expanded(
+                    child: BlocConsumer<SalesReturnCubit, SalesReturnState>(
+                  listener: (context, state) {
+                    if (state is SalesReturnUpdateTempError) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        SnackBar(content: Text(state.errorMessage)),
+                      );
+                    } else if (state is SalesReturnUpdateTempSuccess) {
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(content: Text("Item updated")),
+                      );
+                      Navigation.pop(context);
+                    }
+                  },
+                  builder: (context, state) {
+                    if (state is SalesReturnUpdateTempLoading) {
+                      return const LoadingWidget();
+                    }
+                    return AppButton(
+                      text: "Save",
+                      onPressed: () {
+                        if (SalesReturnCubit.get(context).returnQty == null) {
+                          SalesReturnCubit.get(context).returnQty =
+                              model.itemQry;
+                        }
+                        SalesReturnCubit.get(context)
+                            .updateInvoiceTemp(model.itemSysID, model.itemSKU);
+                      },
+                    );
+                  },
+                )),
               ],
             ),
           ],
