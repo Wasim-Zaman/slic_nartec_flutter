@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:slic/core/color_pallete.dart';
+import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 
 class SelectedInvoiceScreen extends StatelessWidget {
-  const SelectedInvoiceScreen({super.key});
+  final POSInvoiceModel model;
+  const SelectedInvoiceScreen({super.key, required this.model});
 
   @override
   Widget build(BuildContext context) {
@@ -17,38 +19,53 @@ class SelectedInvoiceScreen extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            const Text('Select Transaction Code'),
+            const Text('Transaction Code'),
             const SizedBox(height: 8),
-            const TextFieldWidget(readOnly: true),
+            TextFieldWidget(
+              readOnly: true,
+              initialValue: model.transactionCode,
+            ),
             const SizedBox(height: 16),
             const Text('SO Date'),
             const SizedBox(height: 8),
-            const TextFieldWidget(readOnly: true),
+            TextFieldWidget(
+              readOnly: true,
+              initialValue: model.transactionDate,
+            ),
             const SizedBox(height: 16),
             const Text('Customer'),
             const SizedBox(height: 8),
-            const TextFieldWidget(readOnly: true),
+            TextFieldWidget(
+              readOnly: true,
+              initialValue: model.customerCode,
+            ),
             const SizedBox(height: 16),
-            const Row(
+            Row(
               children: [
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Item Code'),
-                      SizedBox(height: 8),
-                      TextFieldWidget(readOnly: true),
+                      const Text('Item Code'),
+                      const SizedBox(height: 8),
+                      TextFieldWidget(
+                        readOnly: true,
+                        initialValue: model.itemSKU,
+                      ),
                     ],
                   ),
                 ),
-                SizedBox(width: 16),
+                const SizedBox(width: 16),
                 Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text('Size'),
-                      SizedBox(height: 8),
-                      TextFieldWidget(readOnly: true),
+                      const Text('Size'),
+                      const SizedBox(height: 8),
+                      TextFieldWidget(
+                        readOnly: true,
+                        initialValue: model.itemSize,
+                      ),
                     ],
                   ),
                 ),
@@ -57,19 +74,23 @@ class SelectedInvoiceScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const Text('Description'),
             const SizedBox(height: 8),
-            const TextFieldWidget(
+            TextFieldWidget(
               readOnly: true,
+              initialValue: model.itemSKU,
             ),
             const SizedBox(height: 16),
             Row(
               children: [
-                const Expanded(
+                Expanded(
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text('Invoice Quantity'),
                       SizedBox(height: 8),
-                      TextFieldWidget(readOnly: true),
+                      TextFieldWidget(
+                        readOnly: true,
+                        initialValue: model.itemQry.toString(),
+                      ),
                     ],
                   ),
                 ),
@@ -82,6 +103,10 @@ class SelectedInvoiceScreen extends StatelessWidget {
                       const SizedBox(height: 8),
                       TextFieldWidget(
                         filledColor: ColorPallete.accent.withOpacity(0.6),
+                        initialValue: model.itemQry.toString(),
+                        onChanged: (value) {
+                          // update return quantity
+                        },
                       ),
                     ],
                   ),
@@ -92,8 +117,11 @@ class SelectedInvoiceScreen extends StatelessWidget {
             const Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                AppButton(text: "Back"),
-                AppButton(text: "Save"),
+                Expanded(
+                  child: AppButton(text: "Back", backgroundColor: Colors.red),
+                ),
+                SizedBox(width: 16),
+                Expanded(child: AppButton(text: "Save")),
               ],
             ),
           ],

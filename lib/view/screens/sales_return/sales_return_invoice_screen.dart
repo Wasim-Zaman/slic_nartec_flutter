@@ -268,7 +268,7 @@ class InvoiceDataSource extends DataTableSource {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => const SelectedInvoiceScreen(),
+        builder: (context) => SelectedInvoiceScreen(model: invoice),
       ),
     );
   }
