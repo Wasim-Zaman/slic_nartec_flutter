@@ -7,6 +7,8 @@ import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SelectedInvoiceScreen extends StatelessWidget {
   final POSInvoiceModel model;
@@ -141,8 +143,9 @@ class SelectedInvoiceScreen extends StatelessWidget {
                         SnackBar(content: Text(state.errorMessage)),
                       );
                     } else if (state is SalesReturnUpdateTempSuccess) {
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(content: Text("Item updated")),
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        CustomSnackBar.success(message: state.successMessage),
                       );
                       Navigation.pop(context);
                     }

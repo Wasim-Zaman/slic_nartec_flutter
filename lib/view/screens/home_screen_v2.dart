@@ -4,11 +4,12 @@ import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
-import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/auth/login_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -82,11 +83,11 @@ class _HomeScreenState extends State<HomeScreen>
                   ),
                 ),
                 const SizedBox(height: 16.0),
-                buildAnimatedText("Select Company"),
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
                     return CustomDropdownButton(
-                      options: HomeCubit.get(context)
+                      hintText: "Select Company",
+                      items: HomeCubit.get(context)
                           .slicCompanies
                           .where((element) =>
                               element.companyMaster?.cOMPNAME != null)
@@ -108,27 +109,26 @@ class _HomeScreenState extends State<HomeScreen>
                   },
                 ),
                 const SizedBox(height: 8.0),
-                buildAnimatedText("Select Location"),
                 BlocBuilder<HomeCubit, HomeState>(
                   builder: (context, state) {
                     return CustomDropdownButton(
-                      options: HomeCubit.get(context)
+                      hintText: "Select Location",
+                      items: HomeCubit.get(context)
                           .slicLocations
                           .where((element) =>
                               element.locationMaster?.lOCNNAME != null)
-                          .map((e) => e.locationMaster!.lOCNNAME.toString())
+                          .map((e) => "${e.locationMaster!.lOCNCODE}")
                           .toSet()
                           .toList(),
-                      defaultValue: HomeCubit.get(context).location,
+                      defaultValue: HomeCubit.get(context).locationCode,
                       onChanged: (p0) {
-                        HomeCubit.get(context).location = p0.toString();
-                        HomeCubit.get(context).locationCode =
-                            HomeCubit.get(context)
-                                .slicLocations
-                                .firstWhere((element) =>
-                                    element.locationMaster!.lOCNNAME == p0)
-                                .locationMaster!
-                                .lOCNCODE;
+                        HomeCubit.get(context).locationCode = p0.toString();
+                        HomeCubit.get(context).location = HomeCubit.get(context)
+                            .slicLocations
+                            .firstWhere((element) =>
+                                element.locationMaster!.lOCNCODE == p0)
+                            .locationMaster!
+                            .lOCNNAME;
                       },
                     );
                   },
@@ -141,9 +141,13 @@ class _HomeScreenState extends State<HomeScreen>
                       onPressed: () {
                         if (HomeCubit.get(context).company == null ||
                             HomeCubit.get(context).location == null) {
-                          CustomSnackbar.show(
-                              context: context,
-                              message: "Please select company and location");
+                          showTopSnackBar(
+                            Overlay.of(context),
+                            const CustomSnackBar.info(
+                              message:
+                                  "Please select company and location to proceed",
+                            ),
+                          );
                           return;
                         }
                         Navigation.push(context, const LoginScreen());
@@ -153,10 +157,11 @@ class _HomeScreenState extends State<HomeScreen>
                 FadeTransition(
                   opacity: _fadeAnimation,
                   child: AppButton(
-                      text: "Close",
-                      onPressed: () {
-                        Navigation.pop(context);
-                      }),
+                    text: "Close",
+                    onPressed: () {
+                      Navigation.pop(context);
+                    },
+                  ),
                 ),
               ],
             ),

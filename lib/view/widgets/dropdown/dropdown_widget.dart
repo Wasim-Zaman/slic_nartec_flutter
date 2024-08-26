@@ -1,18 +1,21 @@
+import 'package:animated_custom_dropdown/custom_dropdown.dart';
 import 'package:flutter/material.dart';
 import 'package:slic/core/color_pallete.dart';
 
 class CustomDropdownButton extends StatefulWidget {
-  final List<String> options;
+  final List<String> items;
   final String? defaultValue;
   final IconData? icon;
+  final String? hintText;
   final void Function(String?) onChanged;
 
   const CustomDropdownButton({
     super.key,
-    required this.options,
+    required this.items,
     this.defaultValue,
     this.icon,
     required this.onChanged,
+    this.hintText,
   });
 
   @override
@@ -30,42 +33,13 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      padding: const EdgeInsets.symmetric(horizontal: 10),
-      decoration: BoxDecoration(
-        color: ColorPallete.field,
-        borderRadius: BorderRadius.circular(20),
-        // border: Border.all(color: ColorPallete.border),
-      ),
-      child: DropdownButtonHideUnderline(
-        child: DropdownButton<String>(
-          value: selectedValue,
-          icon: const Icon(Icons.arrow_drop_down, color: ColorPallete.border),
-          style: const TextStyle(color: ColorPallete.black, fontSize: 16),
-          dropdownColor: ColorPallete.background,
-          isExpanded: true,
-          onChanged: (value) {
-            setState(() {
-              selectedValue = value;
-            });
-            widget.onChanged(value);
-          },
-          items: widget.options.map<DropdownMenuItem<String>>((String value) {
-            return DropdownMenuItem<String>(
-              value: value,
-              child: FittedBox(
-                child: Row(
-                  children: [
-                    if (widget.icon != null)
-                      Icon(widget.icon, color: ColorPallete.black),
-                    const SizedBox(width: 8),
-                    Text(value),
-                  ],
-                ),
-              ),
-            );
-          }).toList(),
-        ),
+    return CustomDropdown<String>.search(
+      hintText: widget.hintText,
+      items: widget.items,
+      onChanged: widget.onChanged,
+      decoration: CustomDropdownDecoration(
+        // closedFillColor: ColorPallete.field,
+        closedBorder: Border.all(color: ColorPallete.border),
       ),
     );
   }

@@ -50,7 +50,7 @@ class _DirectSalesReturnScreenState extends State<DirectSalesReturnScreen> {
         Text(title),
         const SizedBox(height: 4),
         CustomDropdownButton(
-          options: options,
+          items: options,
           defaultValue: defaultValue,
           onChanged: onChanged,
         ),

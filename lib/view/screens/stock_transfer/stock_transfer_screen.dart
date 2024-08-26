@@ -53,7 +53,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
         Text(title),
         const SizedBox(height: 4),
         CustomDropdownButton(
-          options: options,
+          items: options,
           defaultValue: defaultValue,
           onChanged: onChanged,
         ),

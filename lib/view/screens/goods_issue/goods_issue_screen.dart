@@ -54,7 +54,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
         Text(title),
         const SizedBox(height: 4),
         CustomDropdownButton(
-          options: options,
+          items: options,
           defaultValue: defaultValue,
           onChanged: onChanged,
         ),

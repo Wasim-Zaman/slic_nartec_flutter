@@ -89,7 +89,7 @@ class _HomeScreenState extends State<HomeScreen>
                 const SizedBox(height: 16.0),
                 buildAnimatedText("Select Company"),
                 CustomDropdownButton(
-                  options: HomeCubit.get(context)
+                  items: HomeCubit.get(context)
                       .companies
                       .map((e) => e.companyName.toString())
                       .toList(),
@@ -101,7 +101,7 @@ class _HomeScreenState extends State<HomeScreen>
                 const SizedBox(height: 8.0),
                 buildAnimatedText("Select Location"),
                 CustomDropdownButton(
-                  options: HomeCubit.get(context)
+                  items: HomeCubit.get(context)
                       .locations
                       .map((e) => e.locationName.toString())
                       .toList(),

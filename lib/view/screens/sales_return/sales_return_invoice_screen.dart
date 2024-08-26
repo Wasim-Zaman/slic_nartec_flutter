@@ -11,6 +11,8 @@ import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SalesReturnInvoiceScreen extends StatefulWidget {
   const SalesReturnInvoiceScreen({super.key});
@@ -34,8 +36,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
         .getTrxByLocationCode(HomeCubit.get(context).locationCode);
     final cubit = SalesReturnCubit.get(context);
     await cubit.getTransactionCodes();
-    setState(
-        () {}); // Trigger a rebuild to refresh the dropdown with fetched data
+    setState(() {});
   }
 
   void _handleSubmit() {
@@ -55,7 +56,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
         Text(title),
         const SizedBox(height: 4),
         CustomDropdownButton(
-          options: options,
+          items: options,
           defaultValue: defaultValue,
           onChanged: onChanged,
         ),
@@ -110,8 +111,9 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
               BlocConsumer<SalesReturnCubit, SalesReturnState>(
                 listener: (context, state) {
                   if (state is SalesReturnPOSInvoiceError) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text(state.errorMessage)),
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      CustomSnackBar.error(message: state.errorMessage),
                     );
                   }
                 },

@@ -17,7 +17,10 @@ final class SalesReturnTransactionCodesSuccess extends SalesReturnState {}
 
 final class SalesReturnPOSInvoiceSuccess extends SalesReturnState {}
 
-final class SalesReturnUpdateTempSuccess extends SalesReturnState {}
+final class SalesReturnUpdateTempSuccess extends SalesReturnState {
+  final String successMessage;
+  SalesReturnUpdateTempSuccess({required this.successMessage});
+}
 
 //! Error
 

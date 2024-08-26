@@ -8,6 +8,8 @@ import 'package:slic/view/screens/main_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -68,6 +70,20 @@ class LoginScreen extends StatelessWidget {
                 return AppButton(
                   text: 'Login',
                   onPressed: () {
+                    if (AuthCubit.get(context).emailController.text.isEmpty &&
+                        AuthCubit.get(context)
+                            .passwordController
+                            .text
+                            .isEmpty) {
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        const CustomSnackBar.info(
+                          message:
+                              "Please enter your login ID and password to proceed",
+                        ),
+                      );
+                      return;
+                    }
                     final email = AuthCubit.get(context).emailController.text;
                     final password =
                         AuthCubit.get(context).passwordController.text;

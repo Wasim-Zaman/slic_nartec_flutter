@@ -66,7 +66,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
           await ApiService.updateInvoiceTemp(itemSysID, itemCode, returnQty);
 
       if (response.success) {
-        emit(SalesReturnUpdateTempSuccess());
+        emit(SalesReturnUpdateTempSuccess(successMessage: response.message));
       } else {
         emit(SalesReturnUpdateTempError(errorMessage: response.message));
       }
