@@ -46,6 +46,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
     required List<String> options,
     required String? defaultValue,
     required ValueChanged<String?> onChanged,
+    required String hintText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -56,6 +57,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
           items: options,
           defaultValue: defaultValue,
           onChanged: onChanged,
+          hintText: hintText,
         ),
       ],
     );
@@ -102,6 +104,9 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                 DataColumn(
                   label: Text('Qty', style: TextStyle(color: Colors.white)),
                 ),
+                DataColumn(
+                  label: Text('Actions', style: TextStyle(color: Colors.white)),
+                ),
               ],
               rows: ItemCodeCubit.get(context).itemCodes.map(
                 (e) {
@@ -110,6 +115,16 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                       DataCell(Text(e.itemCode ?? '')),
                       DataCell(Text(e.size.toString())),
                       DataCell(Text(e.itemQty.toString())),
+                      DataCell(
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              ItemCodeCubit.get(context).itemCodes.remove(e);
+                            });
+                          },
+                        ),
+                      ),
                     ],
                   );
                 },
@@ -187,6 +202,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
             children: [
               _buildDropdown(
                 title: "Transaction",
+                hintText: "Select Transaction",
                 options: stockTransferCubit.transactionCodes
                     .where((element) =>
                         element.listOfTransactionCod?.tXNNAME != null)
@@ -209,13 +225,14 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               const SizedBox(height: 16),
               _buildDropdown(
                 title: "From Location",
+                hintText: homeCubit.location ?? '',
                 options: homeCubit.slicLocations
                     .where(
                         (element) => element.locationMaster?.lOCNNAME != null)
                     .map((e) => e.locationMaster!.lOCNNAME.toString())
                     .toSet()
                     .toList(),
-                defaultValue: homeCubit.fromLocation,
+                defaultValue: homeCubit.location,
                 onChanged: (value) {
                   setState(() {
                     homeCubit.fromLocation = value!;
@@ -230,13 +247,14 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               const SizedBox(height: 16),
               _buildDropdown(
                 title: "To Location",
+                hintText: homeCubit.location ?? '',
                 options: homeCubit.slicLocations
                     .where(
                         (element) => element.locationMaster?.lOCNNAME != null)
                     .map((e) => e.locationMaster!.lOCNNAME.toString())
                     .toSet()
                     .toList(),
-                defaultValue: homeCubit.toLocation,
+                defaultValue: homeCubit.location,
                 onChanged: (value) {
                   setState(() {
                     homeCubit.toLocation = value!;
@@ -281,15 +299,10 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         const Text("Type"),
-                        DropdownButtonFormField<String>(
-                          value: stockTransferCubit.type,
-                          items: <String>['U', 'Type1', 'Type2']
-                              .map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
+                        CustomDropdownButton(
+                          items: <String>['U', 'S', 'L', 'LS'].toList(),
+                          defaultValue: stockTransferCubit.type,
+                          hintText: "Type",
                           onChanged: (String? newValue) {
                             setState(() {
                               stockTransferCubit.type = newValue!;
@@ -318,7 +331,6 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                 children: [
                   BlocConsumer<StockTransferCubit, StockTransferState>(
                     listener: (context, state) {
-                      print(state);
                       if (state is StockTransferPostSuccess) {
                         // Handle success state
                         CustomSnackbar.show(

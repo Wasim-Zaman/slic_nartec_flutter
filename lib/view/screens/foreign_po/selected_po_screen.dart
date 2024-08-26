@@ -214,7 +214,13 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
 
   Widget _buildLineItemsTable(List<SlicLineItemModel> data) {
     LineItemSource dataSource = LineItemSource(data, (SlicLineItemModel item) {
-      Navigation.push(context, UpdateLineItemScreen(lineItem: item));
+      Navigation.push(
+          context,
+          UpdateLineItemScreen(
+            lineItem: item,
+            selectedPO:
+                ForeignPoCubit.get(context).selectedPOList[selectedRowIndex!],
+          ));
     });
     return Container(
       padding: const EdgeInsets.all(8.0),

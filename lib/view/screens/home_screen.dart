@@ -3,10 +3,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
-import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/auth/login_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -118,9 +119,13 @@ class _HomeScreenState extends State<HomeScreen>
                       onPressed: () {
                         if (HomeCubit.get(context).company == null ||
                             HomeCubit.get(context).location == null) {
-                          CustomSnackbar.show(
-                              context: context,
-                              message: "Please select company and location");
+                          showTopSnackBar(
+                            Overlay.of(context),
+                            const CustomSnackBar.info(
+                              message:
+                                  "Select company and location to continue",
+                            ),
+                          );
                           return;
                         }
                         Navigation.push(context, const LoginScreen());

@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/api_response.dart';
+import 'package:slic/models/item_code.dart';
 import 'package:slic/models/slic_po_model.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
 import 'package:slic/services/api_service.dart';
@@ -86,6 +87,20 @@ class ForeignPoCubit extends Cubit<ForeignPoState> {
       emit(ForeignPoGetSlicPOListSuccess(slicPOList));
     } catch (err) {
       emit(ForeignPiGetSlicPOListError(err.toString()));
+    }
+  }
+
+  void getItemCodeByItemSKU(itemSKU) async {
+    try {
+      emit(ForeignPoGetItemCodeByItemSKULoading());
+      final response = await ApiService.getItemCodeByItemCode(itemSKU);
+      if (response.success) {
+        emit(ForeignPoGetItemCodeByItemSKUSuccess(response.data));
+      } else {
+        emit(ForeignPoGetItemCodeByItemSKUError(response.message));
+      }
+    } catch (error) {
+      emit(ForeignPoGetItemCodeByItemSKUError(error.toString()));
     }
   }
 }

@@ -47,6 +47,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
     required List<String> options,
     required String? defaultValue,
     required ValueChanged<String?> onChanged,
+    String? hintText,
   }) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -57,6 +58,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
           items: options,
           defaultValue: defaultValue,
           onChanged: onChanged,
+          hintText: hintText,
         ),
       ],
     );
@@ -103,6 +105,9 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                 DataColumn(
                   label: Text('Qty', style: TextStyle(color: Colors.white)),
                 ),
+                DataColumn(
+                  label: Text('Actions', style: TextStyle(color: Colors.white)),
+                ),
               ],
               rows: ItemCodeCubit.get(context).itemCodes.map(
                 (e) {
@@ -111,6 +116,16 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                       DataCell(Text(e.itemCode ?? '')),
                       DataCell(Text(e.productSize.toString())),
                       DataCell(Text(e.itemQty.toString())),
+                      DataCell(
+                        IconButton(
+                          icon: Icon(Icons.delete, color: Colors.red),
+                          onPressed: () {
+                            setState(() {
+                              ItemCodeCubit.get(context).itemCodes.remove(e);
+                            });
+                          },
+                        ),
+                      ),
                     ],
                   );
                 },
@@ -186,23 +201,31 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               _buildDropdown(
+                hintText: "Transaction",
                 title: "Transaction",
-                options: goodsIssueCubit.transactionCodes
-                    .where((element) =>
-                        element.listOfTransactionCod?.tXNNAME != null)
-                    .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
-                    .toSet()
-                    .toList(),
-                defaultValue: goodsIssueCubit.transactionName,
+                // options: goodsIssueCubit.transactionCodes
+                //     .where((element) =>
+                //         element.listOfTransactionCod?.tXNNAME != null)
+                //     .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
+                //     .toSet()
+                //     .toList(),
+                options: ['DPWO', 'SPWO', 'PWO'],
+                defaultValue: goodsIssueCubit.transactionCode,
+                // defaultValue: goodsIssueCubit.transactionName,
+                // onChanged: (value) {
+                //   setState(() {
+                //     goodsIssueCubit.transactionName = value!;
+                //     goodsIssueCubit.transactionCode = goodsIssueCubit
+                //         .transactionCodes
+                //         .firstWhere((element) =>
+                //             element.listOfTransactionCod!.tXNNAME == value)
+                //         .listOfTransactionCod!
+                //         .tXNCODE;
+                //   });
+                // },
                 onChanged: (value) {
                   setState(() {
-                    goodsIssueCubit.transactionName = value!;
-                    goodsIssueCubit.transactionCode = goodsIssueCubit
-                        .transactionCodes
-                        .firstWhere((element) =>
-                            element.listOfTransactionCod!.tXNNAME == value)
-                        .listOfTransactionCod!
-                        .tXNCODE;
+                    goodsIssueCubit.transactionCode = value!;
                   });
                 },
               ),
@@ -215,7 +238,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                     .map((e) => e.locationMaster!.lOCNNAME.toString())
                     .toSet()
                     .toList(),
-                defaultValue: homeCubit.fromLocation,
+                defaultValue: homeCubit.location,
                 onChanged: (value) {
                   setState(() {
                     homeCubit.fromLocation = value!;
@@ -236,7 +259,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                     .map((e) => e.locationMaster!.lOCNNAME.toString())
                     .toSet()
                     .toList(),
-                defaultValue: homeCubit.toLocation,
+                defaultValue: homeCubit.location,
                 onChanged: (value) {
                   setState(() {
                     homeCubit.toLocation = value!;
@@ -290,41 +313,41 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                       },
                     ),
                   ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTextField(
-                      title: "Size",
-                      initialValue: goodsIssueCubit.size.toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          goodsIssueCubit.size = int.tryParse(value) ?? 1;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const Text("Type"),
-                        DropdownButtonFormField<String>(
-                          value: goodsIssueCubit.type,
-                          items: <String>['U'].map((String value) {
-                            return DropdownMenuItem<String>(
-                              value: value,
-                              child: Text(value),
-                            );
-                          }).toList(),
-                          onChanged: (String? newValue) {
-                            setState(() {
-                              goodsIssueCubit.type = newValue!;
-                            });
-                          },
-                        ),
-                      ],
-                    ),
-                  ),
+                  // const SizedBox(width: 16),
+                  // Expanded(
+                  //   child: _buildTextField(
+                  //     title: "Size",
+                  //     initialValue: goodsIssueCubit.size.toString(),
+                  //     onChanged: (value) {
+                  //       setState(() {
+                  //         goodsIssueCubit.size = int.tryParse(value) ?? 1;
+                  //       });
+                  //     },
+                  //   ),
+                  // ),
+                  // const SizedBox(width: 16),
+                  // Expanded(
+                  //   child: Column(
+                  //     crossAxisAlignment: CrossAxisAlignment.start,
+                  //     children: [
+                  //       const Text("Type"),
+                  //       DropdownButtonFormField<String>(
+                  //         value: goodsIssueCubit.type,
+                  //         items: <String>['U'].map((String value) {
+                  //           return DropdownMenuItem<String>(
+                  //             value: value,
+                  //             child: Text(value),
+                  //           );
+                  //         }).toList(),
+                  //         onChanged: (String? newValue) {
+                  //           setState(() {
+                  //             goodsIssueCubit.type = newValue!;
+                  //           });
+                  //         },
+                  //       ),
+                  //     ],
+                  //   ),
+                  // ),
                 ],
               ),
               const SizedBox(height: 16),

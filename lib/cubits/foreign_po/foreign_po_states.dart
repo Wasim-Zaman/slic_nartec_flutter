@@ -12,6 +12,8 @@ class ForeignPoSearchLoading extends ForeignPoState {}
 
 class ForiegnPoGetSlicPOListLoading extends ForeignPoState {}
 
+final class ForeignPoGetItemCodeByItemSKULoading extends ForeignPoState {}
+
 // * Success
 
 class ForeignPoGetSuccess extends ForeignPoState {
@@ -38,6 +40,12 @@ class ForeignPoGetSlicPOListSuccess extends ForeignPoState {
   ForeignPoGetSlicPOListSuccess(this.data);
 }
 
+class ForeignPoGetItemCodeByItemSKUSuccess extends ForeignPoState {
+  final ItemCode data;
+
+  ForeignPoGetItemCodeByItemSKUSuccess(this.data);
+}
+
 // ! Error
 
 class ForeignPoGetError extends ForeignPoState {
@@ -56,4 +64,10 @@ class ForeignPiGetSlicPOListError extends ForeignPoState {
   final String error;
 
   ForeignPiGetSlicPOListError(this.error);
+}
+
+final class ForeignPoGetItemCodeByItemSKUError extends ForeignPoState {
+  final String error;
+
+  ForeignPoGetItemCodeByItemSKUError(this.error);
 }

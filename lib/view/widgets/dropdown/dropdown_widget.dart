@@ -36,9 +36,11 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
     return CustomDropdown<String>.search(
       hintText: widget.hintText,
       items: widget.items,
+      initialItem: widget.defaultValue,
       onChanged: widget.onChanged,
       decoration: CustomDropdownDecoration(
-        // closedFillColor: ColorPallete.field,
+        closedFillColor: ColorPallete.field,
+        expandedFillColor: ColorPallete.field,
         closedBorder: Border.all(color: ColorPallete.border),
       ),
     );

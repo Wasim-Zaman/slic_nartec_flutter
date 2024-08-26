@@ -24,8 +24,13 @@ class ListOfPO {
   String? hEADSYSID;
   String? sTATUS;
 
-  ListOfPO(
-      {this.dOCNO, this.dOCDT, this.sUPPNAME, this.hEADSYSID, this.sTATUS});
+  ListOfPO({
+    this.dOCNO,
+    this.dOCDT,
+    this.sUPPNAME,
+    this.hEADSYSID,
+    this.sTATUS,
+  });
 
   ListOfPO.fromJson(Map<String, dynamic> json) {
     dOCNO = json['DOC_NO'];
