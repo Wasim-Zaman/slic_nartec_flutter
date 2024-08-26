@@ -34,12 +34,12 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
 
   @override
   void initState() {
-    // poDateController.text = widget.lineItem.listOfPOItem?.gRADE ?? '';
-    // supplierController.text =
-    //     widget.lineItem.listOfPOItem!.iTEMSYSID.toString();
-    // descriptionController.text = widget.lineItem.listOfPOItem!.iTEMNAME ?? '';
-    // sizeController.text = widget.lineItem.listOfPOItem!.iTEMCODE ?? '';
-    // balanceQtyController.text = widget.lineItem.listOfPOItem!.pOQTY.toString();
+    poDateController.text = widget.lineItem.listOfPOItem?.gRADE ?? '';
+    supplierController.text =
+        widget.lineItem.listOfPOItem!.iTEMSYSID.toString();
+    descriptionController.text = widget.lineItem.listOfPOItem!.iTEMNAME ?? '';
+    sizeController.text = widget.lineItem.listOfPOItem!.iTEMCODE ?? '';
+    balanceQtyController.text = widget.lineItem.listOfPOItem!.pOQTY.toString();
     receivedQuantityController.text =
         widget.lineItem.listOfPOItem!.rECEIVEDQTY.toString();
     // poQtyController.text = widget.lineItem.listOfPOItem!.uOM ?? '';
@@ -93,7 +93,8 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
                     children: [
                       const Text("PO Date"),
                       TextFieldWidget(
-                        initialValue: state.data.productionDate,
+                        initialValue: state.data.productionDate ??
+                            widget.selectedPO.listOfPO?.dOCDT.toString(),
                         // controller: poDateController,
                         hintText: "PO Date",
                         readOnly: true,
@@ -101,7 +102,7 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
                       const SizedBox(height: 8),
                       const Text("Supplier"),
                       TextFieldWidget(
-                        initialValue: state.data.wHLocation,
+                        initialValue: widget.selectedPO.listOfPO?.sUPPNAME,
                         // controller: supplierController,
                         hintText: "Supplier",
                         readOnly: true,
