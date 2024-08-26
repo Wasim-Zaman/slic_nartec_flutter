@@ -45,9 +45,9 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
     // poQtyController.text = widget.lineItem.listOfPOItem!.uOM ?? '';
 
     ForeignPoCubit.get(context).getItemCodeByItemSKU(
-        // widget.selectedPO.listOfPO?.dOCNO.toString(),
-        // widget.lineItem.listOfPOItem?.iTEMCODE.toString(),
-        "86679EH");
+      // widget.selectedPO.listOfPO?.dOCNO.toString(),
+      widget.lineItem.listOfPOItem?.iTEMCODE.toString(),
+    );
     super.initState();
   }
 
