@@ -1,5 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/sales_order.dart';
+import 'package:slic/models/sales_order_model.dart';
 import 'package:slic/services/api_service.dart';
 
 part 'sales_order_states.dart';
@@ -11,6 +12,10 @@ class SalesOrderCubit extends Cubit<SalesOrderState> {
 
   List<SalesOrder> salesOrderList = [];
   List<SalesOrder> filteredSalesOrders = [];
+  List<SalesOrderModel> salesOrders = [];
+  List<SalesOrderModel> selectedSalesOrder = [];
+  List<SalesOrderModel> filterSalesOrders = [];
+  List<int?> selectedSysId = [];
 
   void getAllSalesOrder() async {
     emit(SalesOrderGetAllLoading());
@@ -28,25 +33,57 @@ class SalesOrderCubit extends Cubit<SalesOrderState> {
   void updateSearchQuery(String query) {
     emit(SalesOrderGetAllLoading());
     if (query.isEmpty) {
-      filteredSalesOrders = List.from(salesOrderList);
+      filterSalesOrders = List.from(salesOrders);
     } else {
-      filteredSalesOrders = salesOrderList.where((order) {
-        if (order.sONUMBER == null ||
-            order.sOCUSTNAME == null ||
-            order.sOLOCNCODE == null ||
-            order.dELLOCN == null ||
-            order.sTATUS == null) {
+      filterSalesOrders = salesOrders.where((order) {
+        if (order.listOfSO?.dELLOCN == null ||
+            order.listOfSO?.hEADSYSID == null ||
+            order.listOfSO?.sOCUSTNAME == null ||
+            order.listOfSO?.sOLOCNCODE == null ||
+            order.listOfSO?.sONUMBER == null) {
           return false;
         }
 
-        return order.sONUMBER!.toLowerCase().contains(query.toLowerCase()) ||
-            order.sOCUSTNAME!.toLowerCase().contains(query.toLowerCase()) ||
-            order.sOLOCNCODE!.toLowerCase().contains(query.toLowerCase()) ||
-            order.dELLOCN!.toLowerCase().contains(query.toLowerCase()) ||
-            order.sTATUS!.toLowerCase().contains(query.toLowerCase()) ||
-            order.hEADSYSID.toString().contains(query.toString());
+        return order.listOfSO!.dELLOCN!
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            order.listOfSO!.hEADSYSID!
+                .toString()
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            order.listOfSO!.sOCUSTNAME!
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            order.listOfSO!.sOLOCNCODE!
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            order.listOfSO!.sONUMBER!
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            order.listOfSO!.sONUMBER.toString().contains(query.toString());
       }).toList();
     }
-    emit(SalesOrderGetAllSuccess());
+
+    emit(SalesOrderGetAllFilteredSuccess());
+  }
+
+  void getSlicSalesOrder() async {
+    try {
+      emit(SalesOrderGetAllLoading());
+
+      const body = {
+        "filter": {"P_SOH_DEL_LOCN_CODE": "FG102"},
+        "M_COMP_CODE": "SLIC",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "ListOfSO",
+        "M_LANG_CODE": "ENG"
+      };
+
+      final res = await ApiService.slicGetData(body);
+      res.forEach((so) => salesOrders.add(SalesOrderModel.fromJson(so)));
+      emit(SalesOrderGetAllSuccess());
+    } catch (error) {
+      emit(SalesOrderGetAllError(error.toString()));
+    }
   }
 }

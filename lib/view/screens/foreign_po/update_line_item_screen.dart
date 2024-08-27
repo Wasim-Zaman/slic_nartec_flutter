@@ -81,144 +81,136 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
         builder: (context, state) {
           if (state is ForeignPoGetItemCodeByItemSKULoading) {
             return const LoadingWidget();
-          } else if (state is ForeignPoGetItemCodeByItemSKUSuccess) {
-            return Form(
-              key: _formKey,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text("PO Date"),
-                      TextFieldWidget(
-                        initialValue: state.data.productionDate ??
-                            widget.selectedPO.listOfPO?.dOCDT.toString(),
-                        // controller: poDateController,
-                        hintText: "PO Date",
-                        readOnly: true,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text("Supplier"),
-                      TextFieldWidget(
-                        initialValue: widget.selectedPO.listOfPO?.sUPPNAME,
-                        // controller: supplierController,
-                        hintText: "Supplier",
-                        readOnly: true,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text("Description"),
-                      TextFieldWidget(
-                        initialValue: state.data.itemCode,
-                        // controller: descriptionController,
-                        hintText: "Description",
-                        readOnly: true,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text("Size"),
-                      TextFieldWidget(
-                        initialValue: state.data.size.toString(),
-                        // controller: sizeController,
-                        hintText: "Size",
-                        readOnly: true,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text("PO Quantity"),
-                      TextFieldWidget(
-                        initialValue: state.data.itemQty.toString(),
-                        // controller: poQtyController,
-                        hintText: "PO Quantity",
-                        readOnly: true,
-                      ),
-                      const Text("Balance Quantity"),
-                      TextFieldWidget(
-                        initialValue: state.data.itemQty.toString(),
-                        // controller: balanceQtyController,
-                        hintText: "Balance Quantity",
-                        readOnly: true,
-                      ),
-                      const SizedBox(height: 8),
-                      const Text("Quantity Received"),
-                      TextFieldWidget(
-                        controller: receivedQuantityController,
-                        hintText: "Quantity Received",
-                        filledColor: ColorPallete.accent.withOpacity(0.6),
-                        validator: (value) {
-                          // Check if value is null or empty
-                          if (value == null || value.isEmpty) {
-                            return 'Please enter a value';
-                          }
+          }
+          final data = ForeignPoCubit.get(context).data;
+          return Form(
+            key: _formKey,
+            autovalidateMode: AutovalidateMode.onUserInteraction,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const Text("PO Date"),
+                    TextFieldWidget(
+                      initialValue: data?.productionDate ??
+                          widget.selectedPO.listOfPO?.dOCDT.toString(),
+                      // controller: poDateController,
+                      // hintText: "PO Date",
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text("Supplier"),
+                    TextFieldWidget(
+                      initialValue: widget.selectedPO.listOfPO?.sUPPNAME,
+                      // controller: supplierController,
+                      // hintText: "Supplier",
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text("Description"),
+                    TextFieldWidget(
+                      initialValue: data?.itemCode ?? '',
+                      // controller: descriptionController,
+                      // hintText: "Description",
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text("Size"),
+                    TextFieldWidget(
+                      initialValue: "${data?.size ?? ''}",
+                      // controller: sizeController,
+                      // hintText: "Size",
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text("PO Quantity"),
+                    TextFieldWidget(
+                      initialValue: "${data?.itemQty ?? ''}",
+                      // controller: poQtyController,
+                      // hintText: "PO Quantity",
+                      readOnly: true,
+                    ),
+                    const Text("Balance Quantity"),
+                    TextFieldWidget(
+                      initialValue: "${data?.itemQty ?? ''}",
+                      // controller: balanceQtyController,
+                      // hintText: "Balance Quantity",
+                      readOnly: true,
+                    ),
+                    const SizedBox(height: 8),
+                    const Text("Quantity Received"),
+                    TextFieldWidget(
+                      controller: receivedQuantityController,
+                      hintText: "Quantity Received",
+                      filledColor: ColorPallete.accent.withOpacity(0.6),
+                      validator: (value) {
+                        // Check if value is null or empty
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a value';
+                        }
 
-                          // Try parsing the value to a number
-                          final parsedValue = num.tryParse(value);
-                          final parsedPo =
-                              num.tryParse(balanceQtyController.text);
+                        // Try parsing the value to a number
+                        final parsedValue = num.tryParse(value);
+                        final parsedPo =
+                            num.tryParse(balanceQtyController.text);
 
-                          // Check if parsing failed (meaning it's not a number)
-                          if (parsedValue == null) {
-                            return 'Please enter a valid number';
-                          }
+                        // Check if parsing failed (meaning it's not a number)
+                        if (parsedValue == null) {
+                          return 'Please enter a valid number';
+                        }
 
-                          // Check if the value is negative
-                          if (parsedValue < 0) {
-                            return 'Negative values are not allowed';
-                          }
+                        // Check if the value is negative
+                        if (parsedValue < 0) {
+                          return 'Negative values are not allowed';
+                        }
 
-                          // Check if the value is greater than 80
-                          if (parsedPo != null && parsedValue > parsedPo) {
-                            return 'Value should not be greater than PO Quantity';
-                          }
+                        // Check if the value is greater than 80
+                        if (parsedPo != null && parsedValue > parsedPo) {
+                          return 'Value should not be greater than PO Quantity';
+                        }
 
-                          // If all checks pass, return null (indicating the value is valid)
-                          return null;
-                        },
-                      ),
-                      const SizedBox(height: 8),
-                      const SizedBox(height: 16),
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          ElevatedButton(
-                            onPressed: () {
-                              // Validate the form
-                              if (!_formKey.currentState!.validate()) {
-                                return;
-                              }
-                              // Save changes to the line item
-                              LineItemCubit.get(context).updateSlicLineItem(
-                                SlicLineItemModel(
-                                  listOfPOItem: ListOfPOItem(
-                                    gRADE: poDateController.text,
-                                    iTEMSYSID:
-                                        int.parse(supplierController.text),
-                                    iTEMNAME: descriptionController.text,
-                                    iTEMCODE: sizeController.text,
-                                    pOQTY: int.parse(balanceQtyController.text),
-                                    rECEIVEDQTY:
-                                        receivedQuantityController.text,
-                                    uOM: poQtyController.text,
-                                  ),
+                        // If all checks pass, return null (indicating the value is valid)
+                        return null;
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    const SizedBox(height: 16),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.end,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            // Validate the form
+                            if (!_formKey.currentState!.validate()) {
+                              return;
+                            }
+                            // Save changes to the line item
+                            LineItemCubit.get(context).updateSlicLineItem(
+                              SlicLineItemModel(
+                                listOfPOItem: ListOfPOItem(
+                                  gRADE: poDateController.text,
+                                  iTEMSYSID: int.parse(supplierController.text),
+                                  iTEMNAME: descriptionController.text,
+                                  iTEMCODE: sizeController.text,
+                                  pOQTY: int.parse(balanceQtyController.text),
+                                  rECEIVEDQTY: receivedQuantityController.text,
+                                  uOM: poQtyController.text,
                                 ),
-                              );
-                              Navigator.pop(context);
-                            },
-                            child: const Text('Save'),
-                          ),
-                        ],
-                      ),
-                    ],
-                  ),
+                              ),
+                            );
+                            Navigator.pop(context);
+                          },
+                          child: const Text('Save'),
+                        ),
+                      ],
+                    ),
+                  ],
                 ),
               ),
-            );
-          } else if (state is ForeignPoGetItemCodeByItemSKUError) {
-            return Center(
-              child: Text(state.error),
-            );
-          } else {
-            return const SizedBox();
-          }
+            ),
+          );
         },
       ),
     );

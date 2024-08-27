@@ -4,8 +4,9 @@ import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
+import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
+import 'package:slic/models/sales_order_model.dart';
 import 'package:slic/models/slic_line_item_model.dart';
-import 'package:slic/models/slic_po_model.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/sales_order/update_so_line_item_screen.dart';
@@ -36,7 +37,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Foreign PO'),
+        title: const Text('Sales Orders'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -45,7 +46,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
             children: [
               SizedBox(
                 child: _buildPOListTable(
-                  ForeignPoCubit.get(context).selectedPOList,
+                  SalesOrderCubit.get(context).selectedSalesOrder,
                 ),
               ),
               const SizedBox(height: 16),
@@ -177,14 +178,14 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
     );
   }
 
-  Widget _buildPOListTable(List<SlicPOModel> data) {
+  Widget _buildPOListTable(List<SalesOrderModel> data) {
     _DataSource dataSource =
         _DataSource(data, selectedRowIndex, (index, selected) {
       setState(() {
         if (selected) {
           selectedRowIndex = index;
           LineItemCubit.get(context).selectedSysId =
-              data[index].listOfPO!.hEADSYSID;
+              data[index].listOfSO!.hEADSYSID.toString();
           context.read<LineItemCubit>().slicLineItemsById(
               LineItemCubit.get(context).selectedSysId ?? '');
         } else {
@@ -196,12 +197,13 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
       padding: const EdgeInsets.all(8.0),
       color: Colors.white,
       child: PaginatedDataTable(
-        columns: const [
-          DataColumn(label: Text('hEADSYSID')),
-          DataColumn(label: Text('dOCNO')),
-          DataColumn(label: Text('dOCDT')),
-          DataColumn(label: Text('sTATUS')),
-          DataColumn(label: Text('sUPPNAME')),
+        columns: [
+          DataColumn(label: Text('hEADSYSID'.toUpperCase())),
+          DataColumn(label: Text('dELLOCN'.toUpperCase())),
+          DataColumn(label: Text('sOCUSTNAME'.toUpperCase())),
+          DataColumn(label: Text('sOLOCNCODE'.toUpperCase())),
+          DataColumn(label: Text('sONUMBER'.toUpperCase())),
+          DataColumn(label: Text('sTATUS'.toUpperCase())),
         ],
         source: dataSource,
         columnSpacing: 20,
@@ -240,7 +242,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
 }
 
 class _DataSource extends DataTableSource {
-  final List<SlicPOModel> _data;
+  final List<SalesOrderModel> _data;
   final int? _selectedRowIndex; // Single selected row index
   final Function(int index, bool selected) _onSelectRow;
 
@@ -248,7 +250,7 @@ class _DataSource extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
-    final SlicPOModel data = _data[index];
+    final SalesOrderModel data = _data[index];
     return DataRow.byIndex(
       index: index,
       selected: _selectedRowIndex == index,
@@ -269,11 +271,12 @@ class _DataSource extends DataTableSource {
         },
       ),
       cells: <DataCell>[
-        DataCell(Text(data.listOfPO?.hEADSYSID ?? '')),
-        DataCell(Text(data.listOfPO?.dOCNO ?? '')),
-        DataCell(Text(data.listOfPO?.dOCDT ?? '')),
-        DataCell(Text(data.listOfPO?.sTATUS ?? '')),
-        DataCell(Text(data.listOfPO?.sUPPNAME ?? '')),
+        DataCell(Text(data.listOfSO?.hEADSYSID.toString() ?? '')),
+        DataCell(Text(data.listOfSO?.dELLOCN ?? '')),
+        DataCell(Text(data.listOfSO?.sOCUSTNAME ?? '')),
+        DataCell(Text(data.listOfSO?.sOLOCNCODE ?? '')),
+        DataCell(Text(data.listOfSO?.sONUMBER ?? '')),
+        DataCell(Text(data.listOfSO?.sTATUS ?? '')),
       ],
     );
   }

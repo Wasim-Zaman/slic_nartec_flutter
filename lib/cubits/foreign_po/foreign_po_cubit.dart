@@ -20,6 +20,8 @@ class ForeignPoCubit extends Cubit<ForeignPoState> {
   List<SlicPOModel> selectedPOList = [];
   final selectedSysIds = [];
 
+  ItemCode? data;
+
   // void updateSearchQuery(String query) {
   //   if (query.isEmpty) {
   //     // If the search query is empty, restore the original data
@@ -94,7 +96,9 @@ class ForeignPoCubit extends Cubit<ForeignPoState> {
     try {
       emit(ForeignPoGetItemCodeByItemSKULoading());
       final response = await ApiService.getItemCodeByItemCode(itemSKU);
+
       if (response.success) {
+        data = response.data;
         emit(ForeignPoGetItemCodeByItemSKUSuccess(response.data));
       } else {
         emit(ForeignPoGetItemCodeByItemSKUError(response.message));

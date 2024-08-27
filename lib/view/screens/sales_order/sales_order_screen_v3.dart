@@ -3,11 +3,14 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
-import 'package:slic/models/slic_po_model.dart';
+import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
+import 'package:slic/models/sales_order_model.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/screens/sales_order/selected_so_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SalesOrderScreen extends StatefulWidget {
   const SalesOrderScreen({super.key});
@@ -23,7 +26,7 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
   @override
   void initState() {
     super.initState();
-    context.read<ForeignPoCubit>().getSlicPoList();
+    SalesOrderCubit.get(context).getSlicSalesOrder();
     LineItemCubit.get(context).lineItems.clear();
     LineItemCubit.get(context).slicLineItemsMap.clear();
     ForeignPoCubit.get(context).selectedPOList.clear();
@@ -33,7 +36,7 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Foreign PO'),
+        title: const Text('Sales Order'),
       ),
       body: Padding(
         padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -44,37 +47,34 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
               child: TextField(
                 controller: _searchController,
                 decoration: InputDecoration(
-                  hintText: 'Search Foreign PO',
+                  hintText: 'Search Sales Order',
                   prefixIcon: const Icon(Icons.search),
                   border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(8.0),
                   ),
                 ),
                 onChanged: (value) =>
-                    context.read<ForeignPoCubit>().updateSearchQuery(value),
+                    context.read<SalesOrderCubit>().updateSearchQuery(value),
               ),
             ),
             Expanded(
               child: Container(
                 color: ColorPallete.background,
-                child: BlocConsumer<ForeignPoCubit, ForeignPoState>(
+                child: BlocConsumer<SalesOrderCubit, SalesOrderState>(
                   listener: (context, state) {
                     if (state is ForeignPoGetSuccess) {
-                      context.read<ForeignPoCubit>().models = state.res.data;
+                      // context.read<ForeignPoCubit>().models = state.res.data;
                     }
                   },
                   builder: (context, state) {
-                    if (state is ForiegnPoGetSlicPOListLoading) {
+                    if (state is SalesOrderGetAllLoading) {
                       return const LoadingWidget();
-                    } else if (state is ForeignPoGetSlicPOListSuccess ||
-                        state is ForeignPoSlicPoSearchSuccess) {
-                      final data = state is ForeignPoGetSlicPOListSuccess
-                          ? state.data
-                          : (state as ForeignPoSlicPoSearchSuccess).data;
-                      return _buildDataTable(data);
+                    } else if (state is SalesOrderGetAllFilteredSuccess) {
+                      return _buildDataTable(
+                          SalesOrderCubit.get(context).filterSalesOrders);
                     }
                     return _buildDataTable(
-                        ForeignPoCubit.get(context).slicPOList);
+                        SalesOrderCubit.get(context).salesOrders);
                   },
                 ),
               ),
@@ -87,14 +87,21 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
                   AppButton(
                     text: "Proceed",
                     onPressed: () {
-                      // save selected tables rows in the following list
-                      // LineItemCubit.get(context).getLineItemsBySysIds(
-                      //   ForeignPoCubit.get(context).selectedSysIds,
-                      // );
-                      if (ForeignPoCubit.get(context)
-                          .selectedPOList
+                      if (SalesOrderCubit.get(context)
+                          .selectedSalesOrder
                           .isNotEmpty) {
-                        Navigation.push(context, const SelectedSoScreen());
+                        Navigation.push(
+                          context,
+                          const SelectedSoScreen(),
+                        );
+                      } else {
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          const CustomSnackBar.info(
+                            message:
+                                "Select at least one row for farther process",
+                          ),
+                        );
                       }
                     },
                   ),
@@ -107,21 +114,21 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
     );
   }
 
-  Widget _buildDataTable(List<SlicPOModel> data) {
+  Widget _buildDataTable(List<SalesOrderModel> data) {
     _DataSource dataSource =
         _DataSource(data, selectedRowIndices, (index, selected) {
       setState(() {
         if (selected) {
           selectedRowIndices.add(index);
-          ForeignPoCubit.get(context).selectedPOList.add(data[index]);
+          SalesOrderCubit.get(context).selectedSalesOrder.add(data[index]);
 
           for (var index in selectedRowIndices) {
-            ForeignPoCubit.get(context)
-                .selectedSysIds
-                .add(data[index].listOfPO?.hEADSYSID);
+            SalesOrderCubit.get(context)
+                .selectedSysId
+                .add(data[index].listOfSO?.hEADSYSID);
           }
         } else {
-          ForeignPoCubit.get(context).selectedPOList.removeAt(index);
+          SalesOrderCubit.get(context).selectedSalesOrder.removeAt(index);
           selectedRowIndices.remove(index);
         }
       });
@@ -131,18 +138,18 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
       color: ColorPallete.background,
       child: PaginatedDataTable(
         primary: true,
-        header: const Text('PO List'),
-        columns: const [
-          DataColumn(label: Text('hEADSYSID')),
-          DataColumn(label: Text('dOCNO')),
-          DataColumn(label: Text('dOCDT')),
-          DataColumn(label: Text('sTATUS')),
-          DataColumn(label: Text('sUPPNAME')),
+        columns: [
+          DataColumn(label: Text('hEADSYSID'.toUpperCase())),
+          DataColumn(label: Text('dELLOCN'.toUpperCase())),
+          DataColumn(label: Text('sOCUSTNAME'.toUpperCase())),
+          DataColumn(label: Text('sOLOCNCODE'.toUpperCase())),
+          DataColumn(label: Text('sONUMBER'.toUpperCase())),
+          DataColumn(label: Text('sTATUS'.toUpperCase())),
         ],
         source: dataSource,
         columnSpacing: 20,
         horizontalMargin: 10,
-        rowsPerPage: 5,
+        rowsPerPage: 7,
         showCheckboxColumn: true,
       ),
     );
@@ -150,7 +157,7 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
 }
 
 class _DataSource extends DataTableSource {
-  final List<SlicPOModel> _data;
+  final List<SalesOrderModel> _data;
   final Set<int> _selectedRowIndices;
   final Function(int index, bool selected) _onSelectRow;
 
@@ -158,7 +165,7 @@ class _DataSource extends DataTableSource {
 
   @override
   DataRow getRow(int index) {
-    final SlicPOModel data = _data[index];
+    final SalesOrderModel data = _data[index];
     return DataRow.byIndex(
       index: index,
       selected: _selectedRowIndices.contains(index),
@@ -179,11 +186,12 @@ class _DataSource extends DataTableSource {
         },
       ),
       cells: <DataCell>[
-        DataCell(Text(data.listOfPO?.hEADSYSID ?? '')),
-        DataCell(Text(data.listOfPO?.dOCNO ?? '')),
-        DataCell(Text(data.listOfPO?.dOCDT ?? '')),
-        DataCell(Text(data.listOfPO?.sTATUS ?? '')),
-        DataCell(Text(data.listOfPO?.sUPPNAME ?? '')),
+        DataCell(Text(data.listOfSO?.hEADSYSID.toString() ?? '')),
+        DataCell(Text(data.listOfSO?.dELLOCN ?? '')),
+        DataCell(Text(data.listOfSO?.sOCUSTNAME ?? '')),
+        DataCell(Text(data.listOfSO?.sOLOCNCODE ?? '')),
+        DataCell(Text(data.listOfSO?.sONUMBER ?? '')),
+        DataCell(Text(data.listOfSO?.sTATUS ?? '')),
       ],
     );
   }
