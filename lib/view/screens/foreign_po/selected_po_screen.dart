@@ -25,11 +25,11 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
   @override
   void initState() {
     super.initState();
-    LineItemCubit.get(context).slicLineItems.clear();
+    LineItemCubit.get(context).poLineItems.clear();
     LineItemCubit.get(context).selectedSysId = null;
     LineItemCubit.get(context).counter.clear();
     LineItemCubit.get(context).lineItems.clear();
-    LineItemCubit.get(context).slicLineItemsMap.clear();
+    LineItemCubit.get(context).poLineItemsMap.clear();
   }
 
   @override
@@ -58,7 +58,7 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                       return _buildLineItemsTable([]);
                     }
                     return _buildLineItemsTable(
-                      LineItemCubit.get(context).slicLineItems,
+                      LineItemCubit.get(context).poLineItems,
                     );
                   },
                 ),
@@ -148,7 +148,7 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                                 color: ColorPallete.primary,
                               )),
                               child: Text(
-                                  "Total: ${LineItemCubit.get(context).slicLineItems.length}"),
+                                  "Total: ${LineItemCubit.get(context).poLineItems.length}"),
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -185,7 +185,7 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
           selectedRowIndex = index;
           LineItemCubit.get(context).selectedSysId =
               data[index].listOfPO!.hEADSYSID;
-          context.read<LineItemCubit>().slicLineItemsById(
+          context.read<LineItemCubit>().slicPOLineItemsById(
               LineItemCubit.get(context).selectedSysId ?? '');
         } else {
           selectedRowIndex = null; // Deselect if needed
@@ -212,8 +212,8 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
     );
   }
 
-  Widget _buildLineItemsTable(List<SlicLineItemModel> data) {
-    LineItemSource dataSource = LineItemSource(data, (SlicLineItemModel item) {
+  Widget _buildLineItemsTable(List<PoLineItemModel> data) {
+    LineItemSource dataSource = LineItemSource(data, (PoLineItemModel item) {
       Navigation.push(
           context,
           UpdateLineItemScreen(
@@ -293,14 +293,14 @@ class _DataSource extends DataTableSource {
 }
 
 class LineItemSource extends DataTableSource {
-  final List<SlicLineItemModel> _data;
-  final void Function(SlicLineItemModel) onDoubleTap;
+  final List<PoLineItemModel> _data;
+  final void Function(PoLineItemModel) onDoubleTap;
 
   LineItemSource(this._data, this.onDoubleTap);
 
   @override
   DataRow getRow(int index) {
-    final SlicLineItemModel data = _data[index];
+    final PoLineItemModel data = _data[index];
     return DataRow.byIndex(
       index: index,
       color: WidgetStateProperty.resolveWith<Color>(

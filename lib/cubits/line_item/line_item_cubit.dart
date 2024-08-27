@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/line_item.dart';
 import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/models/slic_po_model.dart';
+import 'package:slic/models/so_line_item_model.dart';
 import 'package:slic/services/api_service.dart';
 
 part 'line_item_states.dart';
@@ -12,40 +13,59 @@ class LineItemCubit extends Cubit<LineItemState> {
   static LineItemCubit get(context) => BlocProvider.of(context);
 
   List<LineItem> lineItems = [];
-  Map<String, List<SlicLineItemModel>> slicLineItemsMap = {};
-  List<SlicLineItemModel> slicLineItems = [];
+  Map<String, List<PoLineItemModel>> poLineItemsMap = {};
+  Map<String, List<SoLineItemModel>> soLineItemsMap = {};
+  List<PoLineItemModel> poLineItems = [];
+  List<SoLineItemModel> soLineItems = [];
   String? selectedSysId;
   final List counter = [];
 
-  void slicLineItemsById(String sysId) async {
+  void slicPOLineItemsById(String sysId) async {
     emit(LineItemGetBySysIdLoading());
     try {
       // if list for specific head sys id exists, then dont call the API, otherwise call it
-      if (slicLineItemsMap.containsKey(sysId)) {
-        slicLineItems = slicLineItemsMap[sysId]!;
+      if (poLineItemsMap.containsKey(sysId)) {
+        poLineItems = poLineItemsMap[sysId]!;
         emit(LineItemGetBySysIdSuccess());
         return;
       }
-      slicLineItems = await ApiService.getPoLineItems(sysId);
-      slicLineItemsMap[sysId] = slicLineItems;
+      poLineItems = await ApiService.getPoLineItems(sysId);
+      poLineItemsMap[sysId] = poLineItems;
       emit(LineItemGetBySysIdSuccess());
     } catch (err) {
       emit(LineItemGetBySysIdError(err.toString()));
     }
   }
 
-  void updateSlicLineItem(SlicLineItemModel lineItem) async {
+  void slicSOLineItemsById(String sysId) async {
+    emit(LineItemGetBySysIdLoading());
+    try {
+      // if list for specific head sys id exists, then dont call the API, otherwise call it
+      if (soLineItemsMap.containsKey(sysId)) {
+        soLineItems = soLineItemsMap[sysId]!;
+        emit(LineItemGetBySysIdSuccess());
+        return;
+      }
+      soLineItems = await ApiService.getSoLineItems(sysId);
+      soLineItemsMap[sysId] = soLineItems;
+      emit(LineItemGetBySysIdSuccess());
+    } catch (err) {
+      emit(LineItemGetBySysIdError(err.toString()));
+    }
+  }
+
+  void updateSlicLineItem(PoLineItemModel lineItem) async {
     // update the line item inside slicLineItemsMap
     // var i = slicLineItemsMap["$selectedSysId"]!.indexWhere((element) {
     //   return element.listOfPOItem?.iTEMSYSID ==
     //       lineItem.listOfPOItem?.iTEMSYSID;
     // });
     // slicLineItemsMap["$selectedSysId"]!.toList()[i] = lineItem;
-    slicLineItemsMap["$selectedSysId"]!.removeWhere((element) {
+    poLineItemsMap["$selectedSysId"]!.removeWhere((element) {
       return element.listOfPOItem?.iTEMSYSID ==
           lineItem.listOfPOItem?.iTEMSYSID;
     });
-    slicLineItemsMap["$selectedSysId"]!.add(lineItem);
+    poLineItemsMap["$selectedSysId"]!.add(lineItem);
     // if item sys id do not exist in the list
     if (!counter.contains(lineItem.listOfPOItem?.iTEMSYSID)) {
       counter.add(lineItem.listOfPOItem?.iTEMSYSID);
@@ -173,11 +193,11 @@ class LineItemCubit extends Cubit<LineItemState> {
                 "TransactionNo": "2017000002",
                 "LocationCode": locationCode.toString(),
                 "SystemId": "SYSADMIN",
-                "Item": slicLineItemsMap.isEmpty
+                "Item": poLineItemsMap.isEmpty
                     ? []
-                    : slicLineItemsMap[po.listOfPO?.hEADSYSID] == null
+                    : poLineItemsMap[po.listOfPO?.hEADSYSID] == null
                         ? []
-                        : slicLineItemsMap[po.listOfPO?.hEADSYSID]!
+                        : poLineItemsMap[po.listOfPO?.hEADSYSID]!
                             .map(
                               (lineItem) => {
                                 "SessionId": DateTime.now().toIso8601String(),

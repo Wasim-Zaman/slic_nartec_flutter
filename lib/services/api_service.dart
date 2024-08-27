@@ -10,6 +10,7 @@ import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/models/sales_order.dart';
 import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/models/slic_po_model.dart';
+import 'package:slic/models/so_line_item_model.dart';
 import 'package:slic/models/tblPOFPOMaster.dart';
 import 'package:slic/models/trx_codes_model.dart';
 import 'package:slic/services/http_service.dart';
@@ -109,7 +110,7 @@ class ApiService {
     return poList;
   }
 
-  static Future<List<SlicLineItemModel>> getPoLineItems(sysId) async {
+  static Future<List<PoLineItemModel>> getPoLineItems(sysId) async {
     const url = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
     final response =
@@ -130,10 +131,39 @@ class ApiService {
       method: "POST",
     );
 
-    List<SlicLineItemModel> lineItems = [];
+    List<PoLineItemModel> lineItems = [];
 
     response.forEach((data) {
-      lineItems.add(SlicLineItemModel.fromJson(data));
+      lineItems.add(PoLineItemModel.fromJson(data));
+    });
+    return lineItems;
+  }
+
+  static Future<List<SoLineItemModel>> getSoLineItems(sysId) async {
+    const url = "/oneerpreport/api/getapi";
+    final slicToken = SharedStorage.getSlicToken();
+    final response =
+        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
+            .request(
+      url,
+      data: {
+        "filter": {"P_SOI_SOH_SYS_ID": sysId},
+        "M_COMP_CODE": "SLIC",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "ListOfSOItem",
+        "M_LANG_CODE": "ENG"
+      },
+      headers: {
+        "Authorization": "Bearer $slicToken",
+        'Content-Type': 'application/json',
+      },
+      method: "POST",
+    );
+
+    List<SoLineItemModel> lineItems = [];
+
+    response.forEach((data) {
+      lineItems.add(SoLineItemModel.fromJson(data));
     });
     return lineItems;
   }

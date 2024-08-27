@@ -11,7 +11,7 @@ import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class UpdateLineItemScreen extends StatefulWidget {
-  final SlicLineItemModel lineItem;
+  final PoLineItemModel lineItem;
   final SlicPOModel selectedPO;
   const UpdateLineItemScreen(
       {super.key, required this.lineItem, required this.selectedPO});
@@ -188,7 +188,7 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
                             }
                             // Save changes to the line item
                             LineItemCubit.get(context).updateSlicLineItem(
-                              SlicLineItemModel(
+                              PoLineItemModel(
                                 listOfPOItem: ListOfPOItem(
                                   gRADE: poDateController.text,
                                   iTEMSYSID: int.parse(supplierController.text),

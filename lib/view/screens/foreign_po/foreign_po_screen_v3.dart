@@ -25,7 +25,7 @@ class _ForeignPoScreenState extends State<ForeignPoScreen> {
     super.initState();
     context.read<ForeignPoCubit>().getSlicPoList();
     LineItemCubit.get(context).lineItems.clear();
-    LineItemCubit.get(context).slicLineItemsMap.clear();
+    LineItemCubit.get(context).poLineItemsMap.clear();
     ForeignPoCubit.get(context).selectedPOList.clear();
   }
 

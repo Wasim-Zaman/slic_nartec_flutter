@@ -101,7 +101,7 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
       setState(() {
         _selectedRowIndex = index;
         LineItemCubit.get(context)
-            .slicLineItemsById(data[index].hEADSYSID.toString());
+            .slicPOLineItemsById(data[index].hEADSYSID.toString());
       });
     });
     return Container(

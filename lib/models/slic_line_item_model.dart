@@ -1,9 +1,9 @@
-class SlicLineItemModel {
+class PoLineItemModel {
   ListOfPOItem? listOfPOItem;
 
-  SlicLineItemModel({this.listOfPOItem});
+  PoLineItemModel({this.listOfPOItem});
 
-  SlicLineItemModel.fromJson(Map<String, dynamic> json) {
+  PoLineItemModel.fromJson(Map<String, dynamic> json) {
     listOfPOItem = json['ListOfPOItem'] != null
         ? ListOfPOItem.fromJson(json['ListOfPOItem'])
         : null;

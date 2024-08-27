@@ -5,7 +5,7 @@ import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 
 class UpdateSoLineItemScreen extends StatefulWidget {
-  final SlicLineItemModel lineItem;
+  final PoLineItemModel lineItem;
   const UpdateSoLineItemScreen({super.key, required this.lineItem});
 
   @override
@@ -153,7 +153,7 @@ class _UpdateSoLineItemScreenState extends State<UpdateSoLineItemScreen> {
                         }
                         // Save changes to the line item
                         LineItemCubit.get(context).updateSlicLineItem(
-                          SlicLineItemModel(
+                          PoLineItemModel(
                             listOfPOItem: ListOfPOItem(
                               gRADE: gradeController.text,
                               iTEMSYSID: int.parse(itemSysIdController.text),

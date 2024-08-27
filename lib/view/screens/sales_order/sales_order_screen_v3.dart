@@ -28,7 +28,7 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
     super.initState();
     SalesOrderCubit.get(context).getSlicSalesOrder();
     LineItemCubit.get(context).lineItems.clear();
-    LineItemCubit.get(context).slicLineItemsMap.clear();
+    LineItemCubit.get(context).poLineItemsMap.clear();
     ForeignPoCubit.get(context).selectedPOList.clear();
   }
 

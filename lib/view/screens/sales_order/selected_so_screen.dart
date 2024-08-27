@@ -2,16 +2,15 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
-import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/models/sales_order_model.dart';
-import 'package:slic/models/slic_line_item_model.dart';
-import 'package:slic/utils/navigation.dart';
+import 'package:slic/models/so_line_item_model.dart';
 import 'package:slic/utils/snackbar.dart';
-import 'package:slic/view/screens/sales_order/update_so_line_item_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SelectedSoScreen extends StatefulWidget {
   const SelectedSoScreen({super.key});
@@ -26,11 +25,11 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
   @override
   void initState() {
     super.initState();
-    LineItemCubit.get(context).slicLineItems.clear();
+    LineItemCubit.get(context).poLineItems.clear();
     LineItemCubit.get(context).selectedSysId = null;
     LineItemCubit.get(context).counter.clear();
     LineItemCubit.get(context).lineItems.clear();
-    LineItemCubit.get(context).slicLineItemsMap.clear();
+    LineItemCubit.get(context).poLineItemsMap.clear();
   }
 
   @override
@@ -59,7 +58,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
                       return _buildLineItemsTable([]);
                     }
                     return _buildLineItemsTable(
-                      LineItemCubit.get(context).slicLineItems,
+                      LineItemCubit.get(context).soLineItems,
                     );
                   },
                 ),
@@ -124,11 +123,17 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
                                 return AppButton(
                                   text: "Submit GRN",
                                   onPressed: () {
-                                    LineItemCubit.get(context).poToGRN(
-                                      HomeCubit.get(context).locationCode,
-                                      selectedPOs: ForeignPoCubit.get(context)
-                                          .selectedPOList,
+                                    showTopSnackBar(
+                                      Overlay.of(context),
+                                      const CustomSnackBar.info(
+                                        message: "Required API is not provided",
+                                      ),
                                     );
+                                    // LineItemCubit.get(context).poToGRN(
+                                    //   HomeCubit.get(context).locationCode,
+                                    //   selectedPOs: ForeignPoCubit.get(context)
+                                    //       .selectedPOList,
+                                    // );
                                   },
                                 );
                               },
@@ -149,7 +154,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
                                 color: ColorPallete.primary,
                               )),
                               child: Text(
-                                  "Total: ${LineItemCubit.get(context).slicLineItems.length}"),
+                                  "Total: ${LineItemCubit.get(context).poLineItems.length}"),
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -186,7 +191,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
           selectedRowIndex = index;
           LineItemCubit.get(context).selectedSysId =
               data[index].listOfSO!.hEADSYSID.toString();
-          context.read<LineItemCubit>().slicLineItemsById(
+          context.read<LineItemCubit>().slicSOLineItemsById(
               LineItemCubit.get(context).selectedSysId ?? '');
         } else {
           selectedRowIndex = null; // Deselect if needed
@@ -214,9 +219,9 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
     );
   }
 
-  Widget _buildLineItemsTable(List<SlicLineItemModel> data) {
-    LineItemSource dataSource = LineItemSource(data, (SlicLineItemModel item) {
-      Navigation.push(context, UpdateSoLineItemScreen(lineItem: item));
+  Widget _buildLineItemsTable(List<SoLineItemModel> data) {
+    LineItemSource dataSource = LineItemSource(data, (SoLineItemModel item) {
+      // Navigation.push(context, UpdateSoLineItemScreen(lineItem: item));
     });
     return Container(
       padding: const EdgeInsets.all(8.0),
@@ -227,8 +232,8 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
           DataColumn(label: Text('iTEMSYSID')),
           DataColumn(label: Text('iTEMNAME')),
           DataColumn(label: Text('iTEMCODE')),
-          DataColumn(label: Text('pOQTY')),
-          DataColumn(label: Text('rECEIVEDQTY')),
+          DataColumn(label: Text('iNVQTY')),
+          // DataColumn(label: Text('rECEIVEDQTY')),
           DataColumn(label: Text('uOM')),
         ],
         source: dataSource,
@@ -290,14 +295,14 @@ class _DataSource extends DataTableSource {
 }
 
 class LineItemSource extends DataTableSource {
-  final List<SlicLineItemModel> _data;
-  final void Function(SlicLineItemModel) onDoubleTap;
+  final List<SoLineItemModel> _data;
+  final void Function(SoLineItemModel) onDoubleTap;
 
   LineItemSource(this._data, this.onDoubleTap);
 
   @override
   DataRow getRow(int index) {
-    final SlicLineItemModel data = _data[index];
+    final SoLineItemModel data = _data[index];
     return DataRow.byIndex(
       index: index,
       color: WidgetStateProperty.resolveWith<Color>(
@@ -315,43 +320,43 @@ class LineItemSource extends DataTableSource {
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem?.gRADE ?? ''),
+            child: Text(data.listOfSOItem?.gRADE ?? ''),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.iTEMSYSID.toString()),
+            child: Text(data.listOfSOItem!.iTEMSYSID.toString()),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.iTEMNAME.toString()),
+            child: Text(data.listOfSOItem!.iTEMNAME.toString()),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.iTEMCODE.toString()),
+            child: Text(data.listOfSOItem!.iTEMCODE.toString()),
           ),
         ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.pOQTY.toString()),
+            child: Text(data.listOfSOItem!.iNVQTY.toString()),
           ),
         ),
+        // DataCell(
+        //   GestureDetector(
+        //     onDoubleTap: () => onDoubleTap(data),
+        //     child: Text(data.listOfSOItem!.rECEIVEDQTY.toString()),
+        //   ),
+        // ),
         DataCell(
           GestureDetector(
             onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.rECEIVEDQTY.toString()),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            onDoubleTap: () => onDoubleTap(data),
-            child: Text(data.listOfPOItem!.uOM.toString()),
+            child: Text(data.listOfSOItem!.uOM.toString()),
           ),
         ),
       ],
