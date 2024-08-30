@@ -1,3 +1,8 @@
 {
-    "dart.flutterSdkPath": ".fvm/versions/3.22.3"
+"dart.flutterSdkPath": ".fvm/versions/3.22.3",
+"workbench.colorCustomizations": {
+    "activityBar.background": "#56103B",
+    "titleBar.activeBackground": "#781752",
+    "titleBar.activeForeground": "#FEFCFD"
+}
 }
