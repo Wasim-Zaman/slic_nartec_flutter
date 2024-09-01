@@ -188,8 +188,6 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
     final stockTransferCubit = StockTransferCubit.get(context);
     final homeCubit = HomeCubit.get(context);
 
-    print(homeCubit.location);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Stock Transfer"),
@@ -208,17 +206,21 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                 options: stockTransferCubit.transactionCodes
                     .where((element) =>
                         element.listOfTransactionCod?.tXNNAME != null)
-                    .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
+                    .map((e) =>
+                        "${e.listOfTransactionCod!.tXNCODE}-${e.listOfTransactionCod!.tXNNAME}")
                     .toSet()
                     .toList(),
-                defaultValue: stockTransferCubit.transactionName,
+                defaultValue: stockTransferCubit.transactionName == null
+                    ? null
+                    : "${stockTransferCubit.transactionCode}-${stockTransferCubit.transactionName}",
                 onChanged: (value) {
                   setState(() {
-                    stockTransferCubit.transactionName = value!;
+                    stockTransferCubit.transactionName = value?.split("-")[1];
                     stockTransferCubit.transactionCode = stockTransferCubit
                         .transactionCodes
                         .firstWhere((element) =>
-                            element.listOfTransactionCod!.tXNNAME == value)
+                            element.listOfTransactionCod!.tXNNAME ==
+                            stockTransferCubit.transactionName)
                         .listOfTransactionCod!
                         .tXNCODE;
                   });
@@ -232,16 +234,20 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                   options: homeCubit.slicLocations
                       .where(
                           (element) => element.locationMaster?.lOCNNAME != null)
-                      .map((e) => e.locationMaster!.lOCNNAME.toString())
+                      .map((e) =>
+                          "${e.locationMaster!.lOCNCODE}-${e.locationMaster!.lOCNNAME}")
                       .toSet()
                       .toList(),
-                  defaultValue: homeCubit.location,
+                  defaultValue: homeCubit.location == null
+                      ? null
+                      : "${homeCubit.locationCode}-${homeCubit.location}",
                   onChanged: (value) {
                     setState(() {
-                      homeCubit.fromLocation = value!;
+                      homeCubit.fromLocation = value?.split("-")[1];
                       homeCubit.fromLocationCode = homeCubit.slicLocations
                           .firstWhere((element) =>
-                              element.locationMaster!.lOCNNAME == value)
+                              element.locationMaster!.lOCNNAME ==
+                              homeCubit.fromLocation)
                           .locationMaster!
                           .lOCNCODE;
                     });
@@ -255,16 +261,20 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                   options: homeCubit.slicLocations
                       .where(
                           (element) => element.locationMaster?.lOCNNAME != null)
-                      .map((e) => e.locationMaster!.lOCNNAME.toString())
+                      .map((e) =>
+                          "${e.locationMaster!.lOCNCODE}-${e.locationMaster!.lOCNNAME}")
                       .toSet()
                       .toList(),
-                  defaultValue: homeCubit.location,
+                  defaultValue: homeCubit.location == null
+                      ? null
+                      : "${homeCubit.locationCode}-${homeCubit.location}",
                   onChanged: (value) {
                     setState(() {
-                      homeCubit.toLocation = value!;
+                      homeCubit.toLocation = value?.split("-")[1];
                       homeCubit.toLocationCode = homeCubit.slicLocations
                           .firstWhere((element) =>
-                              element.locationMaster!.lOCNNAME == value)
+                              element.locationMaster!.lOCNNAME ==
+                              homeCubit.toLocation)
                           .locationMaster!
                           .lOCNCODE;
                     });
