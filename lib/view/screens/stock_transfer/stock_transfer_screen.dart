@@ -188,6 +188,8 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
     final stockTransferCubit = StockTransferCubit.get(context);
     final homeCubit = HomeCubit.get(context);
 
+    print(homeCubit.location);
+
     return Scaffold(
       appBar: AppBar(
         title: const Text("Stock Transfer"),
@@ -223,49 +225,51 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              _buildDropdown(
-                title: "From Location",
-                hintText: homeCubit.location ?? '',
-                options: homeCubit.slicLocations
-                    .where(
-                        (element) => element.locationMaster?.lOCNNAME != null)
-                    .map((e) => e.locationMaster!.lOCNNAME.toString())
-                    .toSet()
-                    .toList(),
-                defaultValue: homeCubit.location,
-                onChanged: (value) {
-                  setState(() {
-                    homeCubit.fromLocation = value!;
-                    homeCubit.fromLocationCode = homeCubit.slicLocations
-                        .firstWhere((element) =>
-                            element.locationMaster!.lOCNNAME == value)
-                        .locationMaster!
-                        .lOCNCODE;
-                  });
-                },
-              ),
+              if (homeCubit.slicLocations.isNotEmpty)
+                _buildDropdown(
+                  title: "From Location",
+                  hintText: homeCubit.location ?? '',
+                  options: homeCubit.slicLocations
+                      .where(
+                          (element) => element.locationMaster?.lOCNNAME != null)
+                      .map((e) => e.locationMaster!.lOCNNAME.toString())
+                      .toSet()
+                      .toList(),
+                  defaultValue: homeCubit.location,
+                  onChanged: (value) {
+                    setState(() {
+                      homeCubit.fromLocation = value!;
+                      homeCubit.fromLocationCode = homeCubit.slicLocations
+                          .firstWhere((element) =>
+                              element.locationMaster!.lOCNNAME == value)
+                          .locationMaster!
+                          .lOCNCODE;
+                    });
+                  },
+                ),
               const SizedBox(height: 16),
-              _buildDropdown(
-                title: "To Location",
-                hintText: homeCubit.location ?? '',
-                options: homeCubit.slicLocations
-                    .where(
-                        (element) => element.locationMaster?.lOCNNAME != null)
-                    .map((e) => e.locationMaster!.lOCNNAME.toString())
-                    .toSet()
-                    .toList(),
-                defaultValue: homeCubit.location,
-                onChanged: (value) {
-                  setState(() {
-                    homeCubit.toLocation = value!;
-                    homeCubit.toLocationCode = homeCubit.slicLocations
-                        .firstWhere((element) =>
-                            element.locationMaster!.lOCNNAME == value)
-                        .locationMaster!
-                        .lOCNCODE;
-                  });
-                },
-              ),
+              if (homeCubit.slicLocations.isNotEmpty)
+                _buildDropdown(
+                  title: "To Location",
+                  hintText: homeCubit.location ?? '',
+                  options: homeCubit.slicLocations
+                      .where(
+                          (element) => element.locationMaster?.lOCNNAME != null)
+                      .map((e) => e.locationMaster!.lOCNNAME.toString())
+                      .toSet()
+                      .toList(),
+                  defaultValue: homeCubit.location,
+                  onChanged: (value) {
+                    setState(() {
+                      homeCubit.toLocation = value!;
+                      homeCubit.toLocationCode = homeCubit.slicLocations
+                          .firstWhere((element) =>
+                              element.locationMaster!.lOCNNAME == value)
+                          .locationMaster!
+                          .lOCNCODE;
+                    });
+                  },
+                ),
               const SizedBox(height: 16),
               Row(
                 children: [

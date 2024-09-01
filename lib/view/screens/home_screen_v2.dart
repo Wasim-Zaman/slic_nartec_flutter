@@ -4,6 +4,7 @@ import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
+import 'package:slic/utils/shared_storage.dart';
 import 'package:slic/view/screens/auth/login_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
@@ -104,6 +105,9 @@ class _HomeScreenState extends State<HomeScreen>
                                     element.companyMaster!.cOMPNAME == p0)
                                 .companyMaster!
                                 .cOMPCODE;
+                        SharedStorage.setCompany(p0.toString());
+                        SharedStorage.setCompanyCode(
+                            HomeCubit.get(context).companyCode.toString());
                       },
                     );
                   },
@@ -116,7 +120,7 @@ class _HomeScreenState extends State<HomeScreen>
                       items: HomeCubit.get(context)
                           .slicLocations
                           .where((element) =>
-                              element.locationMaster?.lOCNNAME != null)
+                              element.locationMaster?.lOCNCODE != null)
                           .map((e) => "${e.locationMaster!.lOCNCODE}")
                           .toSet()
                           .toList(),
@@ -129,6 +133,10 @@ class _HomeScreenState extends State<HomeScreen>
                                 element.locationMaster!.lOCNCODE == p0)
                             .locationMaster!
                             .lOCNNAME;
+
+                        SharedStorage.setLocation(
+                            HomeCubit.get(context).location.toString());
+                        SharedStorage.setLocationCode(p0.toString());
                       },
                     );
                   },

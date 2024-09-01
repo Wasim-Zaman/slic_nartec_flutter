@@ -35,7 +35,7 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void getSlicCompanies() async {
+  getSlicCompanies() async {
     emit(HomeGetSlicCompaniesLoading());
     try {
       slicCompanies = await ApiService.getSlicCompanies();
@@ -45,7 +45,7 @@ class HomeCubit extends Cubit<HomeState> {
     }
   }
 
-  void getSlicLocations() async {
+  getSlicLocations() async {
     emit(HomeGetSlicLocationsLoading());
     try {
       slicLocations = await ApiService.getSlicLocations();

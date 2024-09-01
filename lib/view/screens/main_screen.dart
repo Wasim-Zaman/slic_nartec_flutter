@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:slic/core/color_pallete.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
+import 'package:slic/utils/shared_storage.dart';
 import 'package:slic/view/screens/foreign_po/foreign_po_screen_v3.dart';
 import 'package:slic/view/screens/goods_issue/goods_issue_screen.dart';
+import 'package:slic/view/screens/home_screen_v2.dart';
 import 'package:slic/view/screens/sales_order/sales_order_screen_v3.dart';
 import 'package:slic/view/screens/sales_return/sales_return_invoice_screen.dart';
 import 'package:slic/view/screens/stock_transfer/stock_transfer_screen.dart';
@@ -25,6 +28,8 @@ class _MainScreenState extends State<MainScreen>
   @override
   void initState() {
     super.initState();
+    initLocalStorage();
+
     _controller = AnimationController(
       duration: const Duration(milliseconds: 500),
       vsync: this,
@@ -41,6 +46,11 @@ class _MainScreenState extends State<MainScreen>
     _controller.forward();
   }
 
+  void initLocalStorage() {
+    HomeCubit.get(context).location = SharedStorage.getLocation();
+    HomeCubit.get(context).company = SharedStorage.getCompany();
+  }
+
   @override
   void dispose() {
     _controller.dispose();
@@ -52,6 +62,41 @@ class _MainScreenState extends State<MainScreen>
     return Scaffold(
       appBar: AppBar(
         title: const Text('Main Screen'),
+        actions: [
+          TextButton(
+              onPressed: () {
+                // show logout dialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: const Text('Logout'),
+                      content: const Text('Are you sure you want to logout?'),
+                      actions: [
+                        ElevatedButton(
+                          onPressed: () {
+                            Navigator.of(context).pop();
+                          },
+                          child: const Text('Cancel'),
+                        ),
+                        ElevatedButton(
+                          onPressed: () {
+                            // logout logic
+                            SharedStorage.clear();
+                            Navigation.replace(context, const HomeScreen());
+                          },
+                          child: const Text('Logout'),
+                        ),
+                      ],
+                    );
+                  },
+                );
+              },
+              child: const Text(
+                "Log out",
+                style: TextStyle(color: Colors.white, fontSize: 18),
+              )),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

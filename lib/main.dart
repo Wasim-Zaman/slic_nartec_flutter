@@ -12,7 +12,7 @@ import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
 import 'package:slic/cubits/trx/trx_cubit.dart';
 import 'package:slic/utils/shared_storage.dart';
-import 'package:slic/view/screens/home_screen_v2.dart';
+import 'package:slic/view/screens/splash/splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -41,7 +41,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'SLIC',
         theme: AppTheme.theme,
-        home: const HomeScreen(),
+        home: const SplashScreen(),
       ),
     );
   }

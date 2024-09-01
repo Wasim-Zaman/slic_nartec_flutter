@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
+import 'package:slic/utils/shared_storage.dart';
 import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/main_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
@@ -55,7 +56,11 @@ class LoginScreen extends StatelessWidget {
             BlocConsumer<AuthCubit, AuthState>(
               listener: (context, state) {
                 if (state is AuthLoginSuccess) {
-                  Navigation.push(context, const MainScreen());
+                  SharedStorage.setEmail(
+                    AuthCubit.get(context).emailController.text.trim(),
+                  ).then((value) {
+                    Navigation.push(context, const MainScreen());
+                  });
                 } else if (state is AuthLoginError) {
                   CustomSnackbar.show(context: context, message: state.message);
                 }
