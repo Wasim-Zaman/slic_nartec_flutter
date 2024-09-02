@@ -74,47 +74,52 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
     String? toLocationCode,
   }) async {
     emit(GoodsIssuePostLoading());
-    final body = {
-      "_keyword_": "Production",
-      "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
-      "data": [
-        {
-          "Company": "SLIC",
-          // "FromLocation-Code": fromLocationCode.toString(),
-          // "ToLocation-Code": toLocationCode.toString(),
-          "UserId": "SYSADMIN",
-          "TransactionCode": transactionCode.toString(),
-          "LocationCode": fromLocationCode.toString(),
-          "UserID": "SYSADMIN",
-          "ProductionDate": date.text.toString(),
-          // "CustomerName": "ABC",
-          // "MobileNo": 805630,
-          // "Remarks": "good",
-          "Item": itemCodes
-              .map(
-                (e) => {
-                  "Item-Code": e.itemCode.toString(),
-                  // "Size": "${e.size}",
-                  "Size": "${e.productSize}",
-                  "Qty": "${e.itemQty}",
-                  "UserID": "SYSADMIN"
-                },
-              )
-              .toList(),
-        }
-      ],
-      "COMPANY": "SLIC",
-      "USERID": "SYSADMIN",
-      "APICODE": "PRODUCTIONWO",
-      "LANG": "ENG"
-    };
+    try {
+      final body = {
+        "_keyword_": "Production",
+        "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
+        "data": [
+          {
+            "Company": "SLIC",
+            // "FromLocation-Code": fromLocationCode.toString(),
+            // "ToLocation-Code": toLocationCode.toString(),
+            "UserId": "SYSADMIN",
+            "TransactionCode": transactionCode.toString(),
+            "LocationCode": fromLocationCode.toString(),
+            "UserID": "SYSADMIN",
+            "ProductionDate": date.text.toString(),
+            // "CustomerName": "ABC",
+            // "MobileNo": 805630,
+            // "Remarks": "good",
+            "Item": itemCodes
+                .map(
+                  (e) => {
+                    "Item-Code": e.itemCode.toString(),
+                    // "Size": "${e.size}",
+                    "Size": "${e.productSize}",
+                    "Qty": "${e.itemQty}",
+                    "UserID": "SYSADMIN"
+                  },
+                )
+                .toList(),
+          }
+        ],
+        "COMPANY": "SLIC",
+        "USERID": "SYSADMIN",
+        "APICODE": "PRODUCTIONWO",
+        "LANG": "ENG"
+      };
 
-    log(jsonEncode(body));
-    final response = await ApiService.slicPostData(body);
-    if (response['message'].isNotEmpty) {
-      emit(GoodsIssuePostError(errorMessage: response['message']));
-    } else {
-      emit(GoodsIssuePostSuccess(message: "Goods Issue posted successfully"));
+      log(jsonEncode(body));
+      final response = await ApiService.slicPostData(body);
+      if (response['message'].isNotEmpty) {
+        emit(GoodsIssuePostError(errorMessage: response['message']));
+      } else {
+        emit(GoodsIssuePostSuccess(message: "Goods Issue posted successfully"));
+      }
+    } catch (e) {
+      log(e.toString());
+      emit(GoodsIssuePostError(errorMessage: e.toString()));
     }
   }
 }

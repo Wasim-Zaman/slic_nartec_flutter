@@ -226,7 +226,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                 // },
                 onChanged: (value) {
                   setState(() {
-                    goodsIssueCubit.transactionCode = value!;
+                    goodsIssueCubit.transactionCode = value;
                   });
                 },
               ),
