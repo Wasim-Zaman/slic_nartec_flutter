@@ -112,9 +112,12 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
 
       log(jsonEncode(body));
       final response = await ApiService.slicPostData(body);
-      emit(GoodsIssuePostSuccess(message: response.toString()));
+      if (response['message'].isNotEmpty) {
+        emit(GoodsIssuePostError(errorMessage: response['message']));
+      } else {
+        emit(GoodsIssuePostSuccess(message: "Goods Issue posted successfully"));
+      }
     } catch (e) {
-      print(e);
       emit(GoodsIssuePostError(errorMessage: e.toString()));
     }
   }

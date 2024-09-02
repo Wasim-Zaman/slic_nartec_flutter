@@ -4,7 +4,6 @@ import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/utils/shared_storage.dart';
-import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/main_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
@@ -62,7 +61,10 @@ class LoginScreen extends StatelessWidget {
                     Navigation.push(context, const MainScreen());
                   });
                 } else if (state is AuthLoginError) {
-                  CustomSnackbar.show(context: context, message: state.message);
+                  showTopSnackBar(
+                    Overlay.of(context),
+                    CustomSnackBar.info(message: state.message),
+                  );
                 }
               },
               builder: (context, state) {

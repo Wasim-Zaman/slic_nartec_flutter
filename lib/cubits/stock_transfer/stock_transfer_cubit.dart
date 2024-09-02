@@ -78,9 +78,9 @@ class StockTransferCubit extends Cubit<StockTransferState> {
             "FromLocation-Code": fromLocationCode.toString(),
             "ToLocation-Code": toLocationCode.toString(),
             "UserId": "SYSADMIN",
-            "CustomerName": "ABC",
-            "MobileNo": 805630,
-            "Remarks": "good",
+            // "CustomerName": "ABC",
+            // "MobileNo": 805630,
+            // "Remarks": "good",
             "Item": itemCodes
                 .map(
                   (e) => {
@@ -101,9 +101,13 @@ class StockTransferCubit extends Cubit<StockTransferState> {
 
       log(jsonEncode(body));
       final response = await ApiService.slicPostData(body);
-      emit(StockTransferPostSuccess(message: response.toString()));
+      if (response["message"].isNotEmpty) {
+        emit(StockTransferPostError(errorMessage: response["message"]));
+      } else {
+        emit(
+            StockTransferPostSuccess(message: "Stock Transfered Successfully"));
+      }
     } catch (e) {
-      print(e);
       emit(StockTransferPostError(errorMessage: e.toString()));
     }
   }

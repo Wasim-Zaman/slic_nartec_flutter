@@ -1,4 +1,9 @@
 {
   //   "dart.flutterSdkPath": ".fvm/versions/3.22.3"
-"dart.flutterSdkPath": "/home/wasim/development/flutter"
+"dart.flutterSdkPath": "/home/wasim/development/flutter",
+"workbench.colorCustomizations": {
+    "activityBar.background": "#56103B",
+    "titleBar.activeBackground": "#781752",
+    "titleBar.activeForeground": "#FEFCFD"
+}
 }

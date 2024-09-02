@@ -5,11 +5,12 @@ import 'package:slic/cubits/goods_issue/goods_issue_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/item_code/item_code_cubit.dart';
 import 'package:slic/utils/navigation.dart';
-import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class GoodsIssueScreen extends StatefulWidget {
   const GoodsIssueScreen({super.key});
@@ -118,7 +119,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                       DataCell(Text(e.itemQty.toString())),
                       DataCell(
                         IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
+                          icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
                             setState(() {
                               ItemCodeCubit.get(context).itemCodes.remove(e);
@@ -380,15 +381,18 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                     listener: (context, state) {
                       if (state is GoodsIssuePostSuccess) {
                         // Handle success state
-                        CustomSnackbar.show(
-                          context: context,
-                          message: "Data saved successfully",
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          CustomSnackBar.success(message: state.message),
                         );
                         Navigation.pop(context);
+                      } else if (state is GoodsIssuePostError) {
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          CustomSnackBar.error(message: state.errorMessage),
+                        );
                       }
                     },
-                    buildWhen: (previous, current) =>
-                        current is GoodsIssuePostLoading,
                     builder: (context, state) {
                       if (state is GoodsIssuePostLoading) {
                         return const LoadingWidget();

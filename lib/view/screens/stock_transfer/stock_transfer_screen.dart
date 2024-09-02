@@ -5,11 +5,12 @@ import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/item_code/item_code_cubit.dart';
 import 'package:slic/cubits/stock_transfer/stock_transfer_cubit.dart';
 import 'package:slic/utils/navigation.dart';
-import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class StockTransferScreen extends StatefulWidget {
   const StockTransferScreen({super.key});
@@ -347,15 +348,18 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                     listener: (context, state) {
                       if (state is StockTransferPostSuccess) {
                         // Handle success state
-                        CustomSnackbar.show(
-                          context: context,
-                          message: "Stock transfer submitted ",
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          CustomSnackBar.success(message: state.message),
                         );
                         Navigation.pop(context);
+                      } else if (state is StockTransferPostError) {
+                        showTopSnackBar(
+                          Overlay.of(context),
+                          CustomSnackBar.error(message: state.errorMessage),
+                        );
                       }
                     },
-                    buildWhen: (previous, current) =>
-                        current is StockTransferPostLoading,
                     builder: (context, state) {
                       if (state is StockTransferPostLoading) {
                         return const LoadingWidget();

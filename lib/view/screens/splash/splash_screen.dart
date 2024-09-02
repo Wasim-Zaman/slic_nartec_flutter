@@ -2,6 +2,7 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/utils/shared_storage.dart';
@@ -19,7 +20,7 @@ class _SplashScreenState extends State<SplashScreen> {
   @override
   void initState() {
     super.initState();
-    Future.delayed(const Duration(seconds: 3), () async {
+    Future.delayed(const Duration(seconds: 2), () async {
       final email = SharedStorage.getEmail();
       if (email != null) {
         HomeCubit.get(context).location = SharedStorage.getLocation();
@@ -27,6 +28,7 @@ class _SplashScreenState extends State<SplashScreen> {
         HomeCubit.get(context).company = SharedStorage.getCompany();
         HomeCubit.get(context).companyCode = SharedStorage.getCompanyCode();
 
+        await AuthCubit.get(context).slicLogin();
         await HomeCubit.get(context).getSlicCompanies();
         await HomeCubit.get(context).getSlicLocations();
 
