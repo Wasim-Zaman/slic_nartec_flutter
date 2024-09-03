@@ -6,6 +6,7 @@ import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/cubits/trx/trx_cubit.dart';
 import 'package:slic/models/pos_invoice_model.dart';
+import 'package:slic/models/trx_codes_model.dart';
 import 'package:slic/view/screens/sales_return/selected_invoice_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
@@ -83,8 +84,17 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                 builder: (context, state) {
                   return _buildDropdown(
                     title: "Select Transaction Code",
-                    options: TrxCubit.get(context)
-                        .filteredTransactions
+                    options: [
+                      ...TrxCubit.get(context).filteredTransactions,
+                      ...[
+                        TrxCodesModel(
+                          tXNCODE: "DMIN",
+                        ),
+                        TrxCodesModel(tXNCODE: "LRIN"),
+                        TrxCodesModel(tXNCODE: "LYIN"),
+                        TrxCodesModel(tXNCODE: "LJIN"),
+                      ]
+                    ]
                         .where((element) => element.tXNCODE != null)
                         .map((e) => e.tXNCODE.toString())
                         .toSet()
@@ -101,7 +111,6 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                                 .listOfTransactionCod!
                                 .tXNCODE ??
                             '';
-                        // stockTransferCubit.getPOSInvoice();
                       });
                     },
                   );
