@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/line_item.dart';
 import 'package:slic/models/slic_line_item_model.dart';
@@ -106,80 +109,6 @@ class LineItemCubit extends Cubit<LineItemState> {
   void poToGRN(locationCode, {required List<SlicPOModel> selectedPOs}) async {
     emit(LineItemPOToGRNLoading());
     try {
-      // var body = {
-      //   "_keyword_": "purchaseorder",
-      //   "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
-      //   "data": [
-      //     {
-      //       "SessionId": DateTime.now().toIso8601String(),
-      //       "Company": "001",
-      //       "HeadSysId": selectedSysId.toString(),
-      //       "TransactionCode": "FPO",
-      //       "TransactionNo": "2017000002",
-      //       "LocationCode": locationCode.toString(),
-      //       "SystemId": "SYSADMIN",
-      //       "Item": slicLineItems
-      //           .map(
-      //             (e) => {
-      //               "SessionId": DateTime.now().toIso8601String(),
-      //               "HeadSysId": selectedSysId.toString(),
-      //               "ItemSysId": e.listOfPOItem?.iTEMSYSID,
-      //               "Item-Code": e.listOfPOItem?.iTEMCODE,
-      //               "ItemDescription": e.listOfPOItem?.iTEMNAME,
-      //               "Size": e.listOfPOItem?.gRADE,
-      //               "UnitCode": e.listOfPOItem?.uOM,
-      //               "ReceivedQty": e.listOfPOItem?.rECEIVEDQTY,
-      //               "SystemId": "SYSADMIN"
-      //             },
-      //           )
-      //           .toList(),
-      //     }
-      //   ],
-      //   "COMPANY": "SLIC",
-      //   "USERID": "SYSADMIN",
-      //   "APICODE": "POTOGRN",
-      //   "LANG": "ENG"
-      // };
-
-      // var body = {
-      //   "_keyword_": "purchaseorder",
-      //   "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
-      //   "data": selectedPOs
-      //       .map((e) => {
-      //             "SessionId": DateTime.now().toIso8601String(),
-      //             "Company": "SLIC",
-      //             "HeadSysId": selectedSysId.toString(),
-      //             "TransactionCode": "FPO",
-      //             "TransactionNo": "2017000002",
-      //             "LocationCode": locationCode.toString(),
-      //             "SystemId": "SYSADMIN",
-      //             "Item": slicLineItemsMap.isEmpty
-      //                 ? []
-      //                 : slicLineItemsMap[e.listOfPO?.hEADSYSID] == null
-      //                     ? []
-      //                     : slicLineItemsMap[e.listOfPO?.hEADSYSID]!
-      //                         .map(
-      //                           (e) => {
-      //                             "SessionId": DateTime.now().toIso8601String(),
-      //                             "HeadSysId": selectedSysId.toString(),
-      //                             "ItemSysId": e.listOfPOItem?.iTEMSYSID,
-      //                             "Item-Code": e.listOfPOItem?.iTEMCODE,
-      //                             "ItemDescription": e.listOfPOItem?.iTEMNAME,
-      //                             "Size": e.listOfPOItem?.gRADE,
-      //                             "UnitCode": e.listOfPOItem?.uOM,
-      //                             "ReceivedQty": e.listOfPOItem?.rECEIVEDQTY,
-      //                             "SystemId": "SYSADMIN"
-      //                           },
-      //                         )
-      //                         .toList(),
-      //           })
-      //       .toList(),
-      //   "COMPANY": "SLIC",
-      //   "USERID": "SYSADMIN",
-      //   "APICODE": "POTOGRN",
-      //   "LANG": "ENG"
-      // };
-
       final body = {
         "keyword": "purchaseorder",
         "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
@@ -223,10 +152,16 @@ class LineItemCubit extends Cubit<LineItemState> {
         "LANG": "ENG"
       };
 
+      log(jsonEncode(body));
+
       final res = await ApiService.slicPostData(body);
       // if message key exists in the response, then emit success state
-      if (res.containsKey('message')) {
-        emit(LineItemPOToGRNSuccess(res['message'].toString()));
+      if (res.containsKey('message') || res.containsKey('error')) {
+        if (res.containsKey('mesage')) {
+          emit(LineItemPOToGRNSuccess(res['message'].toString()));
+        } else {
+          emit(LineItemPOToGRNError(res['error'].toString()));
+        }
       } else {
         emit(LineItemPOToGRNError(res.toString()));
       }

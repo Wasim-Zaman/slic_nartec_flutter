@@ -81,21 +81,15 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
         "data": [
           {
             "Company": "SLIC",
-            // "FromLocation-Code": fromLocationCode.toString(),
-            // "ToLocation-Code": toLocationCode.toString(),
             "UserId": "SYSADMIN",
             "TransactionCode": transactionCode.toString(),
             "LocationCode": fromLocationCode.toString(),
             "UserID": "SYSADMIN",
             "ProductionDate": date.text.toString(),
-            // "CustomerName": "ABC",
-            // "MobileNo": 805630,
-            // "Remarks": "good",
             "Item": itemCodes
                 .map(
                   (e) => {
                     "Item-Code": e.itemCode.toString(),
-                    // "Size": "${e.size}",
                     "Size": "${e.productSize}",
                     "Qty": "${e.itemQty}",
                     "UserID": "SYSADMIN"

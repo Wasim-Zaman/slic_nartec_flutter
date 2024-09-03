@@ -7,10 +7,11 @@ import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/models/slic_po_model.dart';
 import 'package:slic/utils/navigation.dart';
-import 'package:slic/utils/snackbar.dart';
 import 'package:slic/view/screens/foreign_po/update_line_item_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
+import 'package:top_snackbar_flutter/custom_snack_bar.dart';
+import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
 class SelectedPoScreen extends StatefulWidget {
   const SelectedPoScreen({super.key});
@@ -90,29 +91,38 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                             BlocConsumer<LineItemCubit, LineItemState>(
                               listener: (context, state) {
                                 if (state is LineItemPOToGRNSuccess) {
-                                  showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: const Text(
-                                            "GRN submitted successfully",
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          content: Text(state.message),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text("OK"),
-                                            ),
-                                          ],
-                                        );
-                                      });
+                                  // showDialog(
+                                  //     context: context,
+                                  //     builder: (context) {
+                                  //       return AlertDialog(
+                                  //         title: const Text(
+                                  //           "GRN submitted successfully",
+                                  //           textAlign: TextAlign.center,
+                                  //         ),
+                                  //         content: Text(state.message),
+                                  //         actions: [
+                                  //           TextButton(
+                                  //             onPressed: () {
+                                  //               Navigator.of(context).pop();
+                                  //             },
+                                  //             child: const Text("OK"),
+                                  //           ),
+                                  //         ],
+                                  //       );
+                                  //     });
+                                  showTopSnackBar(
+                                    Overlay.of(context),
+                                    const CustomSnackBar.success(
+                                      message: "GRN submitted successfully",
+                                    ),
+                                  );
+                                  Navigation.pop(context);
                                 } else if (state is LineItemPOToGRNError) {
-                                  CustomSnackbar.show(
-                                    context: context,
-                                    message: state.message,
+                                  showTopSnackBar(
+                                    Overlay.of(context),
+                                    CustomSnackBar.error(
+                                      message: state.message,
+                                    ),
                                   );
                                 }
                               },
