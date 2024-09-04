@@ -4,7 +4,7 @@ import 'dart:developer';
 import 'package:http/http.dart' as http;
 
 class HttpService {
-  String _baseUrl = 'http://gs1ksa.org:8080/api';
+  String _baseUrl = 'http://gs1ksa.org:1100/api';
 
   HttpService();
 
