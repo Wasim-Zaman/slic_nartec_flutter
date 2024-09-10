@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/widgets.dart';
@@ -76,7 +75,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
     emit(GoodsIssuePostLoading());
     try {
       final bodyList = itemCodes
-          .map((e) => {
+          .map((e) => <String, Object>{
                 "Item-Code": e.itemCode.toString(),
                 "Size": "${e.productSize}",
                 "Qty": "${e.itemQty}",
@@ -88,14 +87,14 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
         "_keyword_": "Production",
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": [
-          {
+          <String, Object>{
             "Company": "SLIC",
             "UserId": "SYSADMIN",
             "TransactionCode": transactionCode.toString(),
             "LocationCode": fromLocationCode.toString(),
             "UserID": "SYSADMIN",
             "ProductionDate": date.text.toString(),
-            "Item": bodyList,
+            "item": bodyList,
           }
         ],
         "COMPANY": "SLIC",
@@ -104,14 +103,19 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
         "LANG": "ENG"
       };
 
-      log(jsonEncode(body));
-      final response = await ApiService.slicPostData(body);
-      if (response['message'].isNotEmpty) {
-        emit(GoodsIssuePostError(errorMessage: response['message']));
-      } else if (response['MESSAGE'].isNotEmpty) {
-        emit(GoodsIssuePostError(errorMessage: response['MESSAGE']));
+      final response = await ApiService.slicPostData(body) as Map;
+
+      if (bool.parse(response['success'])) {
+        emit(GoodsIssuePostSuccess(message: response['message'].toString()));
       } else {
-        emit(GoodsIssuePostSuccess(message: "Goods Issue posted successfully"));
+        if (response.containsKey("message") && response.containsKey("error")) {
+          emit(GoodsIssuePostError(
+              errorMessage: "${response['message']} ${response['error']}"));
+        } else if (response.containsKey("message")) {
+          emit(GoodsIssuePostError(errorMessage: response['message']));
+        } else if (response.containsKey("MESSAGE")) {
+          emit(GoodsIssuePostError(errorMessage: response['MESSAGE']));
+        }
       }
     } catch (e) {
       log(e.toString());

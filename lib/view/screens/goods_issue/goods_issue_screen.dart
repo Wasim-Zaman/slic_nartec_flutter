@@ -186,9 +186,6 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final homeCubit = HomeCubit.get(context);
-    final goodsIssueCubit = GoodsIssueCubit.get(context);
-
     return Scaffold(
       appBar: AppBar(
         title: const Text("Goods Issue"),
@@ -211,12 +208,12 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                 //     .toSet()
                 //     .toList(),
                 options: ['DPWO', 'SPWO', 'PWO'],
-                defaultValue: goodsIssueCubit.transactionCode,
-                // defaultValue: goodsIssueCubit.transactionName,
+                defaultValue: GoodsIssueCubit.get(context).transactionCode,
+                // defaultValue:   GoodsIssueCubit.get(context).transactionName,
                 // onChanged: (value) {
                 //   setState(() {
-                //     goodsIssueCubit.transactionName = value!;
-                //     goodsIssueCubit.transactionCode = goodsIssueCubit
+                //       GoodsIssueCubit.get(context).transactionName = value!;
+                //       GoodsIssueCubit.get(context).transactionCode =   GoodsIssueCubit.get(context)
                 //         .transactionCodes
                 //         .firstWhere((element) =>
                 //             element.listOfTransactionCod!.tXNNAME == value)
@@ -226,14 +223,15 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                 // },
                 onChanged: (value) {
                   setState(() {
-                    goodsIssueCubit.transactionCode = value;
+                    GoodsIssueCubit.get(context).transactionCode = value;
                   });
                 },
               ),
               const SizedBox(height: 16),
               _buildDropdown(
                 title: "Location Code",
-                options: homeCubit.slicLocations
+                options: HomeCubit.get(context)
+                    .slicLocations
                     .where((element) =>
                         element.locationMaster?.lOCNNAME != null &&
                         element.locationMaster!.lOCNCODE != null)
@@ -241,14 +239,16 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                         "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
                     .toSet()
                     .toList(),
-                // defaultValue: homeCubit.location,
-                defaultValue: homeCubit.fromLocation == null
+                // defaultValue:     HomeCubit.get(context).location,
+                defaultValue: HomeCubit.get(context).fromLocation == null
                     ? null
-                    : "${homeCubit.fromLocationCode!} -- ${homeCubit.fromLocation!}",
+                    : "${HomeCubit.get(context).fromLocationCode!} -- ${HomeCubit.get(context).fromLocation!}",
                 onChanged: (value) {
                   setState(() {
-                    homeCubit.fromLocationCode = value?.split(" -- ")[0];
-                    homeCubit.fromLocation = value?.split(" -- ")[1];
+                    HomeCubit.get(context).fromLocationCode =
+                        value?.split(" -- ")[0];
+                    HomeCubit.get(context).fromLocation =
+                        value?.split(" -- ")[1];
                   });
                 },
               ),
@@ -307,10 +307,11 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                   Expanded(
                     child: _buildTextField(
                       title: "Box Quantity",
-                      initialValue: goodsIssueCubit.boxQuantity.toString(),
+                      initialValue:
+                          GoodsIssueCubit.get(context).boxQuantity.toString(),
                       onChanged: (value) {
                         setState(() {
-                          goodsIssueCubit.boxQuantity =
+                          GoodsIssueCubit.get(context).boxQuantity =
                               int.tryParse(value) ?? 1;
                         });
                       },
