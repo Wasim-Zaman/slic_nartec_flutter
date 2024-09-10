@@ -24,8 +24,10 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   void getPOSInvoice() async {
     emit(SalesReturnPOSInvoiceLoading());
     try {
-      final response =
-          await ApiService.getPOSDetailsByInvoice(invoiceNumber, invoiceNumber);
+      final response = await ApiService.getPOSDetailsByInvoice(
+        invoiceNumber,
+        transactionCode,
+      );
 
       if (response.success) {
         invoices = response.data;
