@@ -33,14 +33,14 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
   }
 
   void _initializeData() async {
-    TrxCubit.get(context)
+    await TrxCubit.get(context)
         .getTrxByLocationCode(HomeCubit.get(context).locationCode);
-    final cubit = SalesReturnCubit.get(context);
-    await cubit.getTransactionCodes();
+    await SalesReturnCubit.get(context).getTransactionCodes();
+
     setState(() {});
   }
 
-  void _handleSubmit() {
+  void _onComplete() {
     FocusManager.instance.primaryFocus?.unfocus();
     SalesReturnCubit.get(context).getPOSInvoice();
   }
@@ -67,10 +67,9 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final stockTransferCubit = SalesReturnCubit.get(context);
     return Scaffold(
       appBar: AppBar(
-        title: const Text("Sales Return"),
+        title: const Text("Sales Return Invoice"),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -98,10 +97,10 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                         .map((e) => e.tXNCODE.toString())
                         .toSet()
                         .toList(),
-                    defaultValue: stockTransferCubit.transactionCode,
+                    defaultValue: SalesReturnCubit.get(context).transactionCode,
                     onChanged: (value) {
                       setState(() {
-                        stockTransferCubit.transactionCode = value;
+                        SalesReturnCubit.get(context).transactionCode = value;
                         // stockTransferCubit.transactionCode = stockTransferCubit
                         //         .transactionCodes
                         //         .firstWhere((element) =>
@@ -138,12 +137,12 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                                 SalesReturnCubit.get(context).invoiceNumber =
                                     value;
                               },
-                              onEditingComplete: _handleSubmit,
+                              onEditingComplete: _onComplete,
                             ),
                           ),
                           const SizedBox(width: 8),
                           IconButton(
-                            onPressed: _handleSubmit,
+                            onPressed: _onComplete,
                             icon: const Icon(Icons.search),
                           ),
                         ],
