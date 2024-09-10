@@ -102,11 +102,10 @@ class StockTransferCubit extends Cubit<StockTransferState> {
 
       log(jsonEncode(body));
       final response = await ApiService.slicPostData(body);
-      if (response["message"].isNotEmpty) {
-        emit(StockTransferPostError(errorMessage: response["message"]));
+      if (response['success'] == "true") {
+        emit(StockTransferPostSuccess(message: response["message"]));
       } else {
-        emit(
-            StockTransferPostSuccess(message: "Stock Transfered Successfully"));
+        emit(StockTransferPostError(errorMessage: response["error"]));
       }
     } catch (e) {
       emit(StockTransferPostError(errorMessage: e.toString()));

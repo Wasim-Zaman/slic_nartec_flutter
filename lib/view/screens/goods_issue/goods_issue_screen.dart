@@ -232,7 +232,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
               ),
               const SizedBox(height: 16),
               _buildDropdown(
-                title: "From Location",
+                title: "Location Code",
                 options: homeCubit.slicLocations
                     .where((element) =>
                         element.locationMaster?.lOCNNAME != null &&
@@ -252,28 +252,28 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                   });
                 },
               ),
-              const SizedBox(height: 16),
-              _buildDropdown(
-                title: "To Location",
-                options: homeCubit.slicLocations
-                    .where((element) =>
-                        element.locationMaster?.lOCNNAME != null &&
-                        element.locationMaster!.lOCNCODE != null)
-                    .map((e) =>
-                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
-                    .toSet()
-                    .toList(),
-                // defaultValue: homeCubit.location,
-                defaultValue: homeCubit.toLocation == null
-                    ? null
-                    : "${homeCubit.toLocationCode!} -- ${homeCubit.toLocation!}",
-                onChanged: (value) {
-                  setState(() {
-                    homeCubit.toLocationCode = value?.split(" -- ")[0];
-                    homeCubit.toLocation = value?.split(" -- ")[1];
-                  });
-                },
-              ),
+              // const SizedBox(height: 16),
+              // _buildDropdown(
+              //   title: "To Location",
+              //   options: homeCubit.slicLocations
+              //       .where((element) =>
+              //           element.locationMaster?.lOCNNAME != null &&
+              //           element.locationMaster!.lOCNCODE != null)
+              //       .map((e) =>
+              //           "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
+              //       .toSet()
+              //       .toList(),
+              //   // defaultValue: homeCubit.location,
+              //   defaultValue: homeCubit.toLocation == null
+              //       ? null
+              //       : "${homeCubit.toLocationCode!} -- ${homeCubit.toLocation!}",
+              //   onChanged: (value) {
+              //     setState(() {
+              //       homeCubit.toLocationCode = value?.split(" -- ")[0];
+              //       homeCubit.toLocation = value?.split(" -- ")[1];
+              //     });
+              //   },
+              // ),
               const SizedBox(height: 16),
               Row(
                 children: [
