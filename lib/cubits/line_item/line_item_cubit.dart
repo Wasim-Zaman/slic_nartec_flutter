@@ -109,43 +109,47 @@ class LineItemCubit extends Cubit<LineItemState> {
   void poToGRN(locationCode, {required List<SlicPOModel> selectedPOs}) async {
     emit(LineItemPOToGRNLoading());
     try {
+      final itemList = selectedPOs
+          .map(
+            (po) => <String, Object>{
+              "SessionId": DateTime.now().toIso8601String(),
+              "Company": "SLIC",
+              "HeadSysId": po.listOfPO!.hEADSYSID.toString(),
+              "TransactionCode": "FPO",
+              "TransactionNo": "2017000002",
+              "LocationCode": locationCode.toString(),
+              "SystemId": "SYSADMIN",
+              "Item": poLineItemsMap.isEmpty
+                  ? []
+                  : poLineItemsMap[po.listOfPO?.hEADSYSID] == null
+                      ? []
+                      : poLineItemsMap[po.listOfPO?.hEADSYSID]!
+                          .map(
+                            (lineItem) => {
+                              "SessionId": DateTime.now().toIso8601String(),
+                              "HeadSysId": po.listOfPO?.hEADSYSID.toString(),
+                              "ItemSysId":
+                                  lineItem.listOfPOItem?.iTEMSYSID.toString(),
+                              "Item-Code": lineItem.listOfPOItem?.iTEMCODE
+                                  .toString(), // Key with hyphen
+                              "ItemDescription":
+                                  lineItem.listOfPOItem?.iTEMNAME.toString(),
+                              "Size": lineItem.listOfPOItem?.gRADE.toString(),
+                              "UnitCode": lineItem.listOfPOItem?.uOM.toString(),
+                              "ReceivedQty":
+                                  lineItem.listOfPOItem?.rECEIVEDQTY.toString(),
+                              "SystemId": "SYSADMIN"
+                            },
+                          )
+                          .toList(),
+            },
+          )
+          .toList();
+
       final body = {
         "keyword": "purchaseorder",
         "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
-        "data": selectedPOs
-            .map(
-              (po) => {
-                "SessionId": DateTime.now().toIso8601String(),
-                "Company": "SLIC",
-                "HeadSysId": po.listOfPO?.hEADSYSID,
-                "TransactionCode": "FPO",
-                "TransactionNo": "2017000002",
-                "LocationCode": locationCode.toString(),
-                "SystemId": "SYSADMIN",
-                "Item": poLineItemsMap.isEmpty
-                    ? []
-                    : poLineItemsMap[po.listOfPO?.hEADSYSID] == null
-                        ? []
-                        : poLineItemsMap[po.listOfPO?.hEADSYSID]!
-                            .map(
-                              (lineItem) => {
-                                "SessionId": DateTime.now().toIso8601String(),
-                                "HeadSysId": po.listOfPO?.hEADSYSID,
-                                "ItemSysId": lineItem.listOfPOItem?.iTEMSYSID,
-                                "Item-Code": lineItem.listOfPOItem?.iTEMCODE,
-                                "ItemDescription":
-                                    lineItem.listOfPOItem?.iTEMNAME,
-                                "Size": lineItem.listOfPOItem?.gRADE,
-                                "UnitCode": lineItem.listOfPOItem?.uOM,
-                                "ReceivedQty":
-                                    lineItem.listOfPOItem?.rECEIVEDQTY,
-                                "SystemId": "SYSADMIN"
-                              },
-                            )
-                            .toList(),
-              },
-            )
-            .toList(),
+        "data": itemList,
         "COMPANY": "SLIC",
         "USERID": "SYSADMIN",
         "APICODE": "POTOGRN",
@@ -155,18 +159,26 @@ class LineItemCubit extends Cubit<LineItemState> {
       log(jsonEncode(body));
 
       final res = await ApiService.slicPostData(body);
+
       // if message key exists in the response, then emit success state
-      if (res.containsKey('message') || res.containsKey('error')) {
-        if (res.containsKey('mesage')) {
-          emit(LineItemPOToGRNSuccess(res['message'].toString()));
-        } else {
-          emit(LineItemPOToGRNError(res['error'].toString()));
-        }
+      if (res.containsKey('MESSAGE')) {
+        emit(LineItemPOToGRNSuccess(res['MESSAGE'].toString()));
       } else {
-        emit(LineItemPOToGRNError(res.toString()));
+        emit(LineItemPOToGRNError(res['error'].toString()));
       }
     } catch (error) {
       emit(LineItemPOToGRNError(error.toString()));
     }
+  }
+
+  clearAll() {
+    lineItems.clear();
+    poLineItemsMap.clear();
+    soLineItemsMap.clear();
+    poLineItems.clear();
+    soLineItems.clear();
+    selectedSysId = null;
+    counter.clear();
+    emit(LineItemInitial());
   }
 }

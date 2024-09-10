@@ -26,11 +26,12 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
   @override
   void initState() {
     super.initState();
-    LineItemCubit.get(context).poLineItems.clear();
-    LineItemCubit.get(context).selectedSysId = null;
-    LineItemCubit.get(context).counter.clear();
-    LineItemCubit.get(context).lineItems.clear();
-    LineItemCubit.get(context).poLineItemsMap.clear();
+    // LineItemCubit.get(context).poLineItems.clear();
+    // LineItemCubit.get(context).selectedSysId = null;
+    // LineItemCubit.get(context).counter.clear();
+    // LineItemCubit.get(context).lineItems.clear();
+    // LineItemCubit.get(context).poLineItemsMap.clear();
+    LineItemCubit.get(context).clearAll();
   }
 
   @override
@@ -116,6 +117,9 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                                       message: "GRN submitted successfully",
                                     ),
                                   );
+                                  LineItemCubit.get(context).clearAll();
+                                  ForeignPoCubit.get(context).clearAll();
+                                  Navigation.pop(context);
                                   Navigation.pop(context);
                                 } else if (state is LineItemPOToGRNError) {
                                   showTopSnackBar(

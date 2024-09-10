@@ -75,8 +75,8 @@ class StockTransferCubit extends Cubit<StockTransferState> {
           {
             "Company": "SLIC",
             "TransactionCode": transactionCode.toString(),
-            "FromLocation-Code": fromLocationCode.toString(),
-            "ToLocation-Code": toLocationCode.toString(),
+            "FromLocation-Code": "FG101",
+            "ToLocation-Code": "FG102",
             "UserId": "SYSADMIN",
             // "CustomerName": "ABC",
             // "MobileNo": 805630,

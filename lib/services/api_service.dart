@@ -276,15 +276,20 @@ class ApiService {
   }
 
   // * SLIC APIs Section ***
-  static Future<dynamic> slicPostData(var body) async {
+  static Future<dynamic> slicPostData(body) async {
     const endpoint = "/oneerpreport/api/postdata";
     final slicToken = SharedStorage.getSlicToken();
+
     final response =
         await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
-            .request(endpoint, method: "POST", data: body, headers: {
-      "Authorization": "Bearer $slicToken",
-      'Content-Type': 'application/json',
-    });
+            .request(endpoint,
+                method: "POST",
+                data: body,
+                headers: <String, String>{
+          "Authorization": "Bearer $slicToken",
+          "Content-Type": "application/json",
+          "Host": "slicuat05api.oneerpcloud.com",
+        });
     return response;
   }
 
@@ -295,7 +300,6 @@ class ApiService {
         await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
             .request(endpoint, method: "POST", data: body, headers: {
       "Authorization": "Bearer $slicToken",
-      'Content-Type': 'application/json',
     });
     return response;
   }

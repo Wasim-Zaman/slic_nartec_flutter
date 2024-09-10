@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:http/http.dart' as http;
+import 'package:nice_json/nice_json.dart';
 
 class HttpService {
   String _baseUrl = 'http://gs1ksa.org:1100/api';
@@ -22,7 +23,7 @@ class HttpService {
     try {
       switch (method.toUpperCase()) {
         case 'POST':
-          return await http.post(uri, headers: headers, body: jsonEncode(body));
+          return await http.post(uri, headers: headers, body: niceJson(body));
         case 'PUT':
           return await http.put(uri, headers: headers, body: jsonEncode(body));
         case 'DELETE':

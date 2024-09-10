@@ -231,7 +231,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               if (homeCubit.slicLocations.isNotEmpty)
                 _buildDropdown(
                   title: "From Location",
-                  hintText: homeCubit.location ?? '',
+                  hintText: "select location",
                   options: homeCubit.slicLocations
                       .where(
                           (element) => element.locationMaster?.lOCNNAME != null)
@@ -244,7 +244,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                       : "${homeCubit.locationCode}-${homeCubit.location}",
                   onChanged: (value) {
                     setState(() {
-                      homeCubit.fromLocation = value?.split("-")[1];
+                      homeCubit.fromLocation = value?.split("-")[1].toString();
                       homeCubit.fromLocationCode = homeCubit.slicLocations
                           .firstWhere((element) =>
                               element.locationMaster!.lOCNNAME ==

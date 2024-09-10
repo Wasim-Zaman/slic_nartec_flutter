@@ -47,7 +47,11 @@ class ForeignPoCubit extends Cubit<ForeignPoState> {
         return po.listOfPO!.sUPPNAME!
                 .toLowerCase()
                 .contains(query.toLowerCase()) ||
-            po.listOfPO!.hEADSYSID!.toLowerCase().contains(query.toLowerCase());
+            po.listOfPO!.hEADSYSID!
+                .toLowerCase()
+                .contains(query.toLowerCase()) ||
+            po.listOfPO!.dOCDT!.toLowerCase().contains(query.toLowerCase()) ||
+            po.listOfPO!.dOCNO!.toLowerCase().contains(query.toLowerCase());
       }).toList();
 
       // Emit the filtered data as a new state
@@ -106,5 +110,13 @@ class ForeignPoCubit extends Cubit<ForeignPoState> {
     } catch (error) {
       emit(ForeignPoGetItemCodeByItemSKUError(error.toString()));
     }
+  }
+
+  clearAll() {
+    // slicPOList.clear();
+    selectedPOList.clear();
+    selectedSysIds.clear();
+    data = null;
+    // emit(ForeignPoInitial());
   }
 }

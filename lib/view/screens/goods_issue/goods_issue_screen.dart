@@ -239,7 +239,8 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                     .map((e) => e.locationMaster!.lOCNNAME.toString())
                     .toSet()
                     .toList(),
-                defaultValue: homeCubit.location,
+                // defaultValue: homeCubit.location,
+                defaultValue: homeCubit.fromLocation,
                 onChanged: (value) {
                   setState(() {
                     homeCubit.fromLocation = value!;
@@ -260,7 +261,8 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                     .map((e) => e.locationMaster!.lOCNNAME.toString())
                     .toSet()
                     .toList(),
-                defaultValue: homeCubit.location,
+                // defaultValue: homeCubit.location,
+                defaultValue: homeCubit.toLocation,
                 onChanged: (value) {
                   setState(() {
                     homeCubit.toLocation = value!;

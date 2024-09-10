@@ -1,0 +1,43 @@
+{
+  "keyword": "purchaseorder",
+  "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
+  "data": [
+    {
+      "SessionId": "2024-09-10T10:19:10.877949",
+      "Company": "SLIC",
+      "HeadSysId": "5065323",
+      "TransactionCode": "FPO",
+      "TransactionNo": "2017000002",
+      "LocationCode": "RM101",
+      "SystemId": "SYSADMIN",
+      "Item": [
+        {
+          "SessionId": "2024-09-10T10:19:10.879922",
+          "HeadSysId": "5065323",
+          "ItemSysId": "13403098",
+          "Item-Code": "U59351L",
+          "ItemDescription": "Shoe Uppers with Toe Cap Fixed, HS Code 64069000",
+          "Size": "43",
+          "UnitCode": "PAIR",
+          "ReceivedQty": "1",
+          "SystemId": "SYSADMIN"
+        },
+        {
+          "SessionId": "2024-09-10T10:19:10.880262",
+          "HeadSysId": "5065323",
+          "ItemSysId": "13403096",
+          "Item-Code": "U5130S",
+          "ItemDescription": "Shoe upper - 3 eyelets tie shoes Style No. 5130S strobel pattern & strobel insole stitched to the upper",
+          "Size": "39",
+          "UnitCode": "PAIR",
+          "ReceivedQty": "1",
+          "SystemId": "SYSADMIN"
+        }
+      ]
+    }
+  ],
+  "COMPANY": "SLIC",
+  "USERID": "SYSADMIN",
+  "APICODE": "POTOGRN",
+  "LANG": "ENG"
+}

@@ -87,9 +87,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                     options: [
                       ...TrxCubit.get(context).filteredTransactions,
                       ...[
-                        TrxCodesModel(
-                          tXNCODE: "DMIN",
-                        ),
+                        TrxCodesModel(tXNCODE: "DMIN"),
                         TrxCodesModel(tXNCODE: "LRIN"),
                         TrxCodesModel(tXNCODE: "LYIN"),
                         TrxCodesModel(tXNCODE: "LJIN"),
