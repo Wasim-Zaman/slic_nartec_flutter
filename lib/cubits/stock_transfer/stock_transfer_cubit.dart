@@ -68,6 +68,16 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   }) async {
     emit(StockTransferPostLoading());
     try {
+      final item = itemCodes
+          .map(
+            (e) => {
+              "ItemCode": e.itemCode.toString(),
+              "Size": "${e.size}",
+              "Qty": "${e.itemQty}",
+              "UserId": "SYSADMIN"
+            },
+          )
+          .toList();
       final body = {
         "_keyword_": "LTO",
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
@@ -75,22 +85,13 @@ class StockTransferCubit extends Cubit<StockTransferState> {
           {
             "Company": "SLIC",
             "TransactionCode": transactionCode.toString(),
-            "FromLocation-Code": "FG101",
-            "ToLocation-Code": "FG102",
+            "FromLocation-Code": "$fromLocationCode",
+            "ToLocation-Code": "$toLocationCode",
             "UserId": "SYSADMIN",
             // "CustomerName": "ABC",
             // "MobileNo": 805630,
             // "Remarks": "good",
-            "Item": itemCodes
-                .map(
-                  (e) => {
-                    "ItemCode": e.itemCode.toString(),
-                    "Size": "${e.size}",
-                    "Qty": "${e.itemQty}",
-                    "UserId": "SYSADMIN"
-                  },
-                )
-                .toList(),
+            "Item": item,
           }
         ],
         "COMPANY": "SLIC",

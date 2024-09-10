@@ -75,6 +75,15 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
   }) async {
     emit(GoodsIssuePostLoading());
     try {
+      final bodyList = itemCodes
+          .map((e) => {
+                "Item-Code": e.itemCode.toString(),
+                "Size": "${e.productSize}",
+                "Qty": "${e.itemQty}",
+                "UserID": "SYSADMIN"
+              })
+          .toList();
+
       final body = {
         "_keyword_": "Production",
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
@@ -86,16 +95,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
             "LocationCode": fromLocationCode.toString(),
             "UserID": "SYSADMIN",
             "ProductionDate": date.text.toString(),
-            "Item": itemCodes
-                .map(
-                  (e) => {
-                    "Item-Code": e.itemCode.toString(),
-                    "Size": "${e.productSize}",
-                    "Qty": "${e.itemQty}",
-                    "UserID": "SYSADMIN"
-                  },
-                )
-                .toList(),
+            "Item": bodyList,
           }
         ],
         "COMPANY": "SLIC",
@@ -108,6 +108,8 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
       final response = await ApiService.slicPostData(body);
       if (response['message'].isNotEmpty) {
         emit(GoodsIssuePostError(errorMessage: response['message']));
+      } else if (response['MESSAGE'].isNotEmpty) {
+        emit(GoodsIssuePostError(errorMessage: response['MESSAGE']));
       } else {
         emit(GoodsIssuePostSuccess(message: "Goods Issue posted successfully"));
       }

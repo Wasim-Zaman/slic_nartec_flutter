@@ -300,6 +300,8 @@ class ApiService {
         await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
             .request(endpoint, method: "POST", data: body, headers: {
       "Authorization": "Bearer $slicToken",
+      "Content-Type": "application/json",
+      "Host": "slicuat05api.oneerpcloud.com",
     });
     return response;
   }

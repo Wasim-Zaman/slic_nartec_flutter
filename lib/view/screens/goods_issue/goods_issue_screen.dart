@@ -234,21 +234,21 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
               _buildDropdown(
                 title: "From Location",
                 options: homeCubit.slicLocations
-                    .where(
-                        (element) => element.locationMaster?.lOCNNAME != null)
-                    .map((e) => e.locationMaster!.lOCNNAME.toString())
+                    .where((element) =>
+                        element.locationMaster?.lOCNNAME != null &&
+                        element.locationMaster!.lOCNCODE != null)
+                    .map((e) =>
+                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
                     .toSet()
                     .toList(),
                 // defaultValue: homeCubit.location,
-                defaultValue: homeCubit.fromLocation,
+                defaultValue: homeCubit.fromLocation == null
+                    ? null
+                    : "${homeCubit.fromLocationCode!} -- ${homeCubit.fromLocation!}",
                 onChanged: (value) {
                   setState(() {
-                    homeCubit.fromLocation = value!;
-                    homeCubit.fromLocationCode = homeCubit.slicLocations
-                        .firstWhere((element) =>
-                            element.locationMaster!.lOCNNAME == value)
-                        .locationMaster!
-                        .lOCNCODE;
+                    homeCubit.fromLocationCode = value?.split(" -- ")[0];
+                    homeCubit.fromLocation = value?.split(" -- ")[1];
                   });
                 },
               ),
@@ -256,21 +256,21 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
               _buildDropdown(
                 title: "To Location",
                 options: homeCubit.slicLocations
-                    .where(
-                        (element) => element.locationMaster?.lOCNNAME != null)
-                    .map((e) => e.locationMaster!.lOCNNAME.toString())
+                    .where((element) =>
+                        element.locationMaster?.lOCNNAME != null &&
+                        element.locationMaster!.lOCNCODE != null)
+                    .map((e) =>
+                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
                     .toSet()
                     .toList(),
                 // defaultValue: homeCubit.location,
-                defaultValue: homeCubit.toLocation,
+                defaultValue: homeCubit.toLocation == null
+                    ? null
+                    : "${homeCubit.toLocationCode!} -- ${homeCubit.toLocation!}",
                 onChanged: (value) {
                   setState(() {
-                    homeCubit.toLocation = value!;
-                    homeCubit.toLocationCode = homeCubit.slicLocations
-                        .firstWhere((element) =>
-                            element.locationMaster!.lOCNNAME == value)
-                        .locationMaster!
-                        .lOCNCODE;
+                    homeCubit.toLocationCode = value?.split(" -- ")[0];
+                    homeCubit.toLocation = value?.split(" -- ")[1];
                   });
                 },
               ),

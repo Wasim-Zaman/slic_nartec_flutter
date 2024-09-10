@@ -7,6 +7,7 @@ import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/cubits/trx/trx_cubit.dart';
 import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/models/trx_codes_model.dart';
+import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/screens/sales_return/selected_invoice_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
@@ -93,22 +94,23 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                         TrxCodesModel(tXNCODE: "LJIN"),
                       ]
                     ]
-                        .where((element) => element.tXNCODE != null)
+                        .where((element) =>
+                            element.tXNCODE != null || element.tXNNAME != null)
                         .map((e) => e.tXNCODE.toString())
                         .toSet()
                         .toList(),
                     defaultValue: stockTransferCubit.transactionCode,
                     onChanged: (value) {
                       setState(() {
-                        stockTransferCubit.transactionName = value!;
-                        stockTransferCubit.transactionCode = stockTransferCubit
-                                .transactionCodes
-                                .firstWhere((element) =>
-                                    element.listOfTransactionCod!.tXNNAME ==
-                                    value)
-                                .listOfTransactionCod!
-                                .tXNCODE ??
-                            '';
+                        stockTransferCubit.transactionCode = value;
+                        // stockTransferCubit.transactionCode = stockTransferCubit
+                        //         .transactionCodes
+                        //         .firstWhere((element) =>
+                        //             element.listOfTransactionCod!.tXNNAME ==
+                        //             value)
+                        //         .listOfTransactionCod!
+                        //         .tXNCODE ??
+                        //     '';
                       });
                     },
                   );
@@ -122,6 +124,14 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                       Overlay.of(context),
                       CustomSnackBar.error(message: state.errorMessage),
                     );
+                  } else if (state is SalesReturnPOSInvoiceSuccess) {
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      CustomSnackBar.success(
+                        message: "Invoice found successfully",
+                      ),
+                    );
+                    Navigation.pop(context);
                   }
                 },
                 builder: (context, state) {
