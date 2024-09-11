@@ -92,35 +92,47 @@ class _SelectedPoScreenState extends State<SelectedPoScreen> {
                             BlocConsumer<LineItemCubit, LineItemState>(
                               listener: (context, state) {
                                 if (state is LineItemPOToGRNSuccess) {
-                                  // showDialog(
-                                  //     context: context,
-                                  //     builder: (context) {
-                                  //       return AlertDialog(
-                                  //         title: const Text(
-                                  //           "GRN submitted successfully",
-                                  //           textAlign: TextAlign.center,
-                                  //         ),
-                                  //         content: Text(state.message),
-                                  //         actions: [
-                                  //           TextButton(
-                                  //             onPressed: () {
-                                  //               Navigator.of(context).pop();
-                                  //             },
-                                  //             child: const Text("OK"),
-                                  //           ),
-                                  //         ],
-                                  //       );
-                                  //     });
-                                  showTopSnackBar(
-                                    Overlay.of(context),
-                                    const CustomSnackBar.success(
-                                      message: "GRN submitted successfully",
-                                    ),
+                                  showDialog(
+                                    context: context,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                          state
+                                              .message, // Display the message from the state
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(state
+                                                .message), // Display the main message
+                                            ...[
+                                              const SizedBox(height: 16),
+                                              if (state.grnSysId != null)
+                                                Text(
+                                                    "GRN System ID: ${state.grnSysId}"), // Display GRN System ID if not null
+                                              if (state.grnDocNo != null)
+                                                Text(
+                                                    "GRN Document No: ${state.grnDocNo}"), // Display GRN Document No if not null
+                                            ],
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigation.pop(context);
+                                              Navigation.pop(context);
+                                              Navigation.pop(context);
+                                            },
+                                            child: const Text("OK"),
+                                          ),
+                                        ],
+                                      );
+                                    },
                                   );
+
                                   LineItemCubit.get(context).clearAll();
                                   ForeignPoCubit.get(context).clearAll();
-                                  Navigation.pop(context);
-                                  Navigation.pop(context);
                                 } else if (state is LineItemPOToGRNError) {
                                   showTopSnackBar(
                                     Overlay.of(context),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/models/sales_order_model.dart';
@@ -26,7 +27,8 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
   @override
   void initState() {
     super.initState();
-    SalesOrderCubit.get(context).getSlicSalesOrder();
+    SalesOrderCubit.get(context)
+        .getSlicSalesOrder("${HomeCubit.get(context).locationCode}");
     LineItemCubit.get(context).lineItems.clear();
     LineItemCubit.get(context).poLineItemsMap.clear();
     ForeignPoCubit.get(context).selectedPOList.clear();
@@ -62,12 +64,21 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
                 color: ColorPallete.background,
                 child: BlocConsumer<SalesOrderCubit, SalesOrderState>(
                   listener: (context, state) {
-                    if (state is ForeignPoGetSuccess) {
-                      // context.read<ForeignPoCubit>().models = state.res.data;
+                    if (state is SalesOrderSlicSOSuccess) {
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        const CustomSnackBar.success(
+                            message: "Sales Orders Loaded"),
+                      );
+                    } else if (state is SalesOrderSlicSOError) {
+                      showTopSnackBar(
+                        Overlay.of(context),
+                        CustomSnackBar.error(message: state.message),
+                      );
                     }
                   },
                   builder: (context, state) {
-                    if (state is SalesOrderGetAllLoading) {
+                    if (state is SalesOrderSlicSOLoading) {
                       return const LoadingWidget();
                     } else if (state is SalesOrderGetAllFilteredSuccess) {
                       return _buildDataTable(

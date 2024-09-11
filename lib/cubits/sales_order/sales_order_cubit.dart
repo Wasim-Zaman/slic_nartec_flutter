@@ -67,12 +67,12 @@ class SalesOrderCubit extends Cubit<SalesOrderState> {
     emit(SalesOrderGetAllFilteredSuccess());
   }
 
-  void getSlicSalesOrder() async {
+  void getSlicSalesOrder(String locCode) async {
     try {
-      emit(SalesOrderGetAllLoading());
+      emit(SalesOrderSlicSOLoading());
 
-      const body = {
-        "filter": {"P_SOH_DEL_LOCN_CODE": "FG102"},
+      final body = {
+        "filter": {"P_SOH_DEL_LOCN_CODE": locCode},
         "M_COMP_CODE": "SLIC",
         "M_USER_ID": "SYSADMIN",
         "APICODE": "ListOfSO",
@@ -81,9 +81,14 @@ class SalesOrderCubit extends Cubit<SalesOrderState> {
 
       final res = await ApiService.slicGetData(body);
       res.forEach((so) => salesOrders.add(SalesOrderModel.fromJson(so)));
-      emit(SalesOrderGetAllSuccess());
+      if (salesOrders.isEmpty) {
+        emit(SalesOrderSlicSOError(
+            'No sales orders found for Loc Code "$locCode"'));
+      } else {
+        emit(SalesOrderSlicSOSuccess());
+      }
     } catch (error) {
-      emit(SalesOrderGetAllError(error.toString()));
+      emit(SalesOrderSlicSOError(error.toString()));
     }
   }
 }

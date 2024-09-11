@@ -20,8 +20,9 @@ class LineItemGetBySysIdsSuccess extends LineItemState {}
 
 class LineItemPOToGRNSuccess extends LineItemState {
   final String message;
+  final String? grnSysId, grnDocNo;
 
-  LineItemPOToGRNSuccess(this.message);
+  LineItemPOToGRNSuccess(this.message, this.grnSysId, this.grnDocNo);
 }
 
 // ! Error

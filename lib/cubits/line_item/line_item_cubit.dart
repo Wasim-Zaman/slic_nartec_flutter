@@ -158,11 +158,16 @@ class LineItemCubit extends Cubit<LineItemState> {
 
       log(jsonEncode(body));
 
-      final res = await ApiService.slicPostData(body);
+      final res = await ApiService.slicPostData(body) as Map;
 
-      // if message key exists in the response, then emit success state
-      if (res.containsKey('MESSAGE')) {
-        emit(LineItemPOToGRNSuccess(res['MESSAGE'].toString()));
+      if (res.containsKey("error")) {
+        emit(LineItemPOToGRNError(res['error'].toString()));
+      } else if (res.containsKey("MESSAGE") && res.containsKey("GRN_DOC_NO")) {
+        emit(LineItemPOToGRNSuccess(
+          res["MESSAGE"],
+          res["GRN_SYS_ID"],
+          res["GRN_DOC_NO"],
+        ));
       } else {
         emit(LineItemPOToGRNError(res['error'].toString()));
       }
