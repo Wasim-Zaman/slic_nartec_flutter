@@ -2,11 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/models/sales_order_model.dart';
 import 'package:slic/models/so_line_item_model.dart';
-import 'package:slic/utils/snackbar.dart';
+import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
@@ -25,11 +26,11 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
   @override
   void initState() {
     super.initState();
-    LineItemCubit.get(context).poLineItems.clear();
+    LineItemCubit.get(context).soLineItems.clear();
     LineItemCubit.get(context).selectedSysId = null;
     LineItemCubit.get(context).counter.clear();
     LineItemCubit.get(context).lineItems.clear();
-    LineItemCubit.get(context).poLineItemsMap.clear();
+    LineItemCubit.get(context).soLineItemsMap.clear();
   }
 
   @override
@@ -89,51 +90,69 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
                             ),
                             BlocConsumer<LineItemCubit, LineItemState>(
                               listener: (context, state) {
-                                if (state is LineItemPOToGRNSuccess) {
+                                if (state is LineItemSOToGRNSuccess) {
                                   showDialog(
-                                      context: context,
-                                      builder: (context) {
-                                        return AlertDialog(
-                                          title: const Text(
-                                            "GRN submitted successfully",
-                                            textAlign: TextAlign.center,
-                                          ),
-                                          content: Text(state.message),
-                                          actions: [
-                                            TextButton(
-                                              onPressed: () {
-                                                Navigator.of(context).pop();
-                                              },
-                                              child: const Text("OK"),
-                                            ),
-                                          ],
-                                        );
-                                      });
-                                } else if (state is LineItemPOToGRNError) {
-                                  CustomSnackbar.show(
                                     context: context,
-                                    message: state.message,
+                                    builder: (context) {
+                                      return AlertDialog(
+                                        title: Text(
+                                          state
+                                              .message, // Display the message from the state
+                                          textAlign: TextAlign.center,
+                                        ),
+                                        content: Column(
+                                          mainAxisSize: MainAxisSize.min,
+                                          children: [
+                                            Text(state
+                                                .message), // Display the main message
+                                            ...[
+                                              const SizedBox(height: 16),
+                                              if (state.grnSysId != null)
+                                                Text(
+                                                    "GRN System ID: ${state.grnSysId}"), // Display GRN System ID if not null
+                                              if (state.grnDocNo != null)
+                                                Text(
+                                                    "GRN Document No: ${state.grnDocNo}"), // Display GRN Document No if not null
+                                            ],
+                                          ],
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed: () {
+                                              Navigation.pop(context);
+                                              Navigation.pop(context);
+                                              Navigation.pop(context);
+                                            },
+                                            child: const Text("OK"),
+                                          ),
+                                        ],
+                                      );
+                                    },
+                                  );
+
+                                  LineItemCubit.get(context).clearAll();
+                                  SalesOrderCubit.get(context).clearAll();
+                                } else if (state is LineItemSOToGRNError) {
+                                  showTopSnackBar(
+                                    Overlay.of(context),
+                                    CustomSnackBar.error(
+                                      message: state.message,
+                                    ),
                                   );
                                 }
                               },
                               builder: (context, state) {
-                                if (state is LineItemPOToGRNLoading) {
+                                if (state is LineItemSOToGRNLoading) {
                                   return const LoadingWidget();
                                 }
                                 return AppButton(
                                   text: "Submit GRN",
                                   onPressed: () {
-                                    showTopSnackBar(
-                                      Overlay.of(context),
-                                      const CustomSnackBar.info(
-                                        message: "Required API is not provided",
-                                      ),
+                                    LineItemCubit.get(context).soToGRN(
+                                      HomeCubit.get(context).locationCode,
+                                      selectedSOs: SalesOrderCubit.get(context)
+                                          .selectedSalesOrder,
                                     );
-                                    // LineItemCubit.get(context).poToGRN(
-                                    //   HomeCubit.get(context).locationCode,
-                                    //   selectedPOs: ForeignPoCubit.get(context)
-                                    //       .selectedPOList,
-                                    // );
                                   },
                                 );
                               },

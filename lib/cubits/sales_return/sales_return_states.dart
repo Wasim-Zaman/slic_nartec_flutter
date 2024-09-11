@@ -11,6 +11,8 @@ final class SalesReturnPOSInvoiceLoading extends SalesReturnState {}
 
 final class SalesReturnUpdateTempLoading extends SalesReturnState {}
 
+final class SalesReturnSaveInvoiceLoading extends SalesReturnState {}
+
 //* Success
 
 final class SalesReturnTransactionCodesSuccess extends SalesReturnState {}
@@ -20,6 +22,11 @@ final class SalesReturnPOSInvoiceSuccess extends SalesReturnState {}
 final class SalesReturnUpdateTempSuccess extends SalesReturnState {
   final String successMessage;
   SalesReturnUpdateTempSuccess({required this.successMessage});
+}
+
+final class SalesReturnSaveInvoiceSuccess extends SalesReturnState {
+  final String successMessage;
+  SalesReturnSaveInvoiceSuccess({required this.successMessage});
 }
 
 //! Error
@@ -40,4 +47,10 @@ final class SalesReturnUpdateTempError extends SalesReturnState {
   final String errorMessage;
 
   SalesReturnUpdateTempError({required this.errorMessage});
+}
+
+final class SalesReturnSaveInvoiceError extends SalesReturnState {
+  final String errorMessage;
+
+  SalesReturnSaveInvoiceError({required this.errorMessage});
 }

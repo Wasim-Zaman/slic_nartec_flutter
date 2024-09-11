@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/line_item.dart';
+import 'package:slic/models/sales_order_model.dart';
 import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/models/slic_po_model.dart';
 import 'package:slic/models/so_line_item_model.dart';
@@ -173,6 +174,79 @@ class LineItemCubit extends Cubit<LineItemState> {
       }
     } catch (error) {
       emit(LineItemPOToGRNError(error.toString()));
+    }
+  }
+
+  void soToGRN(locationCode,
+      {required List<SalesOrderModel> selectedSOs}) async {
+    emit(LineItemSOToGRNLoading());
+    try {
+      final itemList = selectedSOs
+          .map(
+            (po) => <String, Object>{
+              "SessionId": DateTime.now().toIso8601String(),
+              "Company": "SLIC",
+              "HeadSysId": po.listOfSO!.hEADSYSID.toString(),
+              "TransactionCode": "ARCO",
+              "TransactionNo": "211",
+              "LocationCode": locationCode.toString(),
+              "SystemId": "SYSADMIN",
+              "ZATCAPaymentMode": "1",
+              "TaxExemptionReason": "",
+              "Item": soLineItemsMap.isEmpty
+                  ? []
+                  : soLineItemsMap[po.listOfSO?.hEADSYSID] == null
+                      ? []
+                      : soLineItemsMap[po.listOfSO?.hEADSYSID]!
+                          .map(
+                            (lineItem) => {
+                              "SessionId": DateTime.now().toIso8601String(),
+                              "HeadSysId": po.listOfSO?.hEADSYSID.toString(),
+                              "ItemSysId":
+                                  lineItem.listOfSOItem?.iTEMSYSID.toString(),
+                              "Item-Code": lineItem.listOfSOItem?.iTEMCODE
+                                  .toString(), // Key with hyphen
+                              "ItemDescription":
+                                  lineItem.listOfSOItem?.iTEMNAME.toString(),
+                              "Size": lineItem.listOfSOItem?.gRADE.toString(),
+                              "UnitCode": lineItem.listOfSOItem?.uOM.toString(),
+                              "ReceivedQty":
+                                  lineItem.listOfSOItem?.iNVQTY.toString(),
+                              "SystemId": "SYSADMIN"
+                            },
+                          )
+                          .toList(),
+            },
+          )
+          .toList();
+
+      final body = {
+        "_keyword_": "SOToInvoice",
+        "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
+        "data": itemList,
+        "COMPANY": "SLIC",
+        "USERID": "SYSADMIN",
+        "APICODE": "SOTOINV",
+        "LANG": "ENG"
+      };
+
+      log(jsonEncode(body));
+
+      final res = await ApiService.slicPostData(body) as Map;
+
+      if (res.containsKey("error")) {
+        emit(LineItemSOToGRNError(res['error'].toString()));
+      } else if (res.containsKey("MESSAGE") && res.containsKey("GRN_DOC_NO")) {
+        emit(LineItemSOToGRNSuccess(
+          res["MESSAGE"],
+          res["GRN_SYS_ID"],
+          res["GRN_DOC_NO"],
+        ));
+      } else {
+        emit(LineItemSOToGRNError(res['error'].toString()));
+      }
+    } catch (error) {
+      emit(LineItemSOToGRNError(error.toString()));
     }
   }
 

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
-import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
 import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
@@ -30,8 +29,9 @@ class _SalesOrderScreenState extends State<SalesOrderScreen> {
     SalesOrderCubit.get(context)
         .getSlicSalesOrder("${HomeCubit.get(context).locationCode}");
     LineItemCubit.get(context).lineItems.clear();
-    LineItemCubit.get(context).poLineItemsMap.clear();
-    ForeignPoCubit.get(context).selectedPOList.clear();
+    LineItemCubit.get(context).soLineItemsMap.clear();
+    SalesOrderCubit.get(context).selectedSalesOrder.clear();
+    SalesOrderCubit.get(context).salesOrderList.clear();
   }
 
   @override

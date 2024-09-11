@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:slic/models/invoice_header_and_details_model.dart';
 import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
@@ -14,6 +15,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   // Lists
   List<TransactionCodeModel> transactionCodes = [];
   List<POSInvoiceModel> invoices = [];
+  InvoiceHeaderAndDetailsModel? invoiceDetails;
 
   // Selected values
   String? transactionName;
@@ -31,6 +33,22 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
 
       if (response.success) {
         invoices = response.data;
+        emit(SalesReturnPOSInvoiceSuccess());
+      } else {
+        emit(SalesReturnPOSInvoiceError(errorMessage: response.message));
+      }
+    } catch (error) {
+      emit(SalesReturnPOSInvoiceError(errorMessage: error.toString()));
+    }
+  }
+
+  void getInvoiceHeadersAndDetails() async {
+    emit(SalesReturnPOSInvoiceLoading());
+    try {
+      final response = await ApiService.getInvoiceHeaderDetails(invoiceNumber);
+
+      if (response.success) {
+        invoiceDetails = response.data;
         emit(SalesReturnPOSInvoiceSuccess());
       } else {
         emit(SalesReturnPOSInvoiceError(errorMessage: response.message));
@@ -74,6 +92,55 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
       }
     } catch (error) {
       emit(SalesReturnUpdateTempError(errorMessage: error.toString()));
+    }
+  }
+
+  saveSalesInvoice() async {
+    try {
+      emit(SalesReturnSaveInvoiceLoading());
+
+      final data = [
+        {
+          "SessionId": "102202216451",
+          "Company": "SLIC",
+          "HeadSysId": "${invoiceDetails?.invoiceHeader?.headSYSID}",
+          "TransactionCode": "$transactionCode",
+          "TransactionNo": "${invoiceDetails?.invoiceHeader?.invoiceNo}",
+          "DeliveryLocationCode":
+              "${invoiceDetails?.invoiceHeader?.deliveryLocationCode}",
+          "SystemId": "SYSADMIN",
+          "ZATCAPaymentMode": "1",
+          "TaxExemptionReason": "",
+          "Item": invoiceDetails?.invoiceDetails
+              ?.map((details) => {
+                    "SessionId": "102202216451",
+                    "HeadSysId": "${details.headSYSID}",
+                    "ItemSysId": "${details.itemSysID}",
+                    "Item-Code": "${details.itemSKU}",
+                    "ItemDescription": "${details.itemSKU}",
+                    "Size": "${details.itemSize}",
+                    "UnitCode": "${details.itemUnit}",
+                    "ReceivedQty": "${details.itemQry}",
+                    "SystemId": "SYSADMIN"
+                  })
+              .toList(),
+        }
+      ];
+      final body = {
+        "_keyword_": "InvoiceToSR",
+        "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
+        "data": data,
+        "COMPANY": "SLIC",
+        "USERID": "SYSADMIN",
+        "APICODE": "InvoiceToSR",
+        "LANG": "ENG"
+      };
+      final response = await ApiService.slicPostData(body) as Map;
+
+      emit(SalesReturnSaveInvoiceSuccess(successMessage: response['message']));
+      // emit(SalesReturnSaveInvoiceError(errorMessage: response.message));
+    } catch (error) {
+      emit(SalesReturnSaveInvoiceError(errorMessage: error.toString()));
     }
   }
 }

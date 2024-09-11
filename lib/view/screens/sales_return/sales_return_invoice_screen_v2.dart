@@ -5,9 +5,10 @@ import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/cubits/trx/trx_cubit.dart';
-import 'package:slic/models/pos_invoice_model.dart';
+import 'package:slic/models/invoice_header_and_details_model.dart';
 import 'package:slic/models/trx_codes_model.dart';
-import 'package:slic/view/screens/sales_return/selected_invoice_screen.dart';
+import 'package:slic/utils/navigation.dart';
+import 'package:slic/view/screens/sales_return/selected_invoice_screen_v2.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
@@ -42,7 +43,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
 
   void _onComplete() {
     FocusManager.instance.primaryFocus?.unfocus();
-    SalesReturnCubit.get(context).getPOSInvoice();
+    SalesReturnCubit.get(context).getInvoiceHeadersAndDetails();
   }
 
   Widget _buildDropdown({
@@ -116,6 +117,8 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
               ),
               const SizedBox(height: 16),
               BlocConsumer<SalesReturnCubit, SalesReturnState>(
+                buildWhen: (previous, current) =>
+                    previous is SalesReturnPOSInvoiceLoading,
                 listener: (context, state) {
                   if (state is SalesReturnPOSInvoiceError) {
                     showTopSnackBar(
@@ -151,24 +154,60 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                       if (state is SalesReturnPOSInvoiceLoading)
                         const LoadingWidget(),
                       if (state is SalesReturnPOSInvoiceSuccess)
-                        _buildInvoiceTable(
-                          SalesReturnCubit.get(context).invoices,
-                        ),
+                        if (SalesReturnCubit.get(context)
+                                .invoiceDetails
+                                ?.invoiceDetails !=
+                            null)
+                          _buildInvoiceTable(
+                            SalesReturnCubit.get(context)
+                                .invoiceDetails!
+                                .invoiceDetails!
+                                .where(
+                                  (element) =>
+                                      element.transactionCode ==
+                                      SalesReturnCubit.get(context)
+                                          .transactionCode,
+                                )
+                                .toList(),
+                          ),
                     ],
                   );
                 },
               ),
               const SizedBox(height: 16),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  AppButton(
-                    text: "Save & Submit",
-                    onPressed: () {
-                      SalesReturnCubit.get(context);
-                    },
-                  ),
-                ],
+              BlocConsumer<SalesReturnCubit, SalesReturnState>(
+                listener: (context, state) {
+                  if (state is SalesReturnSaveInvoiceSuccess) {
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      CustomSnackBar.success(message: state.successMessage),
+                    );
+                    Navigation.pop(context);
+                  } else if (state is SalesReturnSaveInvoiceError) {
+                    showTopSnackBar(
+                      Overlay.of(context),
+                      CustomSnackBar.error(message: state.errorMessage),
+                    );
+                  }
+                },
+                builder: (context, state) {
+                  return Row(
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      state is SalesReturnSaveInvoiceLoading
+                          ? const LoadingWidget()
+                          : AppButton(
+                              text: "Save & Submit",
+                              onPressed: () {
+                                // unfocus keyboard
+                                FocusManager.instance.primaryFocus?.unfocus();
+                                SalesReturnCubit.get(context)
+                                    .saveSalesInvoice();
+                              },
+                            ),
+                    ],
+                  );
+                },
               ),
             ],
           ),
@@ -177,7 +216,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
     );
   }
 
-  Widget _buildInvoiceTable(List<POSInvoiceModel> data) {
+  Widget _buildInvoiceTable(List<InvoiceDetails> data) {
     final dataSource = InvoiceDataSource(data, context);
 
     return Container(
@@ -204,84 +243,52 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
 }
 
 class InvoiceDataSource extends DataTableSource {
-  final List<POSInvoiceModel> _data;
+  final List<InvoiceDetails> _data;
   final BuildContext context;
 
   InvoiceDataSource(this._data, this.context);
 
   @override
   DataRow getRow(int index) {
-    final POSInvoiceModel data = _data[index];
+    final InvoiceDetails data = _data[index];
     return DataRow.byIndex(
-      index: index,
-      color: WidgetStateProperty.resolveWith<Color>(
-        (Set<WidgetState> states) {
-          if (states.contains(WidgetState.selected)) {
-            return ColorPallete.primary.withOpacity(0.3);
-          }
-          if (index.isEven) {
-            return ColorPallete.background;
-          }
-          return Colors.white;
-        },
-      ),
-      cells: <DataCell>[
-        DataCell(
-          GestureDetector(
-            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-            child: Text(data.invoiceNo ?? ''),
-          ),
+        index: index,
+        color: WidgetStateProperty.resolveWith<Color>(
+          (Set<WidgetState> states) {
+            if (states.contains(WidgetState.selected)) {
+              return ColorPallete.primary.withOpacity(0.3);
+            }
+            if (index.isEven) {
+              return ColorPallete.background;
+            }
+            return Colors.white;
+          },
         ),
-        DataCell(
-          GestureDetector(
-            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-            child: Text(data.transactionCode ?? ''),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-            child: Text(data.customerCode ?? ''),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-            child: Text(data.itemSKU ?? ''),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-            child: Text(data.itemPrice?.toString() ?? ''),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-            child: Text(data.itemQry?.toString() ?? ''),
-          ),
-        ),
-        DataCell(
-          GestureDetector(
-            onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-            child: DateTime.tryParse(data.transactionDate.toString()) == null
-                ? null
-                : Text(DateFormat.yMEd()
-                    .format(DateTime.parse(data.transactionDate.toString()))),
-          ),
-        ),
-      ],
-    );
+        cells: <DataCell>[
+          ...[
+            data.invoiceNo,
+            data.transactionCode,
+            data.customerCode,
+            data.itemSKU,
+            data.itemPrice?.toString(),
+            data.itemQry?.toString(),
+            data.transactionDate != null
+                ? DateFormat.yMEd()
+                    .format(DateTime.parse(data.transactionDate.toString()))
+                : '',
+          ].map((value) {
+            return DataCell(
+              GestureDetector(
+                onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
+                child: Text(value ?? ''),
+              ),
+            );
+          }),
+        ]);
   }
 
-  void _navigateToSelectedInvoiceScreen(POSInvoiceModel invoice) {
-    Navigator.push(
-      context,
-      MaterialPageRoute(
-        builder: (context) => SelectedInvoiceScreen(model: invoice),
-      ),
-    );
+  void _navigateToSelectedInvoiceScreen(InvoiceDetails invoice) {
+    Navigation.push(context, SelectedInvoiceScreen(model: invoice));
   }
 
   @override

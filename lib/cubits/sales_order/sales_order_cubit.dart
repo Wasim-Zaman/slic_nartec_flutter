@@ -91,4 +91,10 @@ class SalesOrderCubit extends Cubit<SalesOrderState> {
       emit(SalesOrderSlicSOError(error.toString()));
     }
   }
+
+  clearAll() {
+    selectedSalesOrder.clear();
+    selectedSysId.clear();
+    salesOrderList.clear();
+  }
 }
