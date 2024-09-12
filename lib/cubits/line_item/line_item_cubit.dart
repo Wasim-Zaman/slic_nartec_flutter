@@ -177,8 +177,12 @@ class LineItemCubit extends Cubit<LineItemState> {
     }
   }
 
-  void soToGRN(locationCode,
-      {required List<SalesOrderModel> selectedSOs}) async {
+  void soToGRN(
+    locationCode, {
+    required List<SalesOrderModel> selectedSOs,
+    String? paymentMode,
+    String? taxReason,
+  }) async {
     emit(LineItemSOToGRNLoading());
     try {
       final itemList = selectedSOs
@@ -191,8 +195,8 @@ class LineItemCubit extends Cubit<LineItemState> {
               "TransactionNo": "211",
               "LocationCode": locationCode.toString(),
               "SystemId": "SYSADMIN",
-              "ZATCAPaymentMode": "1",
-              "TaxExemptionReason": "",
+              "ZATCAPaymentMode": "$paymentMode",
+              "TaxExemptionReason": "$taxReason",
               "Item": soLineItemsMap.isEmpty
                   ? []
                   : soLineItemsMap[po.listOfSO?.hEADSYSID] == null

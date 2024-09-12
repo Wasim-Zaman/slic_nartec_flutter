@@ -173,7 +173,8 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
               const SizedBox(height: 16),
               BlocConsumer<SalesReturnCubit, SalesReturnState>(
                 buildWhen: (previous, current) =>
-                    previous is SalesReturnPOSInvoiceLoading,
+                    current is SalesReturnPOSInvoiceSuccess ||
+                    current is SalesReturnPOSInvoiceLoading,
                 listener: (context, state) {
                   if (state is SalesReturnPOSInvoiceError) {
                     showTopSnackBar(
@@ -256,8 +257,10 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                               onPressed: () {
                                 // unfocus keyboard
                                 FocusManager.instance.primaryFocus?.unfocus();
-                                SalesReturnCubit.get(context)
-                                    .saveSalesInvoice();
+                                SalesReturnCubit.get(context).saveSalesInvoice(
+                                  paymentCubit.selectedPaymentMode,
+                                  paymentCubit.selectedReason,
+                                );
                               },
                             ),
                     ],
@@ -304,7 +307,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
         source: dataSource,
         columnSpacing: 20,
         horizontalMargin: 10,
-        rowsPerPage: 7,
+        rowsPerPage: 5,
         showCheckboxColumn: false,
       ),
     );
@@ -363,7 +366,7 @@ class InvoiceDataSource extends DataTableSource {
             return DataCell(
               GestureDetector(
                 onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-                child: Text(value ?? ''),
+                child: Text(value),
               ),
             );
           }),

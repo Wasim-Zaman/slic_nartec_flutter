@@ -29,13 +29,13 @@ class InvoiceHeaderAndDetailsModel {
 }
 
 class InvoiceHeader {
-  dynamic? recNum;
-  dynamic? tblSysNoID;
-  dynamic? sNo;
+  Object? recNum;
+  Object? tblSysNoID;
+  Object? sNo;
   String? deliveryLocationCode;
   String? itemSysID;
   String? invoiceNo;
-  dynamic? headSYSID;
+  Object? headSYSID;
   String? transactionCode;
   String? customerCode;
   String? salesLocationCode;
@@ -132,7 +132,7 @@ class InvoiceDetails {
   String? deliveryLocationCode;
   String? itemSysID;
   String? invoiceNo;
-  dynamic? headSYSID;
+  Object? headSYSID;
   String? transactionCode;
   String? customerCode;
   String? salesLocationCode;

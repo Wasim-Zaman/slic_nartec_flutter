@@ -98,29 +98,28 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
     }
   }
 
-  saveSalesInvoice() async {
+  saveSalesInvoice(paymentMode, taxReason) async {
     try {
       emit(SalesReturnSaveInvoiceLoading());
 
       final data = [
         {
-          "SessionId": "102202216451",
+          "SessionId": DateTime.now().toUtc().toIso8601String(),
           "Company": "SLIC",
           "HeadSysId":
-              "${invoiceDetails?.invoiceHeader?.headSYSID?.replaceAll(" ", "")}",
+              "${invoiceDetails?.invoiceHeader?.headSYSID?.toString().replaceAll(" ", "")}",
           "TransactionCode": "$transactionCode",
           "TransactionNo": "${invoiceDetails?.invoiceHeader?.invoiceNo}",
           "DeliveryLocationCode":
               "${invoiceDetails?.invoiceHeader?.deliveryLocationCode}",
           "SystemId": "SYSADMIN",
-          "ZATCAPaymentMode":
-              "1", // TODO: FETCHING LIST OF ZATCA PAYMENT MODES:
-          "TaxExemptionReason":
-              "", // TODO: FETCHING LIST OF TAX EXEMPTION REASONS:
+          "ZATCAPaymentMode": "$paymentMode",
+          "TaxExemptionReason": "$taxReason",
           "Item": invoiceDetails?.invoiceDetails
               ?.map((details) => {
                     "SessionId": "102202216451",
-                    "HeadSysId": "${details.headSYSID?.replaceAll(" ", "")}",
+                    "HeadSysId":
+                        "${details.headSYSID?.toString().replaceAll(" ", "")}",
                     "ItemSysId": "${details.itemSysID}",
                     "Item-Code": "${details.itemSKU}",
                     "ItemDescription": "${details.itemSKU}",

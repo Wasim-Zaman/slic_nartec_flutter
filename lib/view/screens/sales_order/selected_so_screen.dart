@@ -4,11 +4,13 @@ import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
+import 'package:slic/cubits/payment/payment_cubit.dart';
 import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/models/sales_order_model.dart';
 import 'package:slic/models/so_line_item_model.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
+import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
@@ -22,6 +24,7 @@ class SelectedSoScreen extends StatefulWidget {
 
 class _SelectedSoScreenState extends State<SelectedSoScreen> {
   int? selectedRowIndex;
+  PaymentCubit paymentCubit = PaymentCubit();
 
   @override
   void initState() {
@@ -31,6 +34,33 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
     LineItemCubit.get(context).counter.clear();
     LineItemCubit.get(context).lineItems.clear();
     LineItemCubit.get(context).soLineItemsMap.clear();
+
+    initializePayment();
+  }
+
+  initializePayment() async {
+    await paymentCubit.getZATCAPaymentModes();
+    await paymentCubit.getTaxExamptionReasons();
+  }
+
+  Widget _buildDropdown({
+    required String title,
+    required List<String> options,
+    required String? defaultValue,
+    required ValueChanged<String?> onChanged,
+  }) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(title),
+        const SizedBox(height: 4),
+        CustomDropdownButton(
+          items: options,
+          defaultValue: defaultValue,
+          onChanged: onChanged,
+        ),
+      ],
+    );
   }
 
   @override
@@ -44,6 +74,53 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
         child: SingleChildScrollView(
           child: Column(
             children: [
+              BlocBuilder<PaymentCubit, PaymentState>(
+                bloc: paymentCubit,
+                builder: (context, state) {
+                  return _buildDropdown(
+                    title: "Select ZATCA Payment Mode",
+                    options: paymentCubit.zatcaPaymentModes
+                        .where((element) =>
+                            element.zATCAPAYMENTMODE?.vSSVNAME != null ||
+                            element.zATCAPAYMENTMODE?.vSSVCODE != null)
+                        .map((e) =>
+                            "${e.zATCAPAYMENTMODE?.vSSVNAME} -- ${e.zATCAPAYMENTMODE?.vSSVCODE}")
+                        .toSet()
+                        .toList(),
+                    defaultValue: null,
+                    onChanged: (value) {
+                      setState(() {
+                        paymentCubit.selectedPaymentMode =
+                            value!.split(" -- ")[1];
+                      });
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              BlocBuilder<PaymentCubit, PaymentState>(
+                bloc: paymentCubit,
+                builder: (context, state) {
+                  return _buildDropdown(
+                    title: "Select Tax Exemption Reason",
+                    options: paymentCubit.taxReasions
+                        .where((element) =>
+                            element.tAXEXEMPTIONREASON?.vSSVNAME != null ||
+                            element.tAXEXEMPTIONREASON?.vSSVCODE != null)
+                        .map((e) =>
+                            "(${e.tAXEXEMPTIONREASON?.vSSVCODE}) -- ${e.tAXEXEMPTIONREASON?.vSSVNAME}")
+                        .toSet()
+                        .toList(),
+                    defaultValue: null,
+                    onChanged: (value) {
+                      setState(() {
+                        paymentCubit.selectedReason = value!.split(" -- ")[1];
+                      });
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
               SizedBox(
                 child: _buildPOListTable(
                   SalesOrderCubit.get(context).selectedSalesOrder,
@@ -152,6 +229,9 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
                                       HomeCubit.get(context).locationCode,
                                       selectedSOs: SalesOrderCubit.get(context)
                                           .selectedSalesOrder,
+                                      paymentMode:
+                                          paymentCubit.selectedPaymentMode,
+                                      taxReason: paymentCubit.selectedReason,
                                     );
                                   },
                                 );
