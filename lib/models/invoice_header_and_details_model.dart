@@ -147,29 +147,34 @@ class InvoiceDetails {
   int? itemQry;
   String? transactionDate;
   String? id;
+  num? returnQty;
+  bool? changed = false;
 
-  InvoiceDetails(
-      {this.recNum,
-      this.tblSysNoID,
-      this.sNo,
-      this.deliveryLocationCode,
-      this.itemSysID,
-      this.invoiceNo,
-      this.headSYSID,
-      this.transactionCode,
-      this.customerCode,
-      this.salesLocationCode,
-      this.remarks,
-      this.transactionType,
-      this.userID,
-      this.itemSKU,
-      this.itemUnit,
-      this.itemSize,
-      this.iTEMRATE,
-      this.itemPrice,
-      this.itemQry,
-      this.transactionDate,
-      this.id});
+  InvoiceDetails({
+    this.recNum,
+    this.tblSysNoID,
+    this.sNo,
+    this.deliveryLocationCode,
+    this.itemSysID,
+    this.invoiceNo,
+    this.headSYSID,
+    this.transactionCode,
+    this.customerCode,
+    this.salesLocationCode,
+    this.remarks,
+    this.transactionType,
+    this.userID,
+    this.itemSKU,
+    this.itemUnit,
+    this.itemSize,
+    this.iTEMRATE,
+    this.itemPrice,
+    this.itemQry,
+    this.transactionDate,
+    this.id,
+    this.changed,
+    this.returnQty,
+  });
 
   InvoiceDetails.fromJson(Map<String, dynamic> json) {
     recNum = json['Rec_Num'];
@@ -193,6 +198,7 @@ class InvoiceDetails {
     itemQry = json['ItemQry'];
     transactionDate = json['TransactionDate'];
     id = json['id'];
+    returnQty = json['ReturnQty'] ?? 0;
   }
 
   Map<String, dynamic> toJson() {

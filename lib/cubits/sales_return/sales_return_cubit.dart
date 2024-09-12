@@ -19,7 +19,6 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   // Lists
   List<TransactionCodeModel> transactionCodes = [];
   List<POSInvoiceModel> invoices = [];
-  List<POSInvoiceModel> selectedInvoices = [];
   List<ItemSysIdModel> itemSysIds = [];
 
   // Selected values
@@ -29,6 +28,9 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   num? returnQty;
 
   InvoiceHeaderAndDetailsModel? invoiceDetails;
+  InvoiceHeaderAndDetailsModel selectedInvoices = InvoiceHeaderAndDetailsModel(
+    invoiceDetails: [],
+  );
 
   void getPOSInvoice() async {
     emit(SalesReturnPOSInvoiceLoading());
@@ -86,8 +88,26 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
     }
   }
 
-  void updateInvoiceTemp(itemSysID, itemCode) async {
+  void updateInvoiceTemp(String? itemSysID, String? itemCode) async {
     try {
+      print(itemSysID);
+      print(itemCode);
+      selectedInvoices?.invoiceDetails?.forEach((element) {
+        if (element.itemSysID == itemSysID && element.itemSKU == itemCode) {
+          element.returnQty = returnQty;
+          // emit new state
+          print("changed");
+          emit(SalesReturnChangedItemSysId());
+        }
+      });
+      invoiceDetails?.invoiceDetails?.forEach((element) {
+        if (element.itemSysID == itemSysID && element.itemSKU == itemCode) {
+          element.returnQty = returnQty;
+          // emit new state
+          print("changed");
+          emit(SalesReturnChangedItemSysId());
+        }
+      });
       emit(SalesReturnUpdateTempLoading());
       final response =
           await ApiService.updateInvoiceTemp(itemSysID, itemCode, returnQty);
@@ -119,7 +139,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
           "SystemId": "SYSADMIN",
           "ZATCAPaymentMode": "$paymentMode",
           "TaxExemptionReason": "$taxReason",
-          "Item": invoiceDetails?.invoiceDetails
+          "Item": selectedInvoices?.invoiceDetails
               ?.map((details) => {
                     "SessionId": "102202216451",
                     "HeadSysId":
@@ -129,7 +149,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
                     "ItemDescription": "${details.remarks}",
                     "Size": "${details.itemSize}",
                     "UnitCode": "${details.itemUnit}",
-                    "ReceivedQty": "${details.itemQry}",
+                    "ReceivedQty": "${details.returnQty}",
                     "SystemId": "SYSADMIN"
                   })
               .toList(),
@@ -190,6 +210,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
           if (element.itemSKU == item.iNVOICEITEMDETAILS?.iNVIITEMCODE) {
             print("changed");
             element.itemSysID = item.iNVOICEITEMDETAILS?.iNVISYSID.toString();
+            element.changed = true;
           }
         }
         emit(SalesReturnChangedItemSysId());
@@ -197,5 +218,16 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
     } catch (error) {
       print(error);
     }
+  }
+
+  // Method to add an invoice to the selected list
+  void addSelectedInvoice(InvoiceDetails invoice) {
+    selectedInvoices?.invoiceDetails?.add(invoice);
+  }
+
+  // Method to remove an invoice from the selected list
+  void removeSelectedInvoice(InvoiceDetails invoice) {
+    selectedInvoices?.invoiceDetails
+        ?.removeWhere((element) => element.id == invoice.id);
   }
 }

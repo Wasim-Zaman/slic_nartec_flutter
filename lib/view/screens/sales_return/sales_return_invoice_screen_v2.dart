@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
-import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/payment/payment_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
@@ -322,9 +321,9 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
       color: Colors.white,
       child: PaginatedDataTable(
         columns: const [
-          // DataColumn(label: Text('ID')),
           DataColumn(label: Text('Item SKU')),
           DataColumn(label: Text('Item Quantity')),
+          DataColumn(label: Text('Return Quantity')),
           DataColumn(label: Text('Invoice No')),
           DataColumn(label: Text('Customer Code')),
           DataColumn(label: Text('Delivery Location Code')),
@@ -348,7 +347,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
         columnSpacing: 20,
         horizontalMargin: 10,
         rowsPerPage: 5,
-        showCheckboxColumn: false,
+        showCheckboxColumn: true, // Show checkboxes for selection
       ),
     );
   }
@@ -357,60 +356,78 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
 class InvoiceDataSource extends DataTableSource {
   final List<InvoiceDetails> _data;
   final BuildContext context;
+  final Set<int> _selectedRows = {};
 
   InvoiceDataSource(this._data, this.context);
 
   @override
   DataRow getRow(int index) {
     final InvoiceDetails data = _data[index];
+    final bool isSelected = _selectedRows.contains(index);
+
     return DataRow.byIndex(
-        index: index,
-        color: WidgetStateProperty.resolveWith<Color>(
-          (Set<WidgetState> states) {
-            if (states.contains(WidgetState.selected)) {
-              return ColorPallete.primary.withOpacity(0.3);
-            }
-            if (index.isEven) {
-              return ColorPallete.background;
-            }
-            return Colors.white;
-          },
-        ),
-        cells: <DataCell>[
-          ...[
-            // '${data.id}',
-            '${data.itemSKU}',
-            '${data.itemQry}',
-            '${data.invoiceNo}',
-            '${data.customerCode}',
-            '${data.deliveryLocationCode}',
-            '${data.iTEMRATE}',
-            '${data.itemPrice}',
-            '${data.itemSize}',
-            '${data.itemSysID}',
-            '${data.itemUnit}',
-            '${data.recNum}',
-            '${data.remarks}',
-            '${data.sNo}',
-            '${data.salesLocationCode}',
-            '${data.tblSysNoID}',
-            '${data.transactionCode}',
-            '${data.transactionType}',
-            '${data.userID}',
-            '${data.headSYSID}',
-            data.transactionDate != null
-                ? DateFormat.yMEd()
-                    .format(DateTime.parse(data.transactionDate.toString()))
-                : '',
-          ].map((value) {
-            return DataCell(
-              GestureDetector(
-                onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
-                child: Text(value),
-              ),
-            );
-          }),
-        ]);
+      index: index,
+      selected: isSelected, // Reflect if the row is selected
+      onSelectChanged: (bool? selected) {
+        _toggleSelection(index, data, selected);
+      },
+      color: WidgetStateProperty.resolveWith<Color?>(
+        (Set<WidgetState> states) {
+          if (data.changed == true) {
+            return Colors.lightBlue;
+          }
+          return null;
+        },
+      ),
+      cells: <DataCell>[
+        ...[
+          '${data.itemSKU}',
+          '${data.itemQry}',
+          '${data.returnQty}',
+          '${data.invoiceNo}',
+          '${data.customerCode}',
+          '${data.deliveryLocationCode}',
+          '${data.iTEMRATE}',
+          '${data.itemPrice}',
+          '${data.itemSize}',
+          '${data.itemSysID}',
+          '${data.itemUnit}',
+          '${data.recNum}',
+          '${data.remarks}',
+          '${data.sNo}',
+          '${data.salesLocationCode}',
+          '${data.tblSysNoID}',
+          '${data.transactionCode}',
+          '${data.transactionType}',
+          '${data.userID}',
+          '${data.headSYSID}',
+          data.transactionDate != null
+              ? DateFormat.yMEd()
+                  .format(DateTime.parse(data.transactionDate.toString()))
+              : '',
+        ].map((value) {
+          return DataCell(
+            GestureDetector(
+              onDoubleTap: () => _navigateToSelectedInvoiceScreen(data),
+              child: Text(value),
+            ),
+          );
+        }),
+      ],
+    );
+  }
+
+  // Method to toggle row selection or deselection
+  void _toggleSelection(int index, InvoiceDetails invoice, bool? selected) {
+    if (selected == true) {
+      _selectedRows.add(index);
+      SalesReturnCubit.get(context).addSelectedInvoice(invoice);
+    } else {
+      _selectedRows.remove(index);
+      SalesReturnCubit.get(context).removeSelectedInvoice(invoice);
+    }
+
+    notifyListeners();
   }
 
   void _navigateToSelectedInvoiceScreen(InvoiceDetails invoice) {
@@ -424,5 +441,6 @@ class InvoiceDataSource extends DataTableSource {
   bool get isRowCountApproximate => false;
 
   @override
-  int get selectedRowCount => 0;
+  int get selectedRowCount =>
+      _selectedRows.length; // Reflect number of selected rows
 }
