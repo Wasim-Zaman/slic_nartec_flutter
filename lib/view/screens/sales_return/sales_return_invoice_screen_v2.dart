@@ -174,13 +174,21 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
               BlocConsumer<SalesReturnCubit, SalesReturnState>(
                 buildWhen: (previous, current) =>
                     current is SalesReturnPOSInvoiceSuccess ||
-                    current is SalesReturnPOSInvoiceLoading,
+                    current is SalesReturnPOSInvoiceLoading ||
+                    current is SalesReturnPOSInvoiceError ||
+                    current is SalesReturnChangedItemSysId,
                 listener: (context, state) {
                   if (state is SalesReturnPOSInvoiceError) {
                     showTopSnackBar(
                       Overlay.of(context),
                       CustomSnackBar.error(message: state.errorMessage),
                     );
+                  } else if (state is SalesReturnPOSInvoiceSuccess) {
+                    SalesReturnCubit.get(context).getItemSysIdsByHeadSysId(
+                        SalesReturnCubit.get(context)
+                            .invoiceDetails
+                            ?.invoiceHeader
+                            ?.headSYSID);
                   }
                 },
                 builder: (context, state) {
@@ -209,7 +217,8 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                       const SizedBox(height: 16),
                       if (state is SalesReturnPOSInvoiceLoading)
                         const LoadingWidget(),
-                      if (state is SalesReturnPOSInvoiceSuccess)
+                      if (state is SalesReturnPOSInvoiceSuccess ||
+                          state is SalesReturnChangedItemSysId)
                         if (SalesReturnCubit.get(context)
                                 .invoiceDetails
                                 ?.invoiceDetails !=
@@ -234,9 +243,40 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
               BlocConsumer<SalesReturnCubit, SalesReturnState>(
                 listener: (context, state) {
                   if (state is SalesReturnSaveInvoiceSuccess) {
-                    showTopSnackBar(
-                      Overlay.of(context),
-                      CustomSnackBar.success(message: state.successMessage),
+                    showDialog(
+                      context: context,
+                      builder: (context) {
+                        return AlertDialog(
+                          title: Text(
+                            state.successMessage,
+                            textAlign: TextAlign.center,
+                          ),
+                          content: Column(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(state.successMessage),
+                              ...[
+                                const SizedBox(height: 16),
+                                if (state.salesReturnDocNo != null)
+                                  Text(
+                                      "Sales Retrurn Doc No: ${state.salesReturnDocNo}"), // Display GRN System ID if not null
+                                if (state.salesReturnSysId != null)
+                                  Text(
+                                      "Sales Return Sys Id: ${state.salesReturnSysId}"), // Display GRN Document No if not null
+                              ],
+                            ],
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () {
+                                Navigation.pop(context);
+                                Navigation.pop(context);
+                              },
+                              child: const Text("OK"),
+                            ),
+                          ],
+                        );
+                      },
                     );
                     Navigation.pop(context);
                   } else if (state is SalesReturnSaveInvoiceError) {
@@ -283,13 +323,13 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
       child: PaginatedDataTable(
         columns: const [
           // DataColumn(label: Text('ID')),
+          DataColumn(label: Text('Item SKU')),
+          DataColumn(label: Text('Item Quantity')),
+          DataColumn(label: Text('Invoice No')),
           DataColumn(label: Text('Customer Code')),
           DataColumn(label: Text('Delivery Location Code')),
           DataColumn(label: Text('Item Rate')),
-          DataColumn(label: Text('Invoice No')),
           DataColumn(label: Text('Item Price')),
-          DataColumn(label: Text('Item Quantity')),
-          DataColumn(label: Text('Item SKU')),
           DataColumn(label: Text('Item Size')),
           DataColumn(label: Text('Item Sys ID')),
           DataColumn(label: Text('Item Unit')),
@@ -339,13 +379,13 @@ class InvoiceDataSource extends DataTableSource {
         cells: <DataCell>[
           ...[
             // '${data.id}',
+            '${data.itemSKU}',
+            '${data.itemQry}',
+            '${data.invoiceNo}',
             '${data.customerCode}',
             '${data.deliveryLocationCode}',
             '${data.iTEMRATE}',
-            '${data.invoiceNo}',
             '${data.itemPrice}',
-            '${data.itemQry}',
-            '${data.itemSKU}',
             '${data.itemSize}',
             '${data.itemSysID}',
             '${data.itemUnit}',

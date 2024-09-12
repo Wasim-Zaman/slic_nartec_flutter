@@ -26,8 +26,15 @@ final class SalesReturnUpdateTempSuccess extends SalesReturnState {
 
 final class SalesReturnSaveInvoiceSuccess extends SalesReturnState {
   final String successMessage;
-  SalesReturnSaveInvoiceSuccess({required this.successMessage});
+  final String? salesReturnSysId, salesReturnDocNo;
+  SalesReturnSaveInvoiceSuccess({
+    required this.successMessage,
+    this.salesReturnDocNo,
+    this.salesReturnSysId,
+  });
 }
+
+final class SalesReturnChangedItemSysId extends SalesReturnState {}
 
 //! Error
 

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
+import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/models/invoice_header_and_details_model.dart';
 import 'package:slic/utils/navigation.dart';
@@ -18,7 +19,7 @@ class SelectedInvoiceScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Location: FG101'),
+        title: Text('Location: ${HomeCubit.get(context).locationCode}'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),

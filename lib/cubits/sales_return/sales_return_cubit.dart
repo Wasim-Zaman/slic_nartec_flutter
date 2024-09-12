@@ -3,6 +3,7 @@ import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/invoice_header_and_details_model.dart';
+import 'package:slic/models/item_sys_id_model.dart';
 import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
@@ -18,13 +19,16 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   // Lists
   List<TransactionCodeModel> transactionCodes = [];
   List<POSInvoiceModel> invoices = [];
-  InvoiceHeaderAndDetailsModel? invoiceDetails;
+  List<POSInvoiceModel> selectedInvoices = [];
+  List<ItemSysIdModel> itemSysIds = [];
 
   // Selected values
   String? transactionName;
   String? transactionCode;
   String? invoiceNumber;
   num? returnQty;
+
+  InvoiceHeaderAndDetailsModel? invoiceDetails;
 
   void getPOSInvoice() async {
     emit(SalesReturnPOSInvoiceLoading());
@@ -104,7 +108,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
 
       final data = [
         {
-          "SessionId": DateTime.now().toUtc().toIso8601String(),
+          "SessionId": "102202216451",
           "Company": "SLIC",
           "HeadSysId":
               "${invoiceDetails?.invoiceHeader?.headSYSID?.toString().replaceAll(" ", "")}",
@@ -122,7 +126,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
                         "${details.headSYSID?.toString().replaceAll(" ", "")}",
                     "ItemSysId": "${details.itemSysID}",
                     "Item-Code": "${details.itemSKU}",
-                    "ItemDescription": "${details.itemSKU}",
+                    "ItemDescription": "${details.remarks}",
                     "Size": "${details.itemSize}",
                     "UnitCode": "${details.itemUnit}",
                     "ReceivedQty": "${details.itemQry}",
@@ -142,12 +146,56 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
       };
 
       log(jsonEncode(body));
-      final response = await ApiService.slicPostData(body) as Map;
+      final response = await ApiService.slicPostData(body);
 
-      emit(SalesReturnSaveInvoiceSuccess(successMessage: response['message']));
+      print(response);
+
+      if (response.containsKey("error")) {
+        emit(SalesReturnSaveInvoiceError(errorMessage: response['error']));
+      } else if (response.containsKey("MESSAGE")) {
+        emit(
+          SalesReturnSaveInvoiceSuccess(
+            successMessage: response['MESSAGE'],
+            salesReturnSysId: response['SALESRETURN_SYS_ID'],
+            salesReturnDocNo: response['SALESRETURN_DOC_NO'],
+          ),
+        );
+      }
       // emit(SalesReturnSaveInvoiceError(errorMessage: response.message));
     } catch (error) {
       emit(SalesReturnSaveInvoiceError(errorMessage: error.toString()));
+    }
+  }
+
+  getItemSysIdsByHeadSysId(headSysId) async {
+    try {
+      final response = await ApiService.slicGetData({
+        "filter": {"P_HEAD_SYS_ID": "$headSysId"},
+        "M_COMP_CODE": "SLIC",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "INVOICEITEMDETAILS",
+        "M_LANG_CODE": "ENG"
+      });
+
+      itemSysIds.clear();
+      response.forEach((item) {
+        itemSysIds.add(ItemSysIdModel.fromJson(item));
+      });
+
+      print(invoiceDetails?.invoiceDetails?.length);
+      print(itemSysIds.length);
+
+      invoiceDetails?.invoiceDetails?.forEach((element) {
+        for (var item in itemSysIds) {
+          if (element.itemSKU == item.iNVOICEITEMDETAILS?.iNVIITEMCODE) {
+            print("changed");
+            element.itemSysID = item.iNVOICEITEMDETAILS?.iNVISYSID.toString();
+          }
+        }
+        emit(SalesReturnChangedItemSysId());
+      });
+    } catch (error) {
+      print(error);
     }
   }
 }

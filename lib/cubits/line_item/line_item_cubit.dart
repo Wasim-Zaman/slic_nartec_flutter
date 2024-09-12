@@ -199,9 +199,9 @@ class LineItemCubit extends Cubit<LineItemState> {
               "TaxExemptionReason": "$taxReason",
               "Item": soLineItemsMap.isEmpty
                   ? []
-                  : soLineItemsMap[po.listOfSO?.hEADSYSID] == null
+                  : soLineItemsMap[po.listOfSO?.hEADSYSID.toString()] == null
                       ? []
-                      : soLineItemsMap[po.listOfSO?.hEADSYSID]!
+                      : soLineItemsMap[po.listOfSO?.hEADSYSID.toString()]!
                           .map(
                             (lineItem) => {
                               "SessionId": DateTime.now().toIso8601String(),
