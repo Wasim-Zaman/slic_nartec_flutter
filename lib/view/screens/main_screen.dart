@@ -102,9 +102,9 @@ class _MainScreenState extends State<MainScreen>
         padding: const EdgeInsets.all(16.0),
         child: GridView.count(
           crossAxisCount: 2,
-          crossAxisSpacing: 16.0,
-          mainAxisSpacing: 16.0,
-          childAspectRatio: 1,
+          crossAxisSpacing: 8.0,
+          mainAxisSpacing: 8.0,
+          childAspectRatio: 1.1,
           children: [
             for (var menu in [
               MenuInfo(
@@ -138,6 +138,16 @@ class _MainScreenState extends State<MainScreen>
                 'Goods Issue\n(Production to FG)',
                 AppAssets.goodsIssue,
                 const GoodsIssueScreen(),
+              ),
+              MenuInfo(
+                'Customer Quotation',
+                AppAssets.customerQuotation,
+                null,
+              ),
+              MenuInfo(
+                'Customer Order',
+                AppAssets.customerOrder,
+                null,
               ),
             ])
               AnimatedBuilder(

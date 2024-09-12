@@ -11,4 +11,6 @@ class AppAssets {
   static const salesOrder = "assets/icons/ic_sales_order.png";
   static const salesReturnInvoice = "assets/icons/ic_sales_return_invoice.png";
   static const stockesTransfer = "assets/icons/ic_stockes_transfer.png";
+  static const customerQuotation = "assets/icons/ic_customer_quotation.png";
+  static const customerOrder = "assets/icons/ic_customer_order.png";
 }
