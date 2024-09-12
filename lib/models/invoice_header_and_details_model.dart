@@ -29,13 +29,13 @@ class InvoiceHeaderAndDetailsModel {
 }
 
 class InvoiceHeader {
-  int? recNum;
-  int? tblSysNoID;
-  int? sNo;
+  dynamic? recNum;
+  dynamic? tblSysNoID;
+  dynamic? sNo;
   String? deliveryLocationCode;
   String? itemSysID;
   String? invoiceNo;
-  String? headSYSID;
+  dynamic? headSYSID;
   String? transactionCode;
   String? customerCode;
   String? salesLocationCode;
@@ -47,9 +47,9 @@ class InvoiceHeader {
   String? id;
   String? vatNumber;
   String? customerName;
-  String? adjAmount;
+  int? adjAmount;
   String? docNo;
-  String? pendingAmount;
+  int? pendingAmount;
 
   InvoiceHeader(
       {this.recNum,
@@ -132,7 +132,7 @@ class InvoiceDetails {
   String? deliveryLocationCode;
   String? itemSysID;
   String? invoiceNo;
-  String? headSYSID;
+  dynamic? headSYSID;
   String? transactionCode;
   String? customerCode;
   String? salesLocationCode;

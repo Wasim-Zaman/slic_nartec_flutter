@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/invoice_header_and_details_model.dart';
 import 'package:slic/models/pos_invoice_model.dart';
@@ -103,18 +106,21 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
         {
           "SessionId": "102202216451",
           "Company": "SLIC",
-          "HeadSysId": "${invoiceDetails?.invoiceHeader?.headSYSID}",
+          "HeadSysId":
+              "${invoiceDetails?.invoiceHeader?.headSYSID?.replaceAll(" ", "")}",
           "TransactionCode": "$transactionCode",
           "TransactionNo": "${invoiceDetails?.invoiceHeader?.invoiceNo}",
           "DeliveryLocationCode":
               "${invoiceDetails?.invoiceHeader?.deliveryLocationCode}",
           "SystemId": "SYSADMIN",
-          "ZATCAPaymentMode": "1",
-          "TaxExemptionReason": "",
+          "ZATCAPaymentMode":
+              "1", // TODO: FETCHING LIST OF ZATCA PAYMENT MODES:
+          "TaxExemptionReason":
+              "", // TODO: FETCHING LIST OF TAX EXEMPTION REASONS:
           "Item": invoiceDetails?.invoiceDetails
               ?.map((details) => {
                     "SessionId": "102202216451",
-                    "HeadSysId": "${details.headSYSID}",
+                    "HeadSysId": "${details.headSYSID?.replaceAll(" ", "")}",
                     "ItemSysId": "${details.itemSysID}",
                     "Item-Code": "${details.itemSKU}",
                     "ItemDescription": "${details.itemSKU}",
@@ -135,6 +141,8 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
         "APICODE": "InvoiceToSR",
         "LANG": "ENG"
       };
+
+      log(jsonEncode(body));
       final response = await ApiService.slicPostData(body) as Map;
 
       emit(SalesReturnSaveInvoiceSuccess(successMessage: response['message']));

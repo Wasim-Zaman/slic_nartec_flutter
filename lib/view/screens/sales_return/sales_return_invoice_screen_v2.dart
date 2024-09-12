@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
+import 'package:slic/cubits/payment/payment_cubit.dart';
 import 'package:slic/cubits/sales_return/sales_return_cubit.dart';
 import 'package:slic/cubits/trx/trx_cubit.dart';
 import 'package:slic/models/invoice_header_and_details_model.dart';
@@ -26,6 +27,7 @@ class SalesReturnInvoiceScreen extends StatefulWidget {
 
 class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
   final _formKey = GlobalKey<FormState>();
+  PaymentCubit paymentCubit = PaymentCubit();
 
   @override
   void initState() {
@@ -38,7 +40,13 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
         .getTrxByLocationCode(HomeCubit.get(context).locationCode);
     await SalesReturnCubit.get(context).getTransactionCodes();
 
-    setState(() {});
+    // Payment
+    await paymentCubit.getZATCAPaymentModes();
+    await paymentCubit.getTaxExamptionReasons();
+
+    setState(() {
+      SalesReturnCubit.get(context).invoiceDetails = null;
+    });
   }
 
   void _onComplete() {
@@ -80,6 +88,53 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
+              BlocBuilder<PaymentCubit, PaymentState>(
+                bloc: paymentCubit,
+                builder: (context, state) {
+                  return _buildDropdown(
+                    title: "Select ZATCA Payment Mode",
+                    options: paymentCubit.zatcaPaymentModes
+                        .where((element) =>
+                            element.zATCAPAYMENTMODE?.vSSVNAME != null ||
+                            element.zATCAPAYMENTMODE?.vSSVCODE != null)
+                        .map((e) =>
+                            "${e.zATCAPAYMENTMODE?.vSSVNAME} -- ${e.zATCAPAYMENTMODE?.vSSVCODE}")
+                        .toSet()
+                        .toList(),
+                    defaultValue: null,
+                    onChanged: (value) {
+                      setState(() {
+                        paymentCubit.selectedPaymentMode =
+                            value!.split(" -- ")[1];
+                      });
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              BlocBuilder<PaymentCubit, PaymentState>(
+                bloc: paymentCubit,
+                builder: (context, state) {
+                  return _buildDropdown(
+                    title: "Select Tax Exemption Reason",
+                    options: paymentCubit.taxReasions
+                        .where((element) =>
+                            element.tAXEXEMPTIONREASON?.vSSVNAME != null ||
+                            element.tAXEXEMPTIONREASON?.vSSVCODE != null)
+                        .map((e) =>
+                            "(${e.tAXEXEMPTIONREASON?.vSSVCODE}) -- ${e.tAXEXEMPTIONREASON?.vSSVNAME}")
+                        .toSet()
+                        .toList(),
+                    defaultValue: null,
+                    onChanged: (value) {
+                      setState(() {
+                        paymentCubit.selectedReason = value!.split(" -- ")[1];
+                      });
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
               BlocBuilder<TrxCubit, TrxState>(
                 builder: (context, state) {
                   return _buildDropdown(
@@ -224,12 +279,26 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
       color: Colors.white,
       child: PaginatedDataTable(
         columns: const [
-          DataColumn(label: Text('Invoice No')),
-          DataColumn(label: Text('Transaction Code')),
+          // DataColumn(label: Text('ID')),
           DataColumn(label: Text('Customer Code')),
-          DataColumn(label: Text('Item SKU')),
+          DataColumn(label: Text('Delivery Location Code')),
+          DataColumn(label: Text('Item Rate')),
+          DataColumn(label: Text('Invoice No')),
           DataColumn(label: Text('Item Price')),
           DataColumn(label: Text('Item Quantity')),
+          DataColumn(label: Text('Item SKU')),
+          DataColumn(label: Text('Item Size')),
+          DataColumn(label: Text('Item Sys ID')),
+          DataColumn(label: Text('Item Unit')),
+          DataColumn(label: Text('Rec Num')),
+          DataColumn(label: Text('Remarks')),
+          DataColumn(label: Text('S No')),
+          DataColumn(label: Text('Sales Location Code')),
+          DataColumn(label: Text('Tbl Sys No ID')),
+          DataColumn(label: Text('Transaction Code')),
+          DataColumn(label: Text('Transaction Type')),
+          DataColumn(label: Text('User ID')),
+          DataColumn(label: Text('Head Sys ID')),
           DataColumn(label: Text('Transaction Date')),
         ],
         source: dataSource,
@@ -266,12 +335,26 @@ class InvoiceDataSource extends DataTableSource {
         ),
         cells: <DataCell>[
           ...[
-            data.invoiceNo,
-            data.transactionCode,
-            data.customerCode,
-            data.itemSKU,
-            data.itemPrice?.toString(),
-            data.itemQry?.toString(),
+            // '${data.id}',
+            '${data.customerCode}',
+            '${data.deliveryLocationCode}',
+            '${data.iTEMRATE}',
+            '${data.invoiceNo}',
+            '${data.itemPrice}',
+            '${data.itemQry}',
+            '${data.itemSKU}',
+            '${data.itemSize}',
+            '${data.itemSysID}',
+            '${data.itemUnit}',
+            '${data.recNum}',
+            '${data.remarks}',
+            '${data.sNo}',
+            '${data.salesLocationCode}',
+            '${data.tblSysNoID}',
+            '${data.transactionCode}',
+            '${data.transactionType}',
+            '${data.userID}',
+            '${data.headSYSID}',
             data.transactionDate != null
                 ? DateFormat.yMEd()
                     .format(DateTime.parse(data.transactionDate.toString()))
