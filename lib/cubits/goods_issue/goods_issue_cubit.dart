@@ -106,7 +106,10 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
       final response = await ApiService.slicPostData(body) as Map;
 
       if (bool.parse(response['success'])) {
-        emit(GoodsIssuePostSuccess(message: response['message'].toString()));
+        emit(GoodsIssuePostSuccess(
+            message: response['message'].toString(),
+            docNo: response['DocNo'].toString(),
+            txnCode: response['TxnCode'].toString()));
       } else {
         if (response.containsKey("message") && response.containsKey("error")) {
           emit(GoodsIssuePostError(
