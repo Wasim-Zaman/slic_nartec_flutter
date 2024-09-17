@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/line_item/line_item_cubit.dart';
-import 'package:slic/models/slic_line_item_model.dart';
+import 'package:slic/models/so_line_item_model.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
 
 class UpdateSoLineItemScreen extends StatefulWidget {
-  final PoLineItemModel lineItem;
+  final SoLineItemModel lineItem;
   const UpdateSoLineItemScreen({super.key, required this.lineItem});
 
   @override
@@ -26,15 +26,15 @@ class _UpdateSoLineItemScreenState extends State<UpdateSoLineItemScreen> {
 
   @override
   void initState() {
-    gradeController.text = widget.lineItem.listOfPOItem?.gRADE ?? '';
+    gradeController.text = widget.lineItem.listOfSOItem?.gRADE ?? '';
     itemSysIdController.text =
-        widget.lineItem.listOfPOItem!.iTEMSYSID.toString();
-    itemNameController.text = widget.lineItem.listOfPOItem!.iTEMNAME ?? '';
-    itemCodeController.text = widget.lineItem.listOfPOItem!.iTEMCODE ?? '';
-    poQuantityController.text = widget.lineItem.listOfPOItem!.pOQTY.toString();
+        widget.lineItem.listOfSOItem!.iTEMSYSID.toString();
+    itemNameController.text = widget.lineItem.listOfSOItem!.iTEMNAME ?? '';
+    itemCodeController.text = widget.lineItem.listOfSOItem!.iTEMCODE ?? '';
+    poQuantityController.text = widget.lineItem.listOfSOItem!.iNVQTY.toString();
     receivedQuantityController.text =
-        widget.lineItem.listOfPOItem!.rECEIVEDQTY.toString();
-    uomController.text = widget.lineItem.listOfPOItem!.uOM ?? '';
+        widget.lineItem.listOfSOItem!.iNVQTY.toString();
+    uomController.text = widget.lineItem.listOfSOItem!.uOM ?? '';
     super.initState();
   }
 
@@ -152,15 +152,15 @@ class _UpdateSoLineItemScreenState extends State<UpdateSoLineItemScreen> {
                           return;
                         }
                         // Save changes to the line item
-                        LineItemCubit.get(context).updateSlicLineItem(
-                          PoLineItemModel(
-                            listOfPOItem: ListOfPOItem(
+                        LineItemCubit.get(context).updateSOSlicLineItem(
+                          SoLineItemModel(
+                            listOfSOItem: ListOfSOItem(
                               gRADE: gradeController.text,
                               iTEMSYSID: int.parse(itemSysIdController.text),
                               iTEMNAME: itemNameController.text,
                               iTEMCODE: itemCodeController.text,
-                              pOQTY: int.parse(poQuantityController.text),
-                              rECEIVEDQTY: receivedQuantityController.text,
+                              iNVQTY: receivedQuantityController.text,
+                              sOQTY: int.parse(receivedQuantityController.text),
                               uOM: uomController.text,
                             ),
                           ),

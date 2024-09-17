@@ -9,6 +9,7 @@ import 'package:slic/cubits/sales_order/sales_order_cubit.dart';
 import 'package:slic/models/sales_order_model.dart';
 import 'package:slic/models/so_line_item_model.dart';
 import 'package:slic/utils/navigation.dart';
+import 'package:slic/view/screens/sales_order/update_so_line_item_screen.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/loading/loading_widget.dart';
@@ -253,7 +254,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
                                 color: ColorPallete.primary,
                               )),
                               child: Text(
-                                  "Total: ${LineItemCubit.get(context).poLineItems.length}"),
+                                  "Total: ${LineItemCubit.get(context).soLineItems.length}"),
                             ),
                             Container(
                               padding: const EdgeInsets.symmetric(
@@ -320,7 +321,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
 
   Widget _buildLineItemsTable(List<SoLineItemModel> data) {
     LineItemSource dataSource = LineItemSource(data, (SoLineItemModel item) {
-      // Navigation.push(context, UpdateSoLineItemScreen(lineItem: item));
+      Navigation.push(context, UpdateSoLineItemScreen(lineItem: item));
     });
     return Container(
       padding: const EdgeInsets.all(8.0),

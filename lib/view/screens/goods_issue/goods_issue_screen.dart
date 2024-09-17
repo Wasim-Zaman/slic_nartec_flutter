@@ -394,23 +394,19 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                           builder: (context) {
                             return AlertDialog(
                               title: Text(
-                                state
-                                    .message, // Display the message from the state
+                                state.message,
                                 textAlign: TextAlign.center,
                               ),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
-                                  Text(state
-                                      .message), // Display the main message
+                                  Text(state.message),
                                   ...[
                                     const SizedBox(height: 16),
                                     if (state.docNo != null)
-                                      Text(
-                                          "Doc Number: ${state.docNo}"), // Display GRN System ID if not null
+                                      Text("Doc Number: ${state.docNo}"),
                                     if (state.txnCode != null)
-                                      Text(
-                                          "Trx Code: ${state.txnCode}"), // Display GRN Document No if not null
+                                      Text("Trx Code: ${state.txnCode}"),
                                   ],
                                 ],
                               ),

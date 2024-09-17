@@ -77,6 +77,19 @@ class LineItemCubit extends Cubit<LineItemState> {
     emit(LineItemGetBySysIdSuccess());
   }
 
+  void updateSOSlicLineItem(SoLineItemModel lineItem) async {
+    soLineItemsMap["$selectedSysId"]!.removeWhere((element) {
+      return element.listOfSOItem?.iTEMSYSID ==
+          lineItem.listOfSOItem?.iTEMSYSID;
+    });
+    soLineItemsMap["$selectedSysId"]!.add(lineItem);
+    // if item sys id do not exist in the list
+    if (!counter.contains(lineItem.listOfSOItem?.iTEMSYSID)) {
+      counter.add(lineItem.listOfSOItem?.iTEMSYSID);
+    }
+    emit(LineItemGetBySysIdSuccess());
+  }
+
   void getLineItemsBySysId(String sysId) async {
     emit(LineItemGetBySysIdLoading());
     try {
