@@ -120,7 +120,10 @@ class StockTransferCubit extends Cubit<StockTransferState> {
       final response = await ApiService.slicPostData(body);
       if (response['success'] == "true") {
         //  {"Transaction Code":"LDTO","success":"true","Company Code":"SLIC","message":"Stock Transfer Out Created succcessfully","Ref-No/SysID":5074407,"Document No":"2024000103"}
-        emit(StockTransferPostSuccess(message: response["message"]));
+        emit(StockTransferPostSuccess(
+            message: response["message"],
+            refNo: response["Ref-No/SysID"],
+            docNo: response["Document No"]));
       } else {
         if (response.containsKey("error")) {
           emit(StockTransferPostError(errorMessage: response["error"]));

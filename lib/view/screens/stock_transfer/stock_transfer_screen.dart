@@ -337,12 +337,41 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                   BlocConsumer<StockTransferCubit, StockTransferState>(
                     listener: (context, state) {
                       if (state is StockTransferPostSuccess) {
-                        // Handle success state
-                        showTopSnackBar(
-                          Overlay.of(context),
-                          CustomSnackBar.success(message: state.message),
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                state
+                                    .message, // Display the message from the state
+                                textAlign: TextAlign.center,
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(state.message),
+                                  ...[
+                                    const SizedBox(height: 16),
+                                    if (state.docNo != null)
+                                      Text("DOC NO: ${state.docNo}"),
+                                    if (state.refNo != null)
+                                      Text("Ref No: ${state.refNo}"),
+                                  ],
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigation.pop(context);
+                                    Navigation.pop(context);
+                                    Navigation.pop(context);
+                                  },
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
                         );
-                        Navigation.pop(context);
                       } else if (state is StockTransferPostError) {
                         showTopSnackBar(
                           Overlay.of(context),
