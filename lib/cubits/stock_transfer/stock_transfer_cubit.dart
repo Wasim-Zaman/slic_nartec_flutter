@@ -68,16 +68,32 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   }) async {
     emit(StockTransferPostLoading());
     try {
-      final item = itemCodes
-          .map(
-            (e) => {
-              "ItemCode": e.itemCode.toString(),
-              "Size": "${e.size}",
-              "Qty": "${e.itemQty}",
-              "UserId": "SYSADMIN"
-            },
-          )
-          .toList();
+      //: TODO: In PITO transaction, i will include the type prefix
+      //: If prefix is U, then we have to pass only U
+      // : otherwise if it is not U then we have to pass suffix also
+
+      /* SuFFIX
+        * 
+      */
+
+      final item = itemCodes.map(
+        (e) {
+          late String ic;
+          if (transactionCode == "PITO") {
+            if (type != "U") {
+              ic = "U${e.itemCode}$type";
+            } else {
+              ic = "U${e.itemCode}";
+            }
+          }
+          return {
+            "ItemCode": ic,
+            "Size": "${e.size}",
+            "Qty": "${e.itemQty}",
+            "UserId": "SYSADMIN"
+          };
+        },
+      ).toList();
       final body = {
         "_keyword_": "LTO",
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
@@ -103,12 +119,18 @@ class StockTransferCubit extends Cubit<StockTransferState> {
       log(jsonEncode(body));
       final response = await ApiService.slicPostData(body);
       if (response['success'] == "true") {
+        //  {"Transaction Code":"LDTO","success":"true","Company Code":"SLIC","message":"Stock Transfer Out Created succcessfully","Ref-No/SysID":5074407,"Document No":"2024000103"}
         emit(StockTransferPostSuccess(message: response["message"]));
       } else {
-        emit(StockTransferPostError(errorMessage: response["error"]));
+        if (response.containsKey("error")) {
+          emit(StockTransferPostError(errorMessage: response["error"]));
+        } else {
+          emit(StockTransferPostError(errorMessage: response.toString()));
+        }
       }
     } catch (e) {
-      emit(StockTransferPostError(errorMessage: e.toString()));
+      emit(StockTransferPostError(
+          errorMessage: "Error occurred while transfering stock!"));
     }
   }
 }

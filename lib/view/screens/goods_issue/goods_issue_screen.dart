@@ -384,11 +384,48 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                     listener: (context, state) {
                       if (state is GoodsIssuePostSuccess) {
                         // Handle success state
-                        showTopSnackBar(
-                          Overlay.of(context),
-                          CustomSnackBar.success(message: state.message),
+                        // showTopSnackBar(
+                        //   Overlay.of(context),
+                        //   CustomSnackBar.success(message: state.message),
+                        // );
+                        // Navigation.pop(context);
+                        showDialog(
+                          context: context,
+                          builder: (context) {
+                            return AlertDialog(
+                              title: Text(
+                                state
+                                    .message, // Display the message from the state
+                                textAlign: TextAlign.center,
+                              ),
+                              content: Column(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(state
+                                      .message), // Display the main message
+                                  ...[
+                                    const SizedBox(height: 16),
+                                    if (state.docNo != null)
+                                      Text(
+                                          "Doc Number: ${state.docNo}"), // Display GRN System ID if not null
+                                    if (state.txnCode != null)
+                                      Text(
+                                          "Trx Code: ${state.txnCode}"), // Display GRN Document No if not null
+                                  ],
+                                ],
+                              ),
+                              actions: [
+                                TextButton(
+                                  onPressed: () {
+                                    Navigation.pop(context);
+                                    Navigation.pop(context);
+                                  },
+                                  child: const Text("OK"),
+                                ),
+                              ],
+                            );
+                          },
                         );
-                        Navigation.pop(context);
                       } else if (state is GoodsIssuePostError) {
                         showTopSnackBar(
                           Overlay.of(context),

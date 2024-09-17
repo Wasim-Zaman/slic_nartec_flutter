@@ -293,7 +293,7 @@ class _SelectedSoScreenState extends State<SelectedSoScreen> {
           context.read<LineItemCubit>().slicSOLineItemsById(
               LineItemCubit.get(context).selectedSysId ?? '');
         } else {
-          selectedRowIndex = null; // Deselect if needed
+          selectedRowIndex = null;
         }
       });
     });

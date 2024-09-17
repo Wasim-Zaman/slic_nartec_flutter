@@ -93,7 +93,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
             "TransactionCode": transactionCode.toString(),
             "LocationCode": fromLocationCode.toString(),
             "UserID": "SYSADMIN",
-            "ProductionDate": date.text.toString(),
+            "ProductionDate": date.text.trim().toString(),
             "item": bodyList,
           }
         ],
