@@ -7,6 +7,7 @@ import 'package:slic/cubits/trx/trx_cubit.dart';
 import 'package:slic/models/invoice_details_slic_model.dart';
 import 'package:slic/models/trx_codes_model.dart';
 import 'package:slic/utils/navigation.dart';
+import 'package:slic/view/screens/sales_return/selected_invoice_screen_v2.dart';
 import 'package:slic/view/widgets/buttons/app_button.dart';
 import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/field/text_field_widget.dart';
@@ -419,17 +420,17 @@ class InvoiceDataSource extends DataTableSource {
       int index, InvoiceDetailsSlicModel invoice, bool? selected) {
     if (selected == true) {
       _selectedRows.add(index);
-      // SalesReturnCubit.get(context).addSelectedInvoice(invoice);
+      SalesReturnCubit.get(context).addSlicSelectedInvoice(invoice);
     } else {
       _selectedRows.remove(index);
-      // SalesReturnCubit.get(context).removeSelectedInvoice(invoice);
+      SalesReturnCubit.get(context).removeSlicSelectedInvoice(invoice);
     }
 
     notifyListeners();
   }
 
   void _navigateToSelectedInvoiceScreen(InvoiceDetailsSlicModel invoice) {
-    // Navigation.push(context, SelectedInvoiceScreen(model: invoice));
+    Navigation.push(context, SelectedInvoiceScreen(model: invoice));
   }
 
   @override

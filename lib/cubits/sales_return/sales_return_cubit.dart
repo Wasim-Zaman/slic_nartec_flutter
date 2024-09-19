@@ -22,6 +22,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   List<POSInvoiceModel> invoices = [];
   List<ItemSysIdModel> itemSysIds = [];
   List<InvoiceDetailsSlicModel> slicInvoices = [];
+  List<InvoiceDetailsSlicModel> selectedSlicInvoices = [];
 
   // Selected values
   String? transactionName;
@@ -171,17 +172,18 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
           "SystemId": "SYSADMIN",
           "ZATCAPaymentMode": "$paymentMode",
           "TaxExemptionReason": "$taxReason",
-          "Item": selectedInvoices.invoiceDetails
-              ?.map((details) => {
+          "Item": selectedSlicInvoices
+              .map((details) => {
                     "SessionId": "102202216451",
                     "HeadSysId":
-                        "${details.headSYSID?.toString().replaceAll(" ", "")}",
-                    "ItemSysId": "${details.itemSysID}",
-                    "Item-Code": "${details.itemSKU}",
-                    "ItemDescription": "${details.remarks}",
-                    "Size": "${details.itemSize}",
-                    "UnitCode": "${details.itemUnit}",
-                    "ReceivedQty": "${details.returnQty}",
+                        "${details.iNVTOSRITEMDETAILS?.iNVIINVHSYSID?.toString().replaceAll(" ", "")}",
+                    "ItemSysId": "${details.iNVTOSRITEMDETAILS?.iNVISYSID}",
+                    "Item-Code": "${details.iNVTOSRITEMDETAILS?.iNVIITEMCODE}",
+                    "ItemDescription":
+                        "${details.iNVTOSRITEMDETAILS?.iNVIITEMDESC}",
+                    "Size": "${details.iNVTOSRITEMDETAILS?.iNVIGRADECODE1}",
+                    "UnitCode": "${details.iNVTOSRITEMDETAILS?.iNVIUOMCODE}",
+                    "ReceivedQty": "${details.iNVTOSRITEMDETAILS?.iNVIQTY}",
                     "SystemId": "SYSADMIN"
                   })
               .toList(),
@@ -259,5 +261,17 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   void removeSelectedInvoice(InvoiceDetails invoice) {
     selectedInvoices?.invoiceDetails
         ?.removeWhere((element) => element.id == invoice.id);
+  }
+
+  // Method to add an invoice to the selected list
+  void addSlicSelectedInvoice(InvoiceDetailsSlicModel invoice) {
+    selectedSlicInvoices.add(invoice);
+  }
+
+  // Method to remove an invoice from the selected list
+  void removeSlicSelectedInvoice(InvoiceDetailsSlicModel invoice) {
+    selectedSlicInvoices.removeWhere((element) =>
+        element.iNVTOSRITEMDETAILS?.iNVISYSID ==
+        invoice.iNVTOSRITEMDETAILS?.iNVISYSID);
   }
 }
