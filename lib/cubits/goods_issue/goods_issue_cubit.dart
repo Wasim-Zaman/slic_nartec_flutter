@@ -41,8 +41,8 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
     date.clear();
   }
 
-  setDate() {
-    date.text = DateFormat.yMd().format(DateTime.now().toUtc());
+  setDate(DateTime selectedDate) {
+    date.text = DateFormat('dd/MM/yyyy').format(selectedDate);
     emit(GoodsIssueDateChanged());
   }
 
@@ -107,9 +107,8 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
 
       if (bool.parse(response['success'])) {
         emit(GoodsIssuePostSuccess(
-            message: response['message'].toString(),
-            docNo: response['DocNo'].toString(),
-            txnCode: response['TxnCode'].toString()));
+          message: response.toString(),
+        ));
       } else {
         if (response.containsKey("message") && response.containsKey("error")) {
           emit(GoodsIssuePostError(

@@ -44,10 +44,10 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
         widget.lineItem.listOfPOItem!.rECEIVEDQTY.toString();
     // poQtyController.text = widget.lineItem.listOfPOItem!.uOM ?? '';
 
-    ForeignPoCubit.get(context).getItemCodeByItemSKU(
-      // widget.selectedPO.listOfPO?.dOCNO.toString(),
-      widget.lineItem.listOfPOItem?.iTEMCODE.toString(),
-    );
+    // ForeignPoCubit.get(context).getItemCodeByItemSKU(
+    //   // widget.selectedPO.listOfPO?.dOCNO.toString(),
+    //   widget.lineItem.listOfPOItem?.iTEMCODE.toString(),
+    // );
     super.initState();
   }
 
@@ -92,49 +92,53 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    const Text("PO Date"),
-                    TextFieldWidget(
-                      initialValue: data?.productionDate ??
-                          widget.selectedPO.listOfPO?.dOCDT.toString(),
-                      // controller: poDateController,
-                      // hintText: "PO Date",
-                      readOnly: true,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text("Supplier"),
-                    TextFieldWidget(
-                      initialValue: widget.selectedPO.listOfPO?.sUPPNAME,
-                      // controller: supplierController,
-                      // hintText: "Supplier",
-                      readOnly: true,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text("Description"),
-                    TextFieldWidget(
-                      initialValue: data?.itemCode ?? '',
-                      // controller: descriptionController,
-                      // hintText: "Description",
-                      readOnly: true,
-                    ),
-                    const SizedBox(height: 8),
-                    const Text("Size"),
-                    TextFieldWidget(
-                      initialValue: "${data?.size ?? ''}",
-                      // controller: sizeController,
-                      // hintText: "Size",
-                      readOnly: true,
-                    ),
-                    const SizedBox(height: 8),
+                    // const Text("PO Date"),
+                    // TextFieldWidget(
+                    //   initialValue: data?.productionDate ??
+                    //       widget.selectedPO.listOfPO?.dOCDT.toString(),
+                    //   // controller: poDateController,
+                    //   // hintText: "PO Date",
+                    //   readOnly: true,
+                    // ),
+                    // const SizedBox(height: 8),
+                    // const Text("Supplier"),
+                    // TextFieldWidget(
+                    //   initialValue: widget.selectedPO.listOfPO?.sUPPNAME,
+                    //   // controller: supplierController,
+                    //   // hintText: "Supplier",
+                    //   readOnly: true,
+                    // ),
+                    // const SizedBox(height: 8),
+                    // const Text("Description"),
+                    // TextFieldWidget(
+                    //   initialValue: data?.itemCode ?? '',
+                    //   // controller: descriptionController,
+                    //   // hintText: "Description",
+                    //   readOnly: true,
+                    // ),
+                    // const SizedBox(height: 8),
+                    // const Text("Size"),
+                    // TextFieldWidget(
+                    //   initialValue: "${data?.size ?? ''}",
+                    //   // controller: sizeController,
+                    //   // hintText: "Size",
+                    //   readOnly: true,
+                    // ),
+                    // const SizedBox(height: 8),
                     const Text("PO Quantity"),
                     TextFieldWidget(
-                      initialValue: "${data?.itemQty ?? ''}",
+                      // initialValue: "${data?.itemQty ?? ''}",
+                      initialValue:
+                          "${widget.lineItem?.listOfPOItem?.pOQTY ?? ''}",
                       // controller: poQtyController,
                       // hintText: "PO Quantity",
                       readOnly: true,
                     ),
                     const Text("Balance Quantity"),
                     TextFieldWidget(
-                      initialValue: "${data?.itemQty ?? ''}",
+                      // initialValue: "${data?.itemQty ?? ''}",
+                      initialValue:
+                          "${widget.lineItem?.listOfPOItem?.pOQTY ?? ''}",
                       // controller: balanceQtyController,
                       // hintText: "Balance Quantity",
                       readOnly: true,

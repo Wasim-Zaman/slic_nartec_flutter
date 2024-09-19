@@ -114,7 +114,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                   return DataRow(
                     cells: [
                       DataCell(Text(e.itemCode ?? '')),
-                      DataCell(Text(e.size.toString())),
+                      DataCell(Text(e.productSize.toString())),
                       DataCell(Text(e.itemQty.toString())),
                       DataCell(
                         IconButton(
@@ -274,31 +274,31 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
               const SizedBox(height: 16),
               Row(
                 children: [
-                  Expanded(
-                    child: _buildTextField(
-                      title: "Box Quantity",
-                      initialValue: stockTransferCubit.boxQuantity.toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          stockTransferCubit.boxQuantity =
-                              int.tryParse(value) ?? 1;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
-                  Expanded(
-                    child: _buildTextField(
-                      title: "Size",
-                      initialValue: stockTransferCubit.size.toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          stockTransferCubit.size = int.tryParse(value) ?? 1;
-                        });
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 16),
+                  // Expanded(
+                  //   child: _buildTextField(
+                  //     title: "Box Quantity",
+                  //     initialValue: stockTransferCubit.boxQuantity.toString(),
+                  //     onChanged: (value) {
+                  //       setState(() {
+                  //         stockTransferCubit.boxQuantity =
+                  //             int.tryParse(value) ?? 1;
+                  //       });
+                  //     },
+                  //   ),
+                  // ),
+                  // const SizedBox(width: 16),
+                  // Expanded(
+                  //   child: _buildTextField(
+                  //     title: "Size",
+                  //     initialValue: stockTransferCubit.size.toString(),
+                  //     onChanged: (value) {
+                  //       setState(() {
+                  //         stockTransferCubit.size = int.tryParse(value) ?? 1;
+                  //       });
+                  //     },
+                  //   ),
+                  // ),
+                  // const SizedBox(width: 16),
                   Expanded(
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -350,13 +350,13 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(state.message),
-                                  ...[
-                                    const SizedBox(height: 16),
-                                    if (state.docNo != null)
-                                      Text("DOC NO: ${state.docNo}"),
-                                    if (state.refNo != null)
-                                      Text("Ref No: ${state.refNo}"),
-                                  ],
+                                  // ...[
+                                  //   const SizedBox(height: 16),
+                                  //   if (state.docNo != null)
+                                  //     Text("DOC NO: ${state.docNo}"),
+                                  //   if (state.refNo != null)
+                                  //     Text("Ref No: ${state.refNo}"),
+                                  // ],
                                 ],
                               ),
                               actions: [

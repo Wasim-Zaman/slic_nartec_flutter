@@ -16,9 +16,7 @@ final class GoodsIssueTransactionCodesLoading extends GoodsIssueState {}
 
 final class GoodsIssuePostSuccess extends GoodsIssueState {
   final String message;
-  final String docNo, txnCode;
-  GoodsIssuePostSuccess(
-      {required this.message, required this.docNo, required this.txnCode});
+  GoodsIssuePostSuccess({required this.message});
 }
 
 final class GoodsIssueTransactionCodesSuccess extends GoodsIssueState {}

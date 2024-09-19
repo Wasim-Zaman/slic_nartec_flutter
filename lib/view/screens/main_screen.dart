@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/utils/shared_storage.dart';
+import 'package:slic/view/screens/customer_order/customer_order_screen.dart';
 import 'package:slic/view/screens/customer_quotation/customer_quotation_screen.dart';
 import 'package:slic/view/screens/foreign_po/foreign_po_screen_v3.dart';
 import 'package:slic/view/screens/goods_issue/goods_issue_screen.dart';
@@ -118,13 +118,13 @@ class _MainScreenState extends State<MainScreen>
                 AppAssets.salesOrder,
                 const SalesOrderScreen(),
               ),
-              MenuInfo(
-                'Direct Sales Return',
-                AppAssets.directSalesReturn,
-                // const DirectSalesReturnScreen(),
-                null,
-                color: ColorPallete.border,
-              ),
+              // MenuInfo(
+              //   'Direct Sales Return',
+              //   AppAssets.directSalesReturn,
+              //   // const DirectSalesReturnScreen(),
+              //   null,
+              //   color: ColorPallete.border,
+              // ),
               MenuInfo(
                 'Stocks Transfer',
                 AppAssets.stockesTransfer,
@@ -148,7 +148,7 @@ class _MainScreenState extends State<MainScreen>
               MenuInfo(
                 'Customer Order',
                 AppAssets.customerOrder,
-                null,
+                const CustomerOrderScreen(),
               ),
             ])
               AnimatedBuilder(

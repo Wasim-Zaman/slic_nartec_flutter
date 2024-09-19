@@ -32,7 +32,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
     final goodsIssueCubit = GoodsIssueCubit.get(context);
     await goodsIssueCubit.getTransactionCodes();
     setState(() {
-      GoodsIssueCubit.get(context).setDate();
+      GoodsIssueCubit.get(context).setDate(DateTime.now());
       ItemCodeCubit.get(context).itemCodes.clear();
     });
   }
@@ -295,7 +295,17 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                   const SizedBox(width: 8),
                   IconButton(
                     onPressed: () {
-                      GoodsIssueCubit.get(context).setDate();
+                      // show date picker
+                      showDatePicker(
+                        context: context,
+                        initialDate: DateTime.now(),
+                        firstDate: DateTime(2000),
+                        lastDate: DateTime(2100),
+                      ).then((value) {
+                        if (value != null) {
+                          GoodsIssueCubit.get(context).setDate(value);
+                        }
+                      });
                     },
                     icon: const Icon(Icons.calendar_today),
                   ),
@@ -402,11 +412,11 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                                 children: [
                                   Text(state.message),
                                   ...[
-                                    const SizedBox(height: 16),
-                                    if (state.docNo.isNotEmpty)
-                                      Text("Doc Number: ${state.docNo}"),
-                                    if (state.txnCode.isNotEmpty)
-                                      Text("Trx Code: ${state.txnCode}"),
+                                    // const SizedBox(height: 16),
+                                    // if (state.docNo.isNotEmpty)
+                                    //   Text("Doc Number: ${state.docNo}"),
+                                    // if (state.txnCode.isNotEmpty)
+                                    //   Text("Trx Code: ${state.txnCode}"),
                                   ],
                                 ],
                               ),

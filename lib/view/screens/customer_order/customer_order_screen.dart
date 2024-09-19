@@ -13,15 +13,14 @@ import 'package:slic/view/widgets/loading/loading_widget.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-class CustomerQuotationScreen extends StatefulWidget {
-  const CustomerQuotationScreen({super.key});
+class CustomerOrderScreen extends StatefulWidget {
+  const CustomerOrderScreen({super.key});
 
   @override
-  State<CustomerQuotationScreen> createState() =>
-      _CustomerQuotationScreenState();
+  State<CustomerOrderScreen> createState() => _CustomerOrderScreenState();
 }
 
-class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
+class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
   final _formKey = GlobalKey<FormState>();
 
   final cqCubit = CustomerCubit();
@@ -203,7 +202,7 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Customer Quotation")),
+      appBar: AppBar(title: const Text("Customer Order")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -231,7 +230,7 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
               ),
               const SizedBox(height: 16),
               _buildDropdown(
-                title: "Location Code",
+                title: "Delivery Location Code",
                 options: HomeCubit.get(context)
                     .slicLocations
                     .where((element) =>
@@ -242,13 +241,13 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
                     .toSet()
                     .toList(),
                 // defaultValue:     HomeCubit.get(context).location,
-                defaultValue: cqCubit.location == null
+                defaultValue: cqCubit.deliveryLocation == null
                     ? null
                     : "${cqCubit.locationCode!} -- ${cqCubit.location!}",
                 onChanged: (value) {
                   setState(() {
-                    cqCubit.locationCode = value?.split(" -- ")[0];
-                    cqCubit.location = value?.split(" -- ")[1];
+                    cqCubit.deliveryLocationCode = value?.split(" -- ")[0];
+                    cqCubit.deliveryLocation = value?.split(" -- ")[1];
                   });
                 },
               ),
@@ -327,49 +326,65 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
               //   ],
               // ),
               TextFieldWidget(
-                hintText: "Delivery",
+                hintText: "Delivery Instruction",
                 onChanged: (p0) {
-                  cqCubit.delivery = p0;
+                  cqCubit.deliveryInstruction = p0;
                 },
               ),
               const SizedBox(height: 16),
 
               TextFieldWidget(
-                hintText: "Remarks",
+                hintText: "Packing Instruction",
                 onChanged: (p0) {
-                  cqCubit.remarks = p0;
+                  cqCubit.packingInstruction = p0;
                 },
               ),
               const SizedBox(height: 16),
 
               TextFieldWidget(
-                hintText: "Fax No",
+                hintText: "Billing Instruction",
                 onChanged: (p0) {
-                  cqCubit.faxNo = p0;
+                  cqCubit.billingInstruction = p0;
                 },
               ),
               const SizedBox(height: 16),
 
               TextFieldWidget(
-                hintText: "RefFromNo",
+                hintText: "Other Details",
                 onChanged: (p0) {
-                  cqCubit.refFromNo = p0;
+                  cqCubit.otherDetails = p0;
                 },
               ),
               const SizedBox(height: 16),
 
               TextFieldWidget(
-                hintText: "RefFrom",
+                hintText: "Cust Ref Number",
                 onChanged: (p0) {
-                  cqCubit.refFrom = p0;
+                  cqCubit.custRefNo = p0;
                 },
               ),
               const SizedBox(height: 16),
 
               TextFieldWidget(
-                hintText: "Delivery After Days",
+                hintText: "Delivery Mode",
                 onChanged: (p0) {
-                  cqCubit.deliverAfterDays = p0;
+                  cqCubit.modeOfDelivery = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "Delivery Contact",
+                onChanged: (p0) {
+                  cqCubit.deliveryContact = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "LPO Number",
+                onChanged: (p0) {
+                  cqCubit.lpoNumber = p0;
                 },
               ),
               const SizedBox(height: 16),

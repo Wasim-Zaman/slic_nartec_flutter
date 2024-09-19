@@ -78,17 +78,19 @@ class StockTransferCubit extends Cubit<StockTransferState> {
 
       final item = itemCodes.map(
         (e) {
-          late String ic;
+          String? ic;
           if (transactionCode == "PITO") {
             if (type != "U") {
               ic = "U${e.itemCode}$type";
             } else {
               ic = "U${e.itemCode}";
             }
+          } else {
+            ic = e.itemCode;
           }
           return {
             "ItemCode": ic,
-            "Size": "${e.size}",
+            "Size": "${e.productSize}",
             "Qty": "${e.itemQty}",
             "UserId": "SYSADMIN"
           };
@@ -121,9 +123,10 @@ class StockTransferCubit extends Cubit<StockTransferState> {
       if (response['success'] == "true") {
         //  {"Transaction Code":"LDTO","success":"true","Company Code":"SLIC","message":"Stock Transfer Out Created succcessfully","Ref-No/SysID":5074407,"Document No":"2024000103"}
         emit(StockTransferPostSuccess(
-            message: response["message"],
-            refNo: response["Ref-No/SysID"],
-            docNo: response["Document No"]));
+          message: response.toString(),
+          // refNo: response["Ref-No/SysID"].toString(),
+          // docNo: response["Document No"].toString(),
+        ));
       } else {
         if (response.containsKey("error")) {
           emit(StockTransferPostError(errorMessage: response["error"]));
@@ -132,6 +135,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
         }
       }
     } catch (e) {
+      print(e);
       emit(StockTransferPostError(
           errorMessage: "Error occurred while transfering stock!"));
     }

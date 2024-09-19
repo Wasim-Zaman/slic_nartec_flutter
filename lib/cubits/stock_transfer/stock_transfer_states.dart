@@ -14,9 +14,8 @@ final class StockTransferTransactionCodesLoading extends StockTransferState {}
 
 final class StockTransferPostSuccess extends StockTransferState {
   final String message;
-  final String? refNo, docNo;
-  StockTransferPostSuccess(
-      {required this.message, required this.refNo, required this.docNo});
+  // final String? refNo, docNo;
+  StockTransferPostSuccess({required this.message});
 }
 
 final class StockTransferTransactionCodesSuccess extends StockTransferState {}

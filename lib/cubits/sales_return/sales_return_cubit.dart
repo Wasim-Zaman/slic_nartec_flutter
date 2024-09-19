@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:slic/models/invoice_details_slic_model.dart';
 import 'package:slic/models/invoice_header_and_details_model.dart';
 import 'package:slic/models/item_sys_id_model.dart';
 import 'package:slic/models/pos_invoice_model.dart';
@@ -20,6 +21,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
   List<TransactionCodeModel> transactionCodes = [];
   List<POSInvoiceModel> invoices = [];
   List<ItemSysIdModel> itemSysIds = [];
+  List<InvoiceDetailsSlicModel> slicInvoices = [];
 
   // Selected values
   String? transactionName;
@@ -58,6 +60,36 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
 
       if (response.success) {
         invoiceDetails = response.data;
+        emit(SalesReturnPOSInvoiceSuccess());
+      } else {
+        emit(SalesReturnPOSInvoiceError(errorMessage: response.message));
+      }
+    } catch (error) {
+      emit(SalesReturnPOSInvoiceError(errorMessage: error.toString()));
+    }
+  }
+
+  void getSlicInvoiceDetails() async {
+    emit(SalesReturnPOSInvoiceLoading());
+    try {
+      final body = {
+        "filter": {
+          "P_INVH_NO": "$invoiceNumber",
+          "P_TXN_CODE": "$transactionCode"
+        },
+        "M_COMP_CODE": "SLIC",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "INVTOSRITEMDETAILS",
+        "M_LANG_CODE": "ENG"
+      };
+
+      log(jsonEncode(body));
+      final response = await ApiService.slicGetData(body);
+
+      if (response.isNotEmpty) {
+        response.forEach((element) {
+          slicInvoices.add(InvoiceDetailsSlicModel.fromJson(element));
+        });
         emit(SalesReturnPOSInvoiceSuccess());
       } else {
         emit(SalesReturnPOSInvoiceError(errorMessage: response.message));
@@ -139,7 +171,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
           "SystemId": "SYSADMIN",
           "ZATCAPaymentMode": "$paymentMode",
           "TaxExemptionReason": "$taxReason",
-          "Item": selectedInvoices?.invoiceDetails
+          "Item": selectedInvoices.invoiceDetails
               ?.map((details) => {
                     "SessionId": "102202216451",
                     "HeadSysId":
@@ -167,8 +199,6 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
 
       log(jsonEncode(body));
       final response = await ApiService.slicPostData(body);
-
-      print(response);
 
       if (response.containsKey("error")) {
         emit(SalesReturnSaveInvoiceError(errorMessage: response['error']));
