@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/core/color_pallete.dart';
+import 'package:slic/cubits/customer/customer_cubit.dart';
 import 'package:slic/cubits/goods_issue/goods_issue_cubit.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/cubits/item_code/item_code_cubit.dart';
@@ -12,15 +13,18 @@ import 'package:slic/view/widgets/loading/loading_widget.dart';
 import 'package:top_snackbar_flutter/custom_snack_bar.dart';
 import 'package:top_snackbar_flutter/top_snack_bar.dart';
 
-class GoodsIssueScreen extends StatefulWidget {
-  const GoodsIssueScreen({super.key});
+class CustomerQuotationScreen extends StatefulWidget {
+  const CustomerQuotationScreen({super.key});
 
   @override
-  State<GoodsIssueScreen> createState() => _GoodsIssueScreenState();
+  State<CustomerQuotationScreen> createState() =>
+      _CustomerQuotationScreenState();
 }
 
-class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
+class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
   final _formKey = GlobalKey<FormState>();
+
+  final cqCubit = CustomerCubit();
 
   @override
   void initState() {
@@ -29,6 +33,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
   }
 
   void _initializeData() async {
+    await HomeCubit.get(context).getCustomers();
     final goodsIssueCubit = GoodsIssueCubit.get(context);
     await goodsIssueCubit.getTransactionCodes();
     setState(() {
@@ -84,8 +89,17 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
   }
 
   Widget _buildDataTable() {
-    return BlocBuilder<ItemCodeCubit, ItemCodeState>(
+    return BlocConsumer<ItemCodeCubit, ItemCodeState>(
       buildWhen: (previous, current) => current is ItemCodeSuccess,
+      listener: (context, state) {
+        if (state is ItemCodeSuccess) {
+          ItemCodeCubit.get(context).getItemRate(
+            state.itemCode?.itemCode,
+            cqCubit.customerCode,
+            state.itemCode?.productSize,
+          );
+        }
+      },
       builder: (context, state) {
         return Container(
           width: double.infinity,
@@ -107,6 +121,9 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                   label: Text('Qty', style: TextStyle(color: Colors.white)),
                 ),
                 DataColumn(
+                  label: Text('Rate', style: TextStyle(color: Colors.white)),
+                ),
+                DataColumn(
                   label: Text('Actions', style: TextStyle(color: Colors.white)),
                 ),
               ],
@@ -117,6 +134,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                       DataCell(Text(e.itemCode ?? '')),
                       DataCell(Text(e.productSize.toString())),
                       DataCell(Text(e.itemQty.toString())),
+                      DataCell(Text(e.rate.toString())),
                       DataCell(
                         IconButton(
                           icon: const Icon(Icons.delete, color: Colors.red),
@@ -148,7 +166,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
             hintText: "Enter Quantity",
             filledColor: ColorPallete.accent.withOpacity(0.6),
             onChanged: (value) {
-              GoodsIssueCubit.get(context).quantity = int.tryParse(value) ?? 1;
+              cqCubit.quantity = int.tryParse(value) ?? 1;
             },
           ),
           actions: [
@@ -162,8 +180,8 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
               onPressed: () {
                 Navigator.pop(context);
                 ItemCodeCubit.get(context).getItemCodeByGtin(
-                  qty: GoodsIssueCubit.get(context).quantity,
-                  size: GoodsIssueCubit.get(context).size,
+                  qty: cqCubit.quantity,
+                  size: cqCubit.size,
                 );
               },
               child: const Text("Submit"),
@@ -177,19 +195,15 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
   void _handleSubmit() {
     // unfocus keyboard
     FocusManager.instance.primaryFocus?.unfocus();
-    GoodsIssueCubit.get(context).submitGoods(
-      itemCodes: ItemCodeCubit.get(context).itemCodes,
-      fromLocationCode: HomeCubit.get(context).fromLocationCode,
-      toLocationCode: HomeCubit.get(context).toLocationCode,
-    );
+    if (_formKey.currentState!.validate()) {
+      cqCubit.addCustomerQuotation(ItemCodeCubit.get(context).itemCodes);
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text("Goods Issue"),
-      ),
+      appBar: AppBar(title: const Text("Customer Quotation")),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
         keyboardDismissBehavior: ScrollViewKeyboardDismissBehavior.onDrag,
@@ -201,29 +215,17 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
               _buildDropdown(
                 hintText: "Transaction",
                 title: "Transaction",
-                // options: goodsIssueCubit.transactionCodes
-                //     .where((element) =>
-                //         element.listOfTransactionCod?.tXNNAME != null)
-                //     .map((e) => e.listOfTransactionCod!.tXNNAME.toString())
-                //     .toSet()
-                //     .toList(),
-                options: ['DPWO', 'SPWO', 'PWO'],
-                defaultValue: GoodsIssueCubit.get(context).transactionCode,
-                // defaultValue:   GoodsIssueCubit.get(context).transactionName,
-                // onChanged: (value) {
-                //   setState(() {
-                //       GoodsIssueCubit.get(context).transactionName = value!;
-                //       GoodsIssueCubit.get(context).transactionCode =   GoodsIssueCubit.get(context)
-                //         .transactionCodes
-                //         .firstWhere((element) =>
-                //             element.listOfTransactionCod!.tXNNAME == value)
-                //         .listOfTransactionCod!
-                //         .tXNCODE;
-                //   });
-                // },
+                options: GoodsIssueCubit.get(context)
+                    .transactionCodes
+                    .where((element) =>
+                        element.listOfTransactionCod?.tXNNAME != null)
+                    .map((e) => e.listOfTransactionCod!.tXNCODE.toString())
+                    .toSet()
+                    .toList(),
+                defaultValue: cqCubit.transactionCode,
                 onChanged: (value) {
                   setState(() {
-                    GoodsIssueCubit.get(context).transactionCode = value;
+                    cqCubit.transactionCode = value;
                   });
                 },
               ),
@@ -240,68 +242,138 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                     .toSet()
                     .toList(),
                 // defaultValue:     HomeCubit.get(context).location,
-                defaultValue: HomeCubit.get(context).fromLocation == null
+                defaultValue: cqCubit.location == null
                     ? null
-                    : "${HomeCubit.get(context).fromLocationCode!} -- ${HomeCubit.get(context).fromLocation!}",
+                    : "${cqCubit.locationCode!} -- ${cqCubit.location!}",
                 onChanged: (value) {
                   setState(() {
-                    HomeCubit.get(context).fromLocationCode =
-                        value?.split(" -- ")[0];
-                    HomeCubit.get(context).fromLocation =
-                        value?.split(" -- ")[1];
+                    cqCubit.locationCode = value?.split(" -- ")[0];
+                    cqCubit.location = value?.split(" -- ")[1];
                   });
                 },
               ),
-              // const SizedBox(height: 16),
-              // _buildDropdown(
-              //   title: "To Location",
-              //   options: homeCubit.slicLocations
-              //       .where((element) =>
-              //           element.locationMaster?.lOCNNAME != null &&
-              //           element.locationMaster!.lOCNCODE != null)
-              //       .map((e) =>
-              //           "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
-              //       .toSet()
-              //       .toList(),
-              //   // defaultValue: homeCubit.location,
-              //   defaultValue: homeCubit.toLocation == null
-              //       ? null
-              //       : "${homeCubit.toLocationCode!} -- ${homeCubit.toLocation!}",
-              //   onChanged: (value) {
-              //     setState(() {
-              //       homeCubit.toLocationCode = value?.split(" -- ")[0];
-              //       homeCubit.toLocation = value?.split(" -- ")[1];
-              //     });
-              //   },
-              // ),
               const SizedBox(height: 16),
-              Row(
-                children: [
-                  const Text("Date"),
-                  const SizedBox(width: 8),
-                  BlocBuilder<GoodsIssueCubit, GoodsIssueState>(
-                    buildWhen: (previous, current) =>
-                        current is GoodsIssueDateChanged,
-                    builder: (context, state) {
-                      final date = GoodsIssueCubit.get(context).date;
-                      return Expanded(
-                        child: TextFieldWidget(
-                          controller: date,
-                          readOnly: true,
-                        ),
-                      );
-                    },
-                  ),
-                  const SizedBox(width: 8),
-                  IconButton(
-                    onPressed: () {
-                      GoodsIssueCubit.get(context).setDate();
-                    },
-                    icon: const Icon(Icons.calendar_today),
-                  ),
-                ],
+              _buildDropdown(
+                title: "Sales Location Code",
+                options: HomeCubit.get(context)
+                    .slicLocations
+                    .where((element) =>
+                        element.locationMaster?.lOCNNAME != null &&
+                        element.locationMaster!.lOCNCODE != null)
+                    .map((e) =>
+                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
+                    .toSet()
+                    .toList(),
+                defaultValue: cqCubit.salesLocation == null
+                    ? null
+                    : "${cqCubit.salesLocationCode!} -- ${cqCubit.salesLocation!}",
+                onChanged: (value) {
+                  setState(() {
+                    cqCubit.salesLocationCode = value?.split(" -- ")[0];
+                    cqCubit.salesLocation = value?.split(" -- ")[1];
+                  });
+                },
               ),
               const SizedBox(height: 16),
+              BlocBuilder<HomeCubit, HomeState>(
+                builder: (context, state) {
+                  return _buildDropdown(
+                    title: "Customer",
+                    options: HomeCubit.get(context)
+                        .customers
+                        .where((element) =>
+                            element.cUSTCODE != null &&
+                            element.cUSTNAME != null)
+                        .map((e) => "${e.cUSTCODE} -- ${e.cUSTNAME}")
+                        .toSet()
+                        .toList(),
+                    defaultValue: cqCubit.customerCode == null
+                        ? null
+                        : "${cqCubit.customerCode!} -- ${cqCubit.customerName!}",
+                    onChanged: (value) {
+                      setState(() {
+                        cqCubit.customerCode = value?.split(" -- ")[0];
+                        cqCubit.customerName = value?.split(" -- ")[1];
+                      });
+                    },
+                  );
+                },
+              ),
+              const SizedBox(height: 16),
+              // Row(
+              //   children: [
+              //     const Text("Date"),
+              //     const SizedBox(width: 8),
+              //     BlocBuilder<GoodsIssueCubit, GoodsIssueState>(
+              //       buildWhen: (previous, current) =>
+              //           current is GoodsIssueDateChanged,
+              //       builder: (context, state) {
+              //         final date = GoodsIssueCubit.get(context).date;
+              //         return Expanded(
+              //           child: TextFieldWidget(
+              //             controller: date,
+              //             readOnly: true,
+              //           ),
+              //         );
+              //       },
+              //     ),
+              //     const SizedBox(width: 8),
+              //     IconButton(
+              //       onPressed: () {
+              //         GoodsIssueCubit.get(context).setDate();
+              //       },
+              //       icon: const Icon(Icons.calendar_today),
+              //     ),
+              //   ],
+              // ),
+              TextFieldWidget(
+                hintText: "Delivery",
+                onChanged: (p0) {
+                  cqCubit.delivery = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "Remarks",
+                onChanged: (p0) {
+                  cqCubit.remarks = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "Fax No",
+                onChanged: (p0) {
+                  cqCubit.faxNo = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "RefFromNo",
+                onChanged: (p0) {
+                  cqCubit.refFromNo = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "RefFrom",
+                onChanged: (p0) {
+                  cqCubit.refFrom = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "Delivery After Days",
+                onChanged: (p0) {
+                  cqCubit.deliverAfterDays = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
               Row(
                 children: [
                   Expanded(
@@ -380,15 +452,16 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                   //   ),
                   // ),
                   // const Spacer(),
-                  BlocConsumer<GoodsIssueCubit, GoodsIssueState>(
+                  BlocConsumer<CustomerCubit, CustomerState>(
+                    bloc: cqCubit,
                     listener: (context, state) {
-                      if (state is GoodsIssuePostSuccess) {
+                      if (state is CustomerSaveQuotationSuccess) {
                         // Handle success state
                         // showTopSnackBar(
                         //   Overlay.of(context),
                         //   CustomSnackBar.success(message: state.message),
                         // );
-                        // Navigation.pop(context);
+                        Navigation.pop(context);
                         showDialog(
                           context: context,
                           builder: (context) {
@@ -405,8 +478,8 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                                     const SizedBox(height: 16),
                                     if (state.docNo.isNotEmpty)
                                       Text("Doc Number: ${state.docNo}"),
-                                    if (state.txnCode.isNotEmpty)
-                                      Text("Trx Code: ${state.txnCode}"),
+                                    if (state.refNo.isNotEmpty)
+                                      Text("Ref No: ${state.refNo}"),
                                   ],
                                 ],
                               ),
@@ -422,15 +495,15 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                             );
                           },
                         );
-                      } else if (state is GoodsIssuePostError) {
+                      } else if (state is CustomerSaveQuotationError) {
                         showTopSnackBar(
                           Overlay.of(context),
-                          CustomSnackBar.error(message: state.errorMessage),
+                          CustomSnackBar.error(message: state.message),
                         );
                       }
                     },
                     builder: (context, state) {
-                      if (state is GoodsIssuePostLoading) {
+                      if (state is CustomerSaveQuotationLoading) {
                         return const LoadingWidget();
                       }
                       return AppButton(

@@ -18,6 +18,7 @@ class ItemCode {
   String? packagingType;
   String? productUnit;
   String? productSize;
+  String? rate;
   String? createdAt;
   String? updatedAt;
 
@@ -41,6 +42,7 @@ class ItemCode {
     this.packagingType,
     this.productUnit,
     this.productSize,
+    this.rate,
     this.createdAt,
     this.updatedAt,
   });
@@ -65,6 +67,7 @@ class ItemCode {
     packagingType = json['PackagingType'];
     productUnit = json['ProductUnit'];
     productSize = json['ProductSize'];
+    rate = json['Rate'];
     createdAt = json['Created_at'];
     updatedAt = json['Updated_at'];
   }

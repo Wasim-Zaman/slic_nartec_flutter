@@ -12,6 +12,8 @@ final class HomeGetSlicCompaniesLoading extends HomeState {}
 
 final class HomeGetSlicLocationsLoading extends HomeState {}
 
+final class HomeGetCustomers extends HomeState {}
+
 // * Success
 
 final class HomeGetCompanyLocationSuccess extends HomeState {
@@ -22,6 +24,8 @@ final class HomeGetCompanyLocationSuccess extends HomeState {
 final class HomeGetSlicCompaniesSuccess extends HomeState {}
 
 final class HomeGetSlicLocationsSuccess extends HomeState {}
+
+final class HomeGetCustomersSuccess extends HomeState {}
 
 // ! Error
 
@@ -38,4 +42,9 @@ final class HomeGetSlicCompaniesError extends HomeState {
 final class HomeGetSlicLocationsError extends HomeState {
   final String message;
   HomeGetSlicLocationsError(this.message);
+}
+
+final class HomeGetCustomersError extends HomeState {
+  final String message;
+  HomeGetCustomersError(this.message);
 }

@@ -2,6 +2,7 @@ import 'package:slic/models/api_response.dart';
 import 'package:slic/models/auth.dart';
 import 'package:slic/models/company.dart';
 import 'package:slic/models/company_location.dart';
+import 'package:slic/models/customer_model.dart';
 import 'package:slic/models/foreign_po.dart';
 import 'package:slic/models/invoice_header_and_details_model.dart';
 import 'package:slic/models/item_code.dart';
@@ -393,5 +394,22 @@ class ApiService {
         });
 
     return ApiResponse.fromJson(response, (data) => null);
+  }
+
+// * CUSTOMERS SECTION ***
+  static Future<ApiResponse> getCustomers() async {
+    const endpoint = "/customerNames/v1/all";
+    final response = await HttpService().request(
+      endpoint,
+      method: "GET",
+    );
+
+    List<CustomerModel> customers = [];
+
+    response['data'].forEach((data) {
+      customers.add(CustomerModel.fromJson(data));
+    });
+
+    return ApiResponse.fromJson(response, (data) => customers);
   }
 }

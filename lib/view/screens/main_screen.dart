@@ -4,6 +4,7 @@ import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/utils/shared_storage.dart';
+import 'package:slic/view/screens/customer_quotation/customer_quotation_screen.dart';
 import 'package:slic/view/screens/foreign_po/foreign_po_screen_v3.dart';
 import 'package:slic/view/screens/goods_issue/goods_issue_screen.dart';
 import 'package:slic/view/screens/home_screen_v2.dart';
@@ -142,7 +143,7 @@ class _MainScreenState extends State<MainScreen>
               MenuInfo(
                 'Customer Quotation',
                 AppAssets.customerQuotation,
-                null,
+                const CustomerQuotationScreen(),
               ),
               MenuInfo(
                 'Customer Order',

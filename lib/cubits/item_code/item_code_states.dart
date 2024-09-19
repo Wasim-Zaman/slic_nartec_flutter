@@ -10,7 +10,11 @@ final class ItemCodeLoading extends ItemCodeState {}
 
 // * Success
 
-final class ItemCodeSuccess extends ItemCodeState {}
+final class ItemCodeSuccess extends ItemCodeState {
+  final ItemCode? itemCode;
+  final ItemRate? rate;
+  ItemCodeSuccess({this.rate, this.itemCode});
+}
 
 // ! Error
 
