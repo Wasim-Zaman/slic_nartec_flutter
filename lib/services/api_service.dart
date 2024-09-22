@@ -1,3 +1,4 @@
+import 'package:slic/config/app_config.dart';
 import 'package:slic/models/api_response.dart';
 import 'package:slic/models/auth.dart';
 import 'package:slic/models/company.dart';
@@ -40,15 +41,18 @@ class ApiService {
 
   static Future<void> slicLogin() async {
     const endpoint = "/oneerpauth/api/login";
-    final response =
-        await HttpService.baseUrl("http://slicuat05api.oneerpcloud.com")
-            .request(endpoint, method: "POST", data: {
-      "apiKey":
-          "b4d21674cd474705f6caa07d618b389ddc7ebc25a77a0dc591f49e9176beda01",
-    }, headers: {
-      'Content-Type': 'application/json',
-      'X-tenanttype': 'live'
-    });
+    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+      endpoint,
+      method: "POST",
+      data: {
+        "apiKey":
+            "b4d21674cd474705f6caa07d618b389ddc7ebc25a77a0dc591f49e9176beda01",
+      },
+      headers: {
+        'Content-Type': 'application/json',
+        'X-tenanttype': 'live',
+      },
+    );
 
     await SharedStorage.setSlicToken(response['token'].toString());
   }
@@ -86,9 +90,7 @@ class ApiService {
   static Future<List<SlicPOModel>> getPoList() async {
     const url = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response =
-        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
-            .request(
+    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
       url,
       data: {
         "filter": {},
@@ -115,9 +117,7 @@ class ApiService {
   static Future<List<PoLineItemModel>> getPoLineItems(sysId) async {
     const url = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response =
-        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
-            .request(
+    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
       url,
       data: {
         "filter": {"P_PI_PH_SYS_ID": sysId},
@@ -144,9 +144,7 @@ class ApiService {
   static Future<List<SoLineItemModel>> getSoLineItems(sysId) async {
     const url = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response =
-        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
-            .request(
+    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
       url,
       data: {
         "filter": {"P_SOI_SOH_SYS_ID": sysId},
@@ -187,18 +185,21 @@ class ApiService {
   static Future<List<CompanyModel>> getSlicCompanies() async {
     const endpoint = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response =
-        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
-            .request(endpoint, method: "POST", data: {
-      "filter": {},
-      "M_COMP_CODE": "001",
-      "M_USER_ID": "SYSADMIN",
-      "APICODE": "CompanyMaster",
-      "M_LANG_CODE": "ENG"
-    }, headers: {
-      "Authorization": "Bearer $slicToken",
-      'Content-Type': 'application/json',
-    });
+    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+      endpoint,
+      method: "POST",
+      data: {
+        "filter": {},
+        "M_COMP_CODE": "001",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "CompanyMaster",
+        "M_LANG_CODE": "ENG"
+      },
+      headers: {
+        "Authorization": "Bearer $slicToken",
+        'Content-Type': 'application/json',
+      },
+    );
 
     List<CompanyModel> companies = [];
     response.forEach((data) {
@@ -210,18 +211,21 @@ class ApiService {
   static Future<List<LocationModel>> getSlicLocations() async {
     const endpoint = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response =
-        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
-            .request(endpoint, method: "POST", data: {
-      "filter": {},
-      "M_COMP_CODE": "001",
-      "M_USER_ID": "SYSADMIN",
-      "APICODE": "LocationMaster",
-      "M_LANG_CODE": "ENG"
-    }, headers: {
-      "Authorization": "Bearer $slicToken",
-      'Content-Type': 'application/json',
-    });
+    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+      endpoint,
+      method: "POST",
+      data: {
+        "filter": {},
+        "M_COMP_CODE": "001",
+        "M_USER_ID": "SYSADMIN",
+        "APICODE": "LocationMaster",
+        "M_LANG_CODE": "ENG"
+      },
+      headers: {
+        "Authorization": "Bearer $slicToken",
+        'Content-Type': 'application/json',
+      },
+    );
 
     List<LocationModel> locations = [];
     response.forEach((data) {
@@ -282,29 +286,32 @@ class ApiService {
     const endpoint = "/oneerpreport/api/postdata";
     final slicToken = SharedStorage.getSlicToken();
 
-    final response =
-        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
-            .request(endpoint,
-                method: "POST",
-                data: body,
-                headers: <String, String>{
-          "Authorization": "Bearer $slicToken",
-          "Content-Type": "application/json",
-          "Host": "slicuat05api.oneerpcloud.com",
-        });
+    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+      endpoint,
+      method: "POST",
+      data: body,
+      headers: <String, String>{
+        "Authorization": "Bearer $slicToken",
+        "Content-Type": "application/json",
+        "Host": "slicuat05api.oneerpcloud.com",
+      },
+    );
     return response;
   }
 
   static Future<dynamic> slicGetData(var body) async {
     const endpoint = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response =
-        await HttpService.baseUrl("https://slicuat05api.oneerpcloud.com")
-            .request(endpoint, method: "POST", data: body, headers: {
-      "Authorization": "Bearer $slicToken",
-      "Content-Type": "application/json",
-      "Host": "slicuat05api.oneerpcloud.com",
-    });
+    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+      endpoint,
+      method: "POST",
+      data: body,
+      headers: {
+        "Authorization": "Bearer $slicToken",
+        "Content-Type": "application/json",
+        "Host": "slicuat05api.oneerpcloud.com",
+      },
+    );
     return response;
   }
 
@@ -396,7 +403,7 @@ class ApiService {
     return ApiResponse.fromJson(response, (data) => null);
   }
 
-// * CUSTOMERS SECTION ***
+  // * CUSTOMERS SECTION ***
   static Future<ApiResponse> getCustomers() async {
     const endpoint = "/customerNames/v1/all";
     final response = await HttpService().request(

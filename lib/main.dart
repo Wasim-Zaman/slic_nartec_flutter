@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:slic/core/theme.dart';
 import 'package:slic/cubits/auth/auth_cubit.dart';
 import 'package:slic/cubits/foreign_po/foreign_po_cubit.dart';
@@ -17,6 +18,7 @@ import 'package:slic/view/screens/splash/splash_screen.dart';
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   await SharedStorage.init();
+  await dotenv.load();
   runApp(const MyApp());
 }
 
