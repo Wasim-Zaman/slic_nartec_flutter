@@ -37,14 +37,16 @@ class ItemCodeCubit extends Cubit<ItemCodeState> {
     }
   }
 
-  getItemRate(itemCode, custCode, productSize) async {
+  Future<void> getItemRate(
+      String itemCode, String custCode, String productSize) async {
     try {
-      final body = {
+      // Construct the request body
+      final Map<String, dynamic> body = {
         "filter": {
           "P_COMP_CODE": "SLIC",
-          "P_ITEM_CODE": "$productSize",
-          "P_CUST_CODE": "$custCode",
-          "P_GRADE_CODE_1": "$productSize"
+          "P_ITEM_CODE": itemCode,
+          "P_CUST_CODE": custCode,
+          "P_GRADE_CODE_1": productSize
         },
         "M_COMP_CODE": "SLIC",
         "M_USER_ID": "SYSADMIN",
@@ -52,39 +54,45 @@ class ItemCodeCubit extends Cubit<ItemCodeState> {
         "M_LANG_CODE": "ENG"
       };
 
+      // Log the request body for debugging purposes
       log(jsonEncode(body));
 
-      final response = await ApiService.slicGetData(body);
+      // Fetch response from the API
+      final response = await ApiService.slicGetData(body) as List<dynamic>;
 
-      if (response.length != 0) {
-        itemRate = response[0];
-        itemCodes
-                .firstWhere(
-                  (element) =>
-                      element.itemCode == itemCode &&
-                      element.productSize == productSize,
-                )
-                .rate =
-            itemRate?.pRICELIST?.pLIRATE == null
-                ? "0"
-                : "${itemRate?.pRICELIST?.pLIRATE}";
-
-        print("${itemRate?.pRICELIST?.pLIRATE}");
-
-        emit(ItemCodeSuccess(rate: itemRate));
-      } else {
-        itemCodes
-            .firstWhere(
-              (element) =>
-                  element.itemCode == itemCode &&
-                  element.productSize == productSize,
-            )
-            .rate = "0";
-        emit(ItemCodeError("No rate found."));
+      if (response.isEmpty) {
+        _updateItemRate(itemCode, productSize, "0");
+        emit(ItemCodeRateError("No rate found."));
+        return;
       }
-    } catch (error) {
-      print(error);
+
+      // Parse the response and extract item rates
+      final List<ItemRate> itemRates =
+          response.map((json) => ItemRate.fromJson(json)).toList();
+
+      // Update item rate
+      final itemRate = itemRates.first;
+      final rate = itemRate.pRICELIST?.pLIRATE?.toString() ?? "0";
+      _updateItemRate(itemCode, productSize, rate);
+
+      // Emit success event with the item rate
+      emit(ItemCodeRateSuccess(rate: itemRate));
+    } catch (error, stacktrace) {
+      log("Error fetching item rate: $error\n$stacktrace");
+      emit(ItemCodeRateError("Failed to fetch item rate."));
     }
+  }
+
+// Helper function to update the rate of the item
+  void _updateItemRate(String itemCode, String productSize, String rate) {
+    final item = itemCodes.firstWhere(
+      (element) =>
+          element.itemCode == itemCode && element.productSize == productSize,
+      orElse: () => ItemCode(),
+    );
+
+    item.rate = rate;
+    log("Updated rate for itemCode: $itemCode, productSize: $productSize to $rate");
   }
 
   void dispose() {

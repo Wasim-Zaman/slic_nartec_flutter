@@ -89,13 +89,12 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
 
   Widget _buildDataTable() {
     return BlocConsumer<ItemCodeCubit, ItemCodeState>(
-      buildWhen: (previous, current) => current is ItemCodeSuccess,
       listener: (context, state) {
         if (state is ItemCodeSuccess) {
           ItemCodeCubit.get(context).getItemRate(
-            state.itemCode?.itemCode,
-            cqCubit.customerCode,
-            state.itemCode?.productSize,
+            "${state.itemCode?.itemCode}",
+            "${cqCubit.customerCode}",
+            "${state.itemCode?.productSize}",
           );
         }
       },

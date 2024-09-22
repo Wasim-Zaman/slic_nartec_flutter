@@ -53,11 +53,11 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
     emit(GoodsIssueDateChanged());
   }
 
-  getTransactionCodes() async {
+  getTransactionCodes({String txnType = "LTRFO"}) async {
     emit(GoodsIssueTransactionCodesLoading());
     try {
       final response = await ApiService.slicGetData({
-        "filter": {"P_TXN_TYPE": "LTRFO"},
+        "filter": {"P_TXN_TYPE": txnType},
         "M_COMP_CODE": "SLIC",
         "M_USER_ID": "SYSADMIN",
         "APICODE": "ListOfTransactionCode",

@@ -35,7 +35,7 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
   void _initializeData() async {
     await HomeCubit.get(context).getCustomers();
     final goodsIssueCubit = GoodsIssueCubit.get(context);
-    await goodsIssueCubit.getTransactionCodes();
+    await goodsIssueCubit.getTransactionCodes(txnType: "SQUOT");
     setState(() {
       ItemCodeCubit.get(context).itemCodes.clear();
     });
@@ -89,13 +89,22 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
 
   Widget _buildDataTable() {
     return BlocConsumer<ItemCodeCubit, ItemCodeState>(
-      buildWhen: (previous, current) => current is ItemCodeSuccess,
       listener: (context, state) {
         if (state is ItemCodeSuccess) {
           ItemCodeCubit.get(context).getItemRate(
-            state.itemCode?.itemCode,
-            cqCubit.customerCode,
-            state.itemCode?.productSize,
+            "${state.itemCode?.itemCode}",
+            "${cqCubit.customerCode}",
+            "${state.itemCode?.productSize}",
+          );
+        } else if (state is ItemCodeRateSuccess) {
+          showTopSnackBar(
+            Overlay.of(context),
+            const CustomSnackBar.success(message: "Item rate updated"),
+          );
+        } else if (state is ItemCodeRateError) {
+          showTopSnackBar(
+            Overlay.of(context),
+            CustomSnackBar.error(message: state.error),
           );
         }
       },
@@ -325,6 +334,39 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
               //     ),
               //   ],
               // ),
+
+              TextFieldWidget(
+                hintText: "CQH_FLEX_01",
+                onChanged: (p0) {
+                  cqCubit.flex1 = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "CQH_FLEX_02",
+                onChanged: (p0) {
+                  cqCubit.flex2 = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "VAT",
+                onChanged: (p0) {
+                  cqCubit.vat = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
+              TextFieldWidget(
+                hintText: "CQH_FLEX_04",
+                onChanged: (p0) {
+                  cqCubit.flex4 = p0;
+                },
+              ),
+              const SizedBox(height: 16),
+
               TextFieldWidget(
                 hintText: "Delivery",
                 onChanged: (p0) {
