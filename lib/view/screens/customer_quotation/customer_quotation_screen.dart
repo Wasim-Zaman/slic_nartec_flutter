@@ -413,19 +413,26 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
               ),
               const SizedBox(height: 16),
 
-              TextFieldWidget(
-                hintText: "RefFromNo",
-                onChanged: (p0) {
-                  cqCubit.refFromNo = p0;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFieldWidget(
-                hintText: "RefFrom",
-                onChanged: (p0) {
-                  cqCubit.refFrom = p0;
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFieldWidget(
+                      hintText: "RefFromNo",
+                      onChanged: (p0) {
+                        cqCubit.refFromNo = p0;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: TextFieldWidget(
+                      hintText: "RefFrom",
+                      onChanged: (p0) {
+                        cqCubit.refFrom = p0;
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 

@@ -228,49 +228,58 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              _buildDropdown(
-                title: "Delivery Location Code",
-                options: HomeCubit.get(context)
-                    .slicLocations
-                    .where((element) =>
-                        element.locationMaster?.lOCNNAME != null &&
-                        element.locationMaster!.lOCNCODE != null)
-                    .map((e) =>
-                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
-                    .toSet()
-                    .toList(),
-                // defaultValue:     HomeCubit.get(context).location,
-                defaultValue: cqCubit.deliveryLocation == null
-                    ? null
-                    : "${cqCubit.locationCode!} -- ${cqCubit.location!}",
-                onChanged: (value) {
-                  setState(() {
-                    cqCubit.deliveryLocationCode = value?.split(" -- ")[0];
-                    cqCubit.deliveryLocation = value?.split(" -- ")[1];
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildDropdown(
-                title: "Sales Location Code",
-                options: HomeCubit.get(context)
-                    .slicLocations
-                    .where((element) =>
-                        element.locationMaster?.lOCNNAME != null &&
-                        element.locationMaster!.lOCNCODE != null)
-                    .map((e) =>
-                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
-                    .toSet()
-                    .toList(),
-                defaultValue: cqCubit.salesLocation == null
-                    ? null
-                    : "${cqCubit.salesLocationCode!} -- ${cqCubit.salesLocation!}",
-                onChanged: (value) {
-                  setState(() {
-                    cqCubit.salesLocationCode = value?.split(" -- ")[0];
-                    cqCubit.salesLocation = value?.split(" -- ")[1];
-                  });
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildDropdown(
+                      title: "Delivery Location Code",
+                      options: HomeCubit.get(context)
+                          .slicLocations
+                          .where((element) =>
+                              element.locationMaster?.lOCNNAME != null &&
+                              element.locationMaster!.lOCNCODE != null)
+                          .map((e) =>
+                              "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
+                          .toSet()
+                          .toList(),
+                      // defaultValue:     HomeCubit.get(context).location,
+                      defaultValue: cqCubit.deliveryLocation == null
+                          ? null
+                          : "${cqCubit.locationCode!} -- ${cqCubit.location!}",
+                      onChanged: (value) {
+                        setState(() {
+                          cqCubit.deliveryLocationCode =
+                              value?.split(" -- ")[0];
+                          cqCubit.deliveryLocation = value?.split(" -- ")[1];
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 4.0),
+                  Expanded(
+                    child: _buildDropdown(
+                      title: "Sales Location Code",
+                      options: HomeCubit.get(context)
+                          .slicLocations
+                          .where((element) =>
+                              element.locationMaster?.lOCNNAME != null &&
+                              element.locationMaster!.lOCNCODE != null)
+                          .map((e) =>
+                              "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
+                          .toSet()
+                          .toList(),
+                      defaultValue: cqCubit.salesLocation == null
+                          ? null
+                          : "${cqCubit.salesLocationCode!} -- ${cqCubit.salesLocation!}",
+                      onChanged: (value) {
+                        setState(() {
+                          cqCubit.salesLocationCode = value?.split(" -- ")[0];
+                          cqCubit.salesLocation = value?.split(" -- ")[1];
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               BlocBuilder<HomeCubit, HomeState>(
