@@ -37,7 +37,6 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
     final goodsIssueCubit = GoodsIssueCubit.get(context);
     await goodsIssueCubit.getTransactionCodes();
     setState(() {
-      GoodsIssueCubit.get(context).setDate(DateTime.now());
       ItemCodeCubit.get(context).itemCodes.clear();
     });
   }
@@ -466,21 +465,14 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text(
-                                state.message,
+                              title: const Text(
+                                "SUCCESS",
                                 textAlign: TextAlign.center,
                               ),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(state.message),
-                                  ...[
-                                    const SizedBox(height: 16),
-                                    if (state.docNo.isNotEmpty)
-                                      Text("Doc Number: ${state.docNo}"),
-                                    if (state.refNo.isNotEmpty)
-                                      Text("Ref No: ${state.refNo}"),
-                                  ],
                                 ],
                               ),
                               actions: [

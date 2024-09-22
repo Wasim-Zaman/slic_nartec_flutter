@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nice_json/nice_json.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/services/api_service.dart';
 
@@ -82,9 +83,11 @@ class CustomerCubit extends Cubit<CustomerState> {
       jsonEncode(body);
 
       final response = await ApiService.slicPostData(body);
+
       if (bool.parse(response['success'])) {
         emit(CustomerSaveQuotationSuccess(
-            message: response['message'].toString(),
+            // message: response['message'].toString(),
+            message: niceJson(response),
             docNo: response['DocNo'].toString(),
             refNo: response['Ref-No/SysID'].toString()));
       } else {

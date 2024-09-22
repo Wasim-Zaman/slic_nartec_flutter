@@ -235,23 +235,23 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                       context: context,
                       builder: (context) {
                         return AlertDialog(
-                          title: Text(
-                            state.successMessage,
+                          title: const Text(
+                            "Success",
                             textAlign: TextAlign.center,
                           ),
                           content: Column(
                             mainAxisSize: MainAxisSize.min,
                             children: [
                               Text(state.successMessage),
-                              ...[
-                                const SizedBox(height: 16),
-                                if (state.salesReturnDocNo != null)
-                                  Text(
-                                      "Sales Retrurn Doc No: ${state.salesReturnDocNo}"), // Display GRN System ID if not null
-                                if (state.salesReturnSysId != null)
-                                  Text(
-                                      "Sales Return Sys Id: ${state.salesReturnSysId}"), // Display GRN Document No if not null
-                              ],
+                              // ...[
+                              //   const SizedBox(height: 16),
+                              //   if (state.salesReturnDocNo != null)
+                              //     Text(
+                              //         "Sales Retrurn Doc No: ${state.salesReturnDocNo}"), // Display GRN System ID if not null
+                              //   if (state.salesReturnSysId != null)
+                              //     Text(
+                              //         "Sales Return Sys Id: ${state.salesReturnSysId}"), // Display GRN Document No if not null
+                              // ],
                             ],
                           ),
                           actions: [

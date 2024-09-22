@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nice_json/nice_json.dart';
 import 'package:slic/models/invoice_details_slic_model.dart';
 import 'package:slic/models/invoice_header_and_details_model.dart';
 import 'package:slic/models/item_sys_id_model.dart';
@@ -201,14 +202,16 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
       };
 
       log(jsonEncode(body));
-      final response = await ApiService.slicPostData(body);
+      final response =
+          await ApiService.slicPostData(body) as Map<String, dynamic>;
 
       if (response.containsKey("error")) {
         emit(SalesReturnSaveInvoiceError(errorMessage: response['error']));
       } else if (response.containsKey("MESSAGE")) {
         emit(
           SalesReturnSaveInvoiceSuccess(
-            successMessage: response['MESSAGE'],
+            // successMessage: response['MESSAGE'],
+            successMessage: niceJson(response),
             salesReturnSysId: response['SALESRETURN_SYS_ID'],
             salesReturnDocNo: response['SALESRETURN_DOC_NO'],
           ),
