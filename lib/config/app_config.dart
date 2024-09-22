@@ -1,5 +1,5 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiConfig {
-  static String baseUrl = dotenv.env['SLIC_TESTING']!;
+  static String slicDomain = dotenv.env['SLIC_TESTING']!;
 }

@@ -41,7 +41,7 @@ class ApiService {
 
   static Future<void> slicLogin() async {
     const endpoint = "/oneerpauth/api/login";
-    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+    final response = await HttpService.baseUrl(ApiConfig.slicDomain).request(
       endpoint,
       method: "POST",
       data: {
@@ -90,7 +90,7 @@ class ApiService {
   static Future<List<SlicPOModel>> getPoList() async {
     const url = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+    final response = await HttpService.baseUrl(ApiConfig.slicDomain).request(
       url,
       data: {
         "filter": {},
@@ -117,7 +117,7 @@ class ApiService {
   static Future<List<PoLineItemModel>> getPoLineItems(sysId) async {
     const url = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+    final response = await HttpService.baseUrl(ApiConfig.slicDomain).request(
       url,
       data: {
         "filter": {"P_PI_PH_SYS_ID": sysId},
@@ -144,7 +144,7 @@ class ApiService {
   static Future<List<SoLineItemModel>> getSoLineItems(sysId) async {
     const url = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+    final response = await HttpService.baseUrl(ApiConfig.slicDomain).request(
       url,
       data: {
         "filter": {"P_SOI_SOH_SYS_ID": sysId},
@@ -185,7 +185,7 @@ class ApiService {
   static Future<List<CompanyModel>> getSlicCompanies() async {
     const endpoint = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+    final response = await HttpService.baseUrl(ApiConfig.slicDomain).request(
       endpoint,
       method: "POST",
       data: {
@@ -211,7 +211,7 @@ class ApiService {
   static Future<List<LocationModel>> getSlicLocations() async {
     const endpoint = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+    final response = await HttpService.baseUrl(ApiConfig.slicDomain).request(
       endpoint,
       method: "POST",
       data: {
@@ -286,7 +286,7 @@ class ApiService {
     const endpoint = "/oneerpreport/api/postdata";
     final slicToken = SharedStorage.getSlicToken();
 
-    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+    final response = await HttpService.baseUrl(ApiConfig.slicDomain).request(
       endpoint,
       method: "POST",
       data: body,
@@ -302,7 +302,7 @@ class ApiService {
   static Future<dynamic> slicGetData(var body) async {
     const endpoint = "/oneerpreport/api/getapi";
     final slicToken = SharedStorage.getSlicToken();
-    final response = await HttpService.baseUrl(ApiConfig.baseUrl).request(
+    final response = await HttpService.baseUrl(ApiConfig.slicDomain).request(
       endpoint,
       method: "POST",
       data: body,
