@@ -195,7 +195,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
     // unfocus keyboard
     FocusManager.instance.primaryFocus?.unfocus();
     if (_formKey.currentState!.validate()) {
-      cqCubit.addCustomerQuotation(ItemCodeCubit.get(context).itemCodes);
+      cqCubit.saveOrder(ItemCodeCubit.get(context).itemCodes);
     }
   }
 
@@ -391,56 +391,38 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
 
               Row(
                 children: [
-                  Expanded(
-                    child: _buildTextField(
-                      title: "Box Quantity",
-                      initialValue:
-                          GoodsIssueCubit.get(context).boxQuantity.toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          GoodsIssueCubit.get(context).boxQuantity =
-                              int.tryParse(value) ?? 1;
+                  BlocBuilder<CustomerCubit, CustomerState>(
+                    bloc: cqCubit,
+                    buildWhen: (previous, current) =>
+                        current is CustomerDateChanged,
+                    builder: (context, state) {
+                      final date = cqCubit.deliveryDate;
+                      return Expanded(
+                        child: TextFieldWidget(
+                          controller: date,
+                          readOnly: true,
+                        ),
+                      );
+                    },
+                  ),
+                  IconButton(
+                      onPressed: () {
+                        // show date picker
+                        showDatePicker(
+                          context: context,
+                          initialDate: DateTime.now(),
+                          firstDate: DateTime(2000),
+                          lastDate: DateTime(2100),
+                        ).then((value) {
+                          if (value != null) {
+                            cqCubit.setDate(value);
+                          }
                         });
                       },
-                    ),
-                  ),
-                  // const SizedBox(width: 16),
-                  // Expanded(
-                  //   child: _buildTextField(
-                  //     title: "Size",
-                  //     initialValue: goodsIssueCubit.size.toString(),
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         goodsIssueCubit.size = int.tryParse(value) ?? 1;
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  // const SizedBox(width: 16),
-                  // Expanded(
-                  //   child: Column(
-                  //     crossAxisAlignment: CrossAxisAlignment.start,
-                  //     children: [
-                  //       const Text("Type"),
-                  //       DropdownButtonFormField<String>(
-                  //         value: goodsIssueCubit.type,
-                  //         items: <String>['U'].map((String value) {
-                  //           return DropdownMenuItem<String>(
-                  //             value: value,
-                  //             child: Text(value),
-                  //           );
-                  //         }).toList(),
-                  //         onChanged: (String? newValue) {
-                  //           setState(() {
-                  //             goodsIssueCubit.type = newValue!;
-                  //           });
-                  //         },
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
+                      icon: const Icon(Icons.search)),
                 ],
               ),
+
               const SizedBox(height: 16),
               TextFieldWidget(
                 hintText: "Search GTIN number",
@@ -470,32 +452,20 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                   BlocConsumer<CustomerCubit, CustomerState>(
                     bloc: cqCubit,
                     listener: (context, state) {
-                      if (state is CustomerSaveQuotationSuccess) {
-                        // Handle success state
-                        // showTopSnackBar(
-                        //   Overlay.of(context),
-                        //   CustomSnackBar.success(message: state.message),
-                        // );
+                      if (state is CustomerSaveOrderSuccess) {
                         Navigation.pop(context);
                         showDialog(
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text(
-                                state.message,
+                              title: const Text(
+                                "Success",
                                 textAlign: TextAlign.center,
                               ),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(state.message),
-                                  ...[
-                                    const SizedBox(height: 16),
-                                    if (state.docNo.isNotEmpty)
-                                      Text("Doc Number: ${state.docNo}"),
-                                    if (state.refNo.isNotEmpty)
-                                      Text("Ref No: ${state.refNo}"),
-                                  ],
                                 ],
                               ),
                               actions: [
@@ -510,7 +480,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                             );
                           },
                         );
-                      } else if (state is CustomerSaveQuotationError) {
+                      } else if (state is CustomerSaveOrderError) {
                         showTopSnackBar(
                           Overlay.of(context),
                           CustomSnackBar.error(message: state.message),
@@ -518,7 +488,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                       }
                     },
                     builder: (context, state) {
-                      if (state is CustomerSaveQuotationLoading) {
+                      if (state is CustomerSaveOrderLoading) {
                         return const LoadingWidget();
                       }
                       return AppButton(

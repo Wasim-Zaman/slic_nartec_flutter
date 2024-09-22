@@ -7,6 +7,8 @@ final class CustomerInitial extends CustomerState {}
 // ? Loading
 final class CustomerSaveQuotationLoading extends CustomerState {}
 
+final class CustomerSaveOrderLoading extends CustomerState {}
+
 // * Success
 final class CustomerSaveQuotationSuccess extends CustomerState {
   final String message, refNo, docNo;
@@ -18,9 +20,23 @@ final class CustomerSaveQuotationSuccess extends CustomerState {
   });
 }
 
+final class CustomerSaveOrderSuccess extends CustomerState {
+  final String message;
+
+  CustomerSaveOrderSuccess({required this.message});
+}
+
+final class CustomerDateChanged extends CustomerState {}
+
 // ! Error
 final class CustomerSaveQuotationError extends CustomerState {
   final String message;
 
   CustomerSaveQuotationError({required this.message});
+}
+
+final class CustomerSaveOrderError extends CustomerState {
+  final String message;
+
+  CustomerSaveOrderError({required this.message});
 }
