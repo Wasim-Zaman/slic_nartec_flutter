@@ -21,6 +21,7 @@ class LineItemCubit extends Cubit<LineItemState> {
   Map<String, List<SoLineItemModel>> soLineItemsMap = {};
   List<PoLineItemModel> poLineItems = [];
   List<SoLineItemModel> soLineItems = [];
+  List<SoLineItemModel> selectedSOLineItems = [];
   String? selectedSysId;
   final List counter = [];
 
@@ -59,18 +60,18 @@ class LineItemCubit extends Cubit<LineItemState> {
   }
 
   void updateSlicLineItem(PoLineItemModel lineItem) async {
-    // update the line item inside slicLineItemsMap
-    // var i = slicLineItemsMap["$selectedSysId"]!.indexWhere((element) {
-    //   return element.listOfPOItem?.iTEMSYSID ==
-    //       lineItem.listOfPOItem?.iTEMSYSID;
-    // });
-    // slicLineItemsMap["$selectedSysId"]!.toList()[i] = lineItem;
-    poLineItemsMap["$selectedSysId"]!.removeWhere((element) {
-      return element.listOfPOItem?.iTEMSYSID ==
-          lineItem.listOfPOItem?.iTEMSYSID;
-    });
-    poLineItemsMap["$selectedSysId"]!.add(lineItem);
-    // if item sys id do not exist in the list
+    final itemList = poLineItemsMap["$selectedSysId"];
+    if (itemList != null) {
+      final index = itemList.indexWhere((element) =>
+          element.listOfPOItem?.iTEMSYSID == lineItem.listOfPOItem?.iTEMSYSID);
+      if (index != -1) {
+        itemList[index] = lineItem;
+      } else {
+        itemList.add(lineItem);
+      }
+    }
+
+    // if item sys id does not exist in the list
     if (!counter.contains(lineItem.listOfPOItem?.iTEMSYSID)) {
       counter.add(lineItem.listOfPOItem?.iTEMSYSID);
     }
@@ -78,12 +79,18 @@ class LineItemCubit extends Cubit<LineItemState> {
   }
 
   void updateSOSlicLineItem(SoLineItemModel lineItem) async {
-    soLineItemsMap["$selectedSysId"]!.removeWhere((element) {
-      return element.listOfSOItem?.iTEMSYSID ==
-          lineItem.listOfSOItem?.iTEMSYSID;
-    });
-    soLineItemsMap["$selectedSysId"]!.add(lineItem);
-    // if item sys id do not exist in the list
+    final itemList = soLineItemsMap["$selectedSysId"];
+    if (itemList != null) {
+      final index = itemList.indexWhere((element) =>
+          element.listOfSOItem?.iTEMSYSID == lineItem.listOfSOItem?.iTEMSYSID);
+      if (index != -1) {
+        itemList[index] = lineItem;
+      } else {
+        itemList.add(lineItem);
+      }
+    }
+
+    // if item sys id does not exist in the list
     if (!counter.contains(lineItem.listOfSOItem?.iTEMSYSID)) {
       counter.add(lineItem.listOfSOItem?.iTEMSYSID);
     }
@@ -200,25 +207,25 @@ class LineItemCubit extends Cubit<LineItemState> {
     try {
       final itemList = selectedSOs
           .map(
-            (po) => <String, Object>{
+            (so) => <String, Object>{
               "SessionId": DateTime.now().toIso8601String(),
               "Company": "SLIC",
-              "HeadSysId": po.listOfSO!.hEADSYSID.toString(),
-              "TransactionCode": "ARCO",
-              "TransactionNo": "211",
+              "HeadSysId": so.listOfSO!.hEADSYSID.toString(),
+              "TransactionCode": "${so.listOfSO?.sONUMBER?.split('-')[0]}",
+              "TransactionNo": "${so.listOfSO?.sONUMBER?.split('-')[1]}",
               "LocationCode": locationCode.toString(),
               "SystemId": "SYSADMIN",
               "ZATCAPaymentMode": "$paymentMode",
               "TaxExemptionReason": "$taxReason",
               "Item": soLineItemsMap.isEmpty
                   ? []
-                  : soLineItemsMap[po.listOfSO?.hEADSYSID.toString()] == null
+                  : soLineItemsMap[so.listOfSO?.hEADSYSID.toString()] == null
                       ? []
-                      : soLineItemsMap[po.listOfSO?.hEADSYSID.toString()]!
+                      : soLineItemsMap[so.listOfSO?.hEADSYSID.toString()]!
                           .map(
                             (lineItem) => {
                               "SessionId": DateTime.now().toIso8601String(),
-                              "HeadSysId": po.listOfSO?.hEADSYSID.toString(),
+                              "HeadSysId": so.listOfSO?.hEADSYSID.toString(),
                               "ItemSysId":
                                   lineItem.listOfSOItem?.iTEMSYSID.toString(),
                               "Item-Code": lineItem.listOfSOItem?.iTEMCODE

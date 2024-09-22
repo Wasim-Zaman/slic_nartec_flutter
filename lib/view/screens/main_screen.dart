@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/home/home_cubit.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
@@ -11,6 +13,7 @@ import 'package:slic/view/screens/home_screen_v2.dart';
 import 'package:slic/view/screens/sales_order/sales_order_screen_v3.dart';
 import 'package:slic/view/screens/sales_return/sales_return_invoice_screen_v2.dart';
 import 'package:slic/view/screens/stock_transfer/stock_transfer_screen.dart';
+import 'package:slic/view/widgets/dropdown/dropdown_widget.dart';
 import 'package:slic/view/widgets/menu_card.dart';
 
 class MainScreen extends StatefulWidget {
@@ -62,7 +65,7 @@ class _MainScreenState extends State<MainScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Main Screen'),
+        title: const Text("SLIC MENU"),
         actions: [
           TextButton(
               onPressed: () {
@@ -101,76 +104,112 @@ class _MainScreenState extends State<MainScreen>
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 8.0,
-          mainAxisSpacing: 8.0,
-          childAspectRatio: 1.1,
+        child: Column(
           children: [
-            for (var menu in [
-              MenuInfo(
-                'Foreign PO',
-                AppAssets.foreignPo,
-                const ForeignPoScreen(),
-              ),
-              MenuInfo(
-                'Sales Order',
-                AppAssets.salesOrder,
-                const SalesOrderScreen(),
-              ),
-              // MenuInfo(
-              //   'Direct Sales Return',
-              //   AppAssets.directSalesReturn,
-              //   // const DirectSalesReturnScreen(),
-              //   null,
-              //   color: ColorPallete.border,
-              // ),
-              MenuInfo(
-                'Stocks Transfer',
-                AppAssets.stockesTransfer,
-                const StockTransferScreen(),
-              ),
-              MenuInfo(
-                'Sales Return Invoice',
-                AppAssets.salesReturnInvoice,
-                const SalesReturnInvoiceScreen(),
-              ),
-              MenuInfo(
-                'Goods Issue\n(Production to FG)',
-                AppAssets.goodsIssue,
-                const GoodsIssueScreen(),
-              ),
-              MenuInfo(
-                'Customer Quotation',
-                AppAssets.customerQuotation,
-                const CustomerQuotationScreen(),
-              ),
-              MenuInfo(
-                'Customer Order',
-                AppAssets.customerOrder,
-                const CustomerOrderScreen(),
-              ),
-            ])
-              AnimatedBuilder(
-                animation: _controller,
-                builder: (context, child) => Transform.scale(
-                  scale: _scaleAnimation.value,
-                  child: AnimatedOpacity(
-                    opacity: _opacityAnimation.value,
-                    duration: const Duration(milliseconds: 500),
-                    child: MenuCard(
-                      title: menu.title,
-                      iconPath: menu.iconPath,
-                      onTap: () {
-                        if (menu.screen != null) {
-                          Navigation.push(context, menu.screen!);
-                        }
-                      },
-                      bgColor: menu.color,
+            BlocBuilder<HomeCubit, HomeState>(
+              builder: (context, state) {
+                return CustomDropdownButton(
+                  hintText: "Select Location",
+                  closedFillColor: ColorPallete.accent,
+                  items: HomeCubit.get(context)
+                      .slicLocations
+                      .where(
+                          (element) => element.locationMaster?.lOCNCODE != null)
+                      .map((e) => "${e.locationMaster!.lOCNCODE}")
+                      .toSet()
+                      .toList(),
+                  defaultValue: HomeCubit.get(context).locationCode,
+                  onChanged: (p0) {
+                    HomeCubit.get(context).locationCode = p0.toString();
+                    HomeCubit.get(context).location = HomeCubit.get(context)
+                        .slicLocations
+                        .firstWhere(
+                            (element) => element.locationMaster!.lOCNCODE == p0)
+                        .locationMaster!
+                        .lOCNNAME;
+
+                    SharedStorage.setLocation(
+                        HomeCubit.get(context).location.toString());
+                    SharedStorage.setLocationCode(p0.toString());
+                  },
+                );
+              },
+            ),
+            const SizedBox(height: 16),
+            Expanded(
+              child: GridView.count(
+                crossAxisCount: 2,
+                crossAxisSpacing: 8.0,
+                mainAxisSpacing: 8.0,
+                childAspectRatio: 1.1,
+                children: [
+                  for (var menu in [
+                    MenuInfo(
+                      'Foreign PO',
+                      AppAssets.foreignPo,
+                      const ForeignPoScreen(),
                     ),
-                  ),
-                ),
+                    MenuInfo(
+                      'Sales Order',
+                      AppAssets.salesOrder,
+                      const SalesOrderScreen(),
+                    ),
+                    // MenuInfo(
+                    //   'Direct Sales Return',
+                    //   AppAssets.directSalesReturn,
+                    //   // const DirectSalesReturnScreen(),
+                    //   null,
+                    //   color: ColorPallete.border,
+                    // ),
+                    MenuInfo(
+                      'Stocks Transfer',
+                      AppAssets.stockesTransfer,
+                      const StockTransferScreen(),
+                    ),
+                    MenuInfo(
+                      'Sales Return Invoice',
+                      AppAssets.salesReturnInvoice,
+                      const SalesReturnInvoiceScreen(),
+                    ),
+                    MenuInfo(
+                      'Goods Issue\n(Production to FG)',
+                      AppAssets.goodsIssue,
+                      const GoodsIssueScreen(),
+                    ),
+                    MenuInfo(
+                      'Customer Quotation',
+                      AppAssets.customerQuotation,
+                      const CustomerQuotationScreen(),
+                    ),
+                    MenuInfo(
+                      'Customer Order',
+                      AppAssets.customerOrder,
+                      const CustomerOrderScreen(),
+                    ),
+                  ])
+                    AnimatedBuilder(
+                      animation: _controller,
+                      builder: (context, child) => Transform.scale(
+                        scale: _scaleAnimation.value,
+                        child: AnimatedOpacity(
+                          opacity: _opacityAnimation.value,
+                          duration: const Duration(milliseconds: 500),
+                          child: MenuCard(
+                            title: menu.title,
+                            iconPath: menu.iconPath,
+                            onTap: () {
+                              if (menu.screen != null) {
+                                Navigation.push(context, menu.screen!);
+                              }
+                            },
+                            bgColor: menu.color,
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
               ),
+            ),
           ],
         ),
       ),

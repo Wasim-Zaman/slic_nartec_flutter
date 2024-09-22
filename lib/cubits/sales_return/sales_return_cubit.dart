@@ -87,6 +87,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
       log(jsonEncode(body));
       final response = await ApiService.slicGetData(body);
 
+      slicInvoices.clear();
       if (response.isNotEmpty) {
         response.forEach((element) {
           slicInvoices.add(InvoiceDetailsSlicModel.fromJson(element));
@@ -161,20 +162,20 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
 
       final data = [
         {
-          "SessionId": "102202216451",
+          "SessionId": DateTime.now().toIso8601String(),
           "Company": "SLIC",
           "HeadSysId":
-              "${invoiceDetails?.invoiceHeader?.headSYSID?.toString().replaceAll(" ", "")}",
+              "${selectedSlicInvoices[0].iNVTOSRITEMDETAILS?.iNVIINVHSYSID.toString().replaceAll(" ", "")}",
           "TransactionCode": "$transactionCode",
-          "TransactionNo": "${invoiceDetails?.invoiceHeader?.invoiceNo}",
-          "DeliveryLocationCode":
-              "${invoiceDetails?.invoiceHeader?.deliveryLocationCode}",
+          "TransactionNo":
+              "${selectedSlicInvoices[0].iNVTOSRITEMDETAILS?.iNVHNO}",
+          "DeliveryLocationCode": "",
           "SystemId": "SYSADMIN",
           "ZATCAPaymentMode": "$paymentMode",
           "TaxExemptionReason": "$taxReason",
           "Item": selectedSlicInvoices
               .map((details) => {
-                    "SessionId": "102202216451",
+                    "SessionId": DateTime.now().toIso8601String(),
                     "HeadSysId":
                         "${details.iNVTOSRITEMDETAILS?.iNVIINVHSYSID?.toString().replaceAll(" ", "")}",
                     "ItemSysId": "${details.iNVTOSRITEMDETAILS?.iNVISYSID}",

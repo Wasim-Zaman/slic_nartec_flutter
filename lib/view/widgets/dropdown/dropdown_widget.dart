@@ -8,6 +8,7 @@ class CustomDropdownButton extends StatefulWidget {
   final IconData? icon;
   final String? hintText;
   final void Function(String?) onChanged;
+  final Color? closedFillColor;
 
   const CustomDropdownButton({
     super.key,
@@ -16,6 +17,7 @@ class CustomDropdownButton extends StatefulWidget {
     this.icon,
     required this.onChanged,
     this.hintText,
+    this.closedFillColor,
   });
 
   @override
@@ -39,7 +41,7 @@ class _CustomDropdownButtonState extends State<CustomDropdownButton> {
       initialItem: widget.defaultValue,
       onChanged: widget.onChanged,
       decoration: CustomDropdownDecoration(
-        closedFillColor: ColorPallete.field,
+        closedFillColor: widget.closedFillColor ?? ColorPallete.field,
         expandedFillColor: ColorPallete.field,
         closedBorder: Border.all(color: ColorPallete.border),
       ),

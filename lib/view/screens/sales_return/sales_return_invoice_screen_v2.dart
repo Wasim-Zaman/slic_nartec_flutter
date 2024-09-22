@@ -44,6 +44,8 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
 
     setState(() {
       SalesReturnCubit.get(context).invoiceDetails = null;
+      SalesReturnCubit.get(context).slicInvoices.clear();
+      SalesReturnCubit.get(context).selectedSlicInvoices.clear();
     });
   }
 
@@ -182,6 +184,7 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                       CustomSnackBar.error(message: state.errorMessage),
                     );
                   } else if (state is SalesReturnPOSInvoiceSuccess) {
+                    SalesReturnCubit.get(context).selectedSlicInvoices.clear();
                     // SalesReturnCubit.get(context).getItemSysIdsByHeadSysId(
                     //     SalesReturnCubit.get(context)
                     //         .invoiceDetails
@@ -263,7 +266,6 @@ class _SalesReturnInvoiceScreenState extends State<SalesReturnInvoiceScreen> {
                         );
                       },
                     );
-                    Navigation.pop(context);
                   } else if (state is SalesReturnSaveInvoiceError) {
                     showTopSnackBar(
                       Overlay.of(context),

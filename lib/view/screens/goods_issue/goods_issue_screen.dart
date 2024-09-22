@@ -29,6 +29,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
   }
 
   void _initializeData() async {
+    GoodsIssueCubit.get(context).init();
     final goodsIssueCubit = GoodsIssueCubit.get(context);
     await goodsIssueCubit.getTransactionCodes();
     setState(() {
@@ -393,31 +394,18 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                   BlocConsumer<GoodsIssueCubit, GoodsIssueState>(
                     listener: (context, state) {
                       if (state is GoodsIssuePostSuccess) {
-                        // Handle success state
-                        // showTopSnackBar(
-                        //   Overlay.of(context),
-                        //   CustomSnackBar.success(message: state.message),
-                        // );
-                        // Navigation.pop(context);
                         showDialog(
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text(
-                                state.message,
+                              title: const Text(
+                                "Success",
                                 textAlign: TextAlign.center,
                               ),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(state.message),
-                                  ...[
-                                    // const SizedBox(height: 16),
-                                    // if (state.docNo.isNotEmpty)
-                                    //   Text("Doc Number: ${state.docNo}"),
-                                    // if (state.txnCode.isNotEmpty)
-                                    //   Text("Trx Code: ${state.txnCode}"),
-                                  ],
                                 ],
                               ),
                               actions: [

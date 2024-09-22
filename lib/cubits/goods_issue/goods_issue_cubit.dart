@@ -3,6 +3,7 @@ import 'dart:developer';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:nice_json/nice_json.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
@@ -28,6 +29,12 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
   // Selected values
   int quantity = 1;
   // Add your cubit methods here
+
+  // init
+  void init() {
+    getTransactionCodes();
+    emit(GoodsIssueInitia());
+  }
 
   void dispose() {
     emit(GoodsIssueInitia());
@@ -103,11 +110,12 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
         "LANG": "ENG"
       };
 
-      final response = await ApiService.slicPostData(body) as Map;
+      final response =
+          await ApiService.slicPostData(body) as Map<String, dynamic>;
 
       if (bool.parse(response['success'])) {
         emit(GoodsIssuePostSuccess(
-          message: response.toString(),
+          message: niceJson(response),
         ));
       } else {
         if (response.containsKey("message") && response.containsKey("error")) {
