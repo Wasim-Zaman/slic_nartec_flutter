@@ -75,7 +75,7 @@ class CustomerCubit extends Cubit<CustomerState> {
                   (i) => {
                     "Item-Code": "${i.itemCode}",
                     "Size": "${i.productSize}",
-                    "Rate": "55.0",
+                    "Rate": "${i.rate}",
                     "Qty": "${i.itemQty}"
                   },
                 )
