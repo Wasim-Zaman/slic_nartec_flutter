@@ -339,22 +339,26 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                   cqCubit.deliveryInstruction = p0;
                 },
               ),
-              const SizedBox(height: 16),
-
-              TextFieldWidget(
-                hintText: "Packing Instruction",
-                onChanged: (p0) {
-                  cqCubit.packingInstruction = p0;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFieldWidget(
-                hintText: "Billing Instruction",
-                onChanged: (p0) {
-                  cqCubit.billingInstruction = p0;
-                },
-              ),
+              const SizedBox(height: 16.0),
+              Row(children: [
+                Expanded(
+                  child: TextFieldWidget(
+                    hintText: "Packing Instruction",
+                    onChanged: (p0) {
+                      cqCubit.packingInstruction = p0;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 4.0),
+                Expanded(
+                  child: TextFieldWidget(
+                    hintText: "Billing Instruction",
+                    onChanged: (p0) {
+                      cqCubit.billingInstruction = p0;
+                    },
+                  ),
+                ),
+              ]),
               const SizedBox(height: 16),
 
               TextFieldWidget(
@@ -373,19 +377,26 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              TextFieldWidget(
-                hintText: "Delivery Mode",
-                onChanged: (p0) {
-                  cqCubit.modeOfDelivery = p0;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFieldWidget(
-                hintText: "Delivery Contact",
-                onChanged: (p0) {
-                  cqCubit.deliveryContact = p0;
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFieldWidget(
+                      hintText: "Delivery Mode",
+                      onChanged: (p0) {
+                        cqCubit.modeOfDelivery = p0;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 4),
+                  Expanded(
+                    child: TextFieldWidget(
+                      hintText: "Delivery Contact",
+                      onChanged: (p0) {
+                        cqCubit.deliveryContact = p0;
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
@@ -407,6 +418,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                       final date = cqCubit.deliveryDate;
                       return Expanded(
                         child: TextFieldWidget(
+                          hintText: "Delivery Date",
                           controller: date,
                           readOnly: true,
                         ),
