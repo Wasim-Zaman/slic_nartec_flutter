@@ -238,49 +238,57 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              _buildDropdown(
-                title: "Location Code",
-                options: HomeCubit.get(context)
-                    .slicLocations
-                    .where((element) =>
-                        element.locationMaster?.lOCNNAME != null &&
-                        element.locationMaster!.lOCNCODE != null)
-                    .map((e) =>
-                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
-                    .toSet()
-                    .toList(),
-                // defaultValue:     HomeCubit.get(context).location,
-                defaultValue: cqCubit.location == null
-                    ? null
-                    : "${cqCubit.locationCode!} -- ${cqCubit.location!}",
-                onChanged: (value) {
-                  setState(() {
-                    cqCubit.locationCode = value?.split(" -- ")[0];
-                    cqCubit.location = value?.split(" -- ")[1];
-                  });
-                },
-              ),
-              const SizedBox(height: 16),
-              _buildDropdown(
-                title: "Sales Location Code",
-                options: HomeCubit.get(context)
-                    .slicLocations
-                    .where((element) =>
-                        element.locationMaster?.lOCNNAME != null &&
-                        element.locationMaster!.lOCNCODE != null)
-                    .map((e) =>
-                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
-                    .toSet()
-                    .toList(),
-                defaultValue: cqCubit.salesLocation == null
-                    ? null
-                    : "${cqCubit.salesLocationCode!} -- ${cqCubit.salesLocation!}",
-                onChanged: (value) {
-                  setState(() {
-                    cqCubit.salesLocationCode = value?.split(" -- ")[0];
-                    cqCubit.salesLocation = value?.split(" -- ")[1];
-                  });
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: _buildDropdown(
+                      title: "Location Code",
+                      options: HomeCubit.get(context)
+                          .slicLocations
+                          .where((element) =>
+                              element.locationMaster?.lOCNNAME != null &&
+                              element.locationMaster!.lOCNCODE != null)
+                          .map((e) =>
+                              "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
+                          .toSet()
+                          .toList(),
+                      // defaultValue:     HomeCubit.get(context).location,
+                      defaultValue: cqCubit.location == null
+                          ? null
+                          : "${cqCubit.locationCode!} -- ${cqCubit.location!}",
+                      onChanged: (value) {
+                        setState(() {
+                          cqCubit.locationCode = value?.split(" -- ")[0];
+                          cqCubit.location = value?.split(" -- ")[1];
+                        });
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: _buildDropdown(
+                      title: "Sales Location Code",
+                      options: HomeCubit.get(context)
+                          .slicLocations
+                          .where((element) =>
+                              element.locationMaster?.lOCNNAME != null &&
+                              element.locationMaster!.lOCNCODE != null)
+                          .map((e) =>
+                              "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
+                          .toSet()
+                          .toList(),
+                      defaultValue: cqCubit.salesLocation == null
+                          ? null
+                          : "${cqCubit.salesLocationCode!} -- ${cqCubit.salesLocation!}",
+                      onChanged: (value) {
+                        setState(() {
+                          cqCubit.salesLocationCode = value?.split(" -- ")[0];
+                          cqCubit.salesLocation = value?.split(" -- ")[1];
+                        });
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
               BlocBuilder<HomeCubit, HomeState>(
@@ -335,35 +343,49 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
               //   ],
               // ),
 
-              TextFieldWidget(
-                hintText: "CQH_FLEX_01",
-                onChanged: (p0) {
-                  cqCubit.flex1 = p0;
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFieldWidget(
+                      hintText: "CQH_FLEX_01",
+                      onChanged: (p0) {
+                        cqCubit.flex1 = p0;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8),
+                  Expanded(
+                    child: TextFieldWidget(
+                      hintText: "CQH_FLEX_02",
+                      onChanged: (p0) {
+                        cqCubit.flex2 = p0;
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
-              TextFieldWidget(
-                hintText: "CQH_FLEX_02",
-                onChanged: (p0) {
-                  cqCubit.flex2 = p0;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFieldWidget(
-                hintText: "VAT",
-                onChanged: (p0) {
-                  cqCubit.vat = p0;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              TextFieldWidget(
-                hintText: "CQH_FLEX_04",
-                onChanged: (p0) {
-                  cqCubit.flex4 = p0;
-                },
+              Row(
+                children: [
+                  Expanded(
+                    child: TextFieldWidget(
+                      hintText: "VAT",
+                      onChanged: (p0) {
+                        cqCubit.vat = p0;
+                      },
+                    ),
+                  ),
+                  const SizedBox(width: 8.0),
+                  Expanded(
+                    child: TextFieldWidget(
+                      hintText: "CQH_FLEX_04",
+                      onChanged: (p0) {
+                        cqCubit.flex4 = p0;
+                      },
+                    ),
+                  ),
+                ],
               ),
               const SizedBox(height: 16),
 
