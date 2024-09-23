@@ -442,7 +442,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                           }
                         });
                       },
-                      icon: Icon(Icons.calendar_month_outlined),
+                      icon: const Icon(Icons.calendar_month_outlined),
                     ),
                   ),
                 ],
