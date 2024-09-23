@@ -425,7 +425,10 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                       );
                     },
                   ),
-                  IconButton(
+                  const SizedBox(width: 4),
+                  CircleAvatar(
+                    backgroundColor: ColorPallete.accent.withOpacity(0.6),
+                    child: IconButton(
                       onPressed: () {
                         // show date picker
                         showDatePicker(
@@ -439,7 +442,9 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                           }
                         });
                       },
-                      icon: const Icon(Icons.search)),
+                      icon: Icon(Icons.calendar_month_outlined),
+                    ),
+                  ),
                 ],
               ),
 
