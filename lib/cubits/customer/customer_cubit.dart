@@ -48,6 +48,7 @@ class CustomerCubit extends Cubit<CustomerState> {
   int quantity = 1, size = 1;
 
   final deliveryDate = TextEditingController();
+  final lcValidDate = TextEditingController();
 
   setDate(DateTime selectedDate) {
     deliveryDate.text = DateFormat('dd/MM/yyyy').format(selectedDate);
@@ -158,9 +159,9 @@ class CustomerCubit extends Cubit<CustomerState> {
             "CustRefNo": "$custRefNo",
             "ModeOfDelivery": "$modeOfDelivery",
             "DeliveryContact": "$deliveryContact",
-            "DeliveryDate": "2024-09-24",
+            "DeliveryDate": deliveryDate.text,
             "LcNo": "$lcNo",
-            "LcValidDate": "2024-09-24",
+            "LcValidDate": lcValidDate.text,
             "Item": item,
           }
         ],
