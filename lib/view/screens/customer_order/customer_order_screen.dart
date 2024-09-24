@@ -369,14 +369,6 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              TextFieldWidget(
-                hintText: "Cust Ref Number",
-                onChanged: (p0) {
-                  cqCubit.custRefNo = p0;
-                },
-              ),
-              const SizedBox(height: 16),
-
               Row(
                 children: [
                   Expanded(
@@ -408,45 +400,112 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              Row(
-                children: [
-                  BlocBuilder<CustomerCubit, CustomerState>(
-                    bloc: cqCubit,
-                    buildWhen: (previous, current) =>
-                        current is CustomerDateChanged,
-                    builder: (context, state) {
-                      final date = cqCubit.deliveryDate;
-                      return Expanded(
-                        child: TextFieldWidget(
-                          hintText: "Delivery Date",
-                          controller: date,
-                          readOnly: true,
+              Row(children: [
+                Expanded(
+                  child: Row(
+                    children: [
+                      CircleAvatar(
+                        backgroundColor: ColorPallete.accent.withOpacity(0.6),
+                        child: IconButton(
+                          onPressed: () {
+                            // show date picker
+                            showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            ).then((value) {
+                              if (value != null) {
+                                cqCubit.setDeliveryDate(value);
+                              }
+                            });
+                          },
+                          icon: const Icon(Icons.calendar_month_outlined),
                         ),
-                      );
+                      ),
+                      const SizedBox(width: 4),
+                      BlocBuilder<CustomerCubit, CustomerState>(
+                        bloc: cqCubit,
+                        buildWhen: (previous, current) =>
+                            current is CustomerDateChanged,
+                        builder: (context, state) {
+                          final date = cqCubit.deliveryDate;
+                          return Expanded(
+                            child: TextFieldWidget(
+                              hintText: "Delivery Date",
+                              controller: date,
+                              readOnly: true,
+                            ),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: Row(
+                    children: [
+                      BlocBuilder<CustomerCubit, CustomerState>(
+                        bloc: cqCubit,
+                        buildWhen: (previous, current) =>
+                            current is CustomerDateChanged,
+                        builder: (context, state) {
+                          final date = cqCubit.lcValidDate;
+                          return Expanded(
+                            child: TextFieldWidget(
+                              hintText: "LC Valid Date",
+                              controller: date,
+                              readOnly: true,
+                            ),
+                          );
+                        },
+                      ),
+                      const SizedBox(width: 4),
+                      CircleAvatar(
+                        backgroundColor: ColorPallete.accent.withOpacity(0.6),
+                        child: IconButton(
+                          onPressed: () {
+                            // show date picker
+                            showDatePicker(
+                              context: context,
+                              initialDate: DateTime.now(),
+                              firstDate: DateTime(2000),
+                              lastDate: DateTime(2100),
+                            ).then((value) {
+                              if (value != null) {
+                                cqCubit.setLcValiddate(value);
+                              }
+                            });
+                          },
+                          icon: const Icon(Icons.calendar_month_outlined),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ]),
+
+              const SizedBox(height: 16),
+              Row(children: [
+                Expanded(
+                  child: TextFieldWidget(
+                    hintText: "Cust Ref Number",
+                    onChanged: (p0) {
+                      cqCubit.custRefNo = p0;
                     },
                   ),
-                  const SizedBox(width: 4),
-                  CircleAvatar(
-                    backgroundColor: ColorPallete.accent.withOpacity(0.6),
-                    child: IconButton(
-                      onPressed: () {
-                        // show date picker
-                        showDatePicker(
-                          context: context,
-                          initialDate: DateTime.now(),
-                          firstDate: DateTime(2000),
-                          lastDate: DateTime(2100),
-                        ).then((value) {
-                          if (value != null) {
-                            cqCubit.setDate(value);
-                          }
-                        });
-                      },
-                      icon: const Icon(Icons.calendar_month_outlined),
-                    ),
+                ),
+                const SizedBox(width: 4),
+                Expanded(
+                  child: TextFieldWidget(
+                    hintText: "LC Number",
+                    onChanged: (p0) {
+                      cqCubit.lcNo = p0;
+                    },
                   ),
-                ],
-              ),
+                ),
+              ]),
 
               const SizedBox(height: 16),
               TextFieldWidget(

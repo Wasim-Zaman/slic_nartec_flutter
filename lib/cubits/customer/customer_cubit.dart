@@ -50,8 +50,13 @@ class CustomerCubit extends Cubit<CustomerState> {
   final deliveryDate = TextEditingController();
   final lcValidDate = TextEditingController();
 
-  setDate(DateTime selectedDate) {
+  setDeliveryDate(DateTime selectedDate) {
     deliveryDate.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+    emit(CustomerDateChanged());
+  }
+
+  setLcValiddate(DateTime selectedDate) {
+    lcValidDate.text = DateFormat('dd/MM/yyyy').format(selectedDate);
     emit(CustomerDateChanged());
   }
 

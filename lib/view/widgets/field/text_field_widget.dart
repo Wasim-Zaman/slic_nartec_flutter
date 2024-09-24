@@ -13,6 +13,7 @@ class TextFieldWidget extends StatefulWidget {
   final void Function()? onEditingComplete;
   final String? initialValue;
   final Color? hintColor;
+  final Widget? suffix;
 
   const TextFieldWidget({
     super.key,
@@ -27,6 +28,7 @@ class TextFieldWidget extends StatefulWidget {
     this.onEditingComplete,
     this.initialValue,
     this.hintColor,
+    this.suffix,
   });
 
   @override
@@ -58,6 +60,12 @@ class _TextFieldWidgetState extends State<TextFieldWidget> {
       obscuringCharacter: '*',
       decoration: InputDecoration(
         filled: true,
+        suffix: widget.suffix == null
+            ? null
+            : CircleAvatar(
+                backgroundColor: ColorPallete.accent,
+                child: widget.suffix,
+              ),
         fillColor: widget.filledColor ?? ColorPallete.field,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(4.0),
