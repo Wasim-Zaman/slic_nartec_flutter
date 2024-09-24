@@ -338,6 +338,9 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
                           setState(() {
                             cqCubit.customerCode = value?.split(" -- ")[0];
                             cqCubit.customerName = value?.split(" -- ")[1];
+
+                            // reset payment terms
+                            cqCubit.paymentTerm = null;
                             HomeCubit.get(context)
                                 .getPaymentTerms(cqCubit.customerCode);
                           });
