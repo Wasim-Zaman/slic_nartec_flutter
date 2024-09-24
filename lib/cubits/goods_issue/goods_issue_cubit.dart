@@ -1,4 +1,3 @@
-import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter/widgets.dart';
@@ -103,7 +102,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
             "LocationCode": fromLocationCode.toString(),
             "UserID": "${SharedStorage.getEmail()}",
             "ProductionDate": date.text.trim().toString(),
-            "item": bodyList,
+            "item": bodyList
           }
         ],
         "COMPANY": "SLIC",
@@ -112,7 +111,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
         "LANG": "ENG"
       };
 
-      log(jsonEncode(body));
+      log(niceJson(body));
 
       final response =
           await ApiService.slicPostData(body) as Map<String, dynamic>;
