@@ -74,9 +74,10 @@ import 'dart:developer';
 
 import 'package:http/http.dart' as http;
 import 'package:nice_json/nice_json.dart';
+import 'package:slic/config/app_config.dart';
 
 class HttpService {
-  String _baseUrl = 'http://gs1ksa.org:1100/api';
+  String _baseUrl = ApiConfig.nartecDomain;
 
   HttpService();
 

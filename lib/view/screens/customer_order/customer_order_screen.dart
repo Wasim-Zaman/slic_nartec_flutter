@@ -34,7 +34,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
   void _initializeData() async {
     await HomeCubit.get(context).getCustomers();
     final goodsIssueCubit = GoodsIssueCubit.get(context);
-    await goodsIssueCubit.getTransactionCodes();
+    await goodsIssueCubit.getTransactionCodes(txnType: "SO");
     setState(() {
       GoodsIssueCubit.get(context).setDate(DateTime.now());
       ItemCodeCubit.get(context).itemCodes.clear();
@@ -193,9 +193,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
   void _handleSubmit() {
     // unfocus keyboard
     FocusManager.instance.primaryFocus?.unfocus();
-    if (_formKey.currentState!.validate()) {
-      cqCubit.saveOrder(ItemCodeCubit.get(context).itemCodes);
-    }
+    cqCubit.saveOrder(ItemCodeCubit.get(context).itemCodes);
   }
 
   @override
@@ -245,7 +243,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                       // defaultValue:     HomeCubit.get(context).location,
                       defaultValue: cqCubit.deliveryLocation == null
                           ? null
-                          : "${cqCubit.locationCode!} -- ${cqCubit.location!}",
+                          : "${cqCubit.deliveryLocationCode!} -- ${cqCubit.deliveryLocation!}",
                       onChanged: (value) {
                         setState(() {
                           cqCubit.deliveryLocationCode =
@@ -392,13 +390,13 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
               ),
               const SizedBox(height: 16),
 
-              TextFieldWidget(
-                hintText: "LPO Number",
-                onChanged: (p0) {
-                  cqCubit.lpoNumber = p0;
-                },
-              ),
-              const SizedBox(height: 16),
+              // TextFieldWidget(
+              //   hintText: "LPO Number",
+              //   onChanged: (p0) {
+              //     cqCubit.lpoNumber = p0;
+              //   },
+              // ),
+              // const SizedBox(height: 16),
 
               Row(children: [
                 Expanded(
@@ -411,8 +409,10 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
                             // show date picker
                             showDatePicker(
                               context: context,
-                              initialDate: DateTime.now(),
-                              firstDate: DateTime(2000),
+                              initialDate:
+                                  DateTime.now().add(const Duration(days: 1)),
+                              firstDate: DateTime.now().add(const Duration(
+                                  days: 1)), // Allows picking dates after today
                               lastDate: DateTime(2100),
                             ).then((value) {
                               if (value != null) {

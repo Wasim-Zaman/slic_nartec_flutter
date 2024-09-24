@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'dart:developer';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -50,15 +51,16 @@ class CustomerCubit extends Cubit<CustomerState> {
   final deliveryDate = TextEditingController();
   final lcValidDate = TextEditingController();
 
-  setDeliveryDate(DateTime selectedDate) {
-    deliveryDate.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+setDeliveryDate(DateTime selectedDate) {
+    deliveryDate.text = DateFormat('yyyy-MM-dd').format(selectedDate);
     emit(CustomerDateChanged());
   }
 
   setLcValiddate(DateTime selectedDate) {
-    lcValidDate.text = DateFormat('dd/MM/yyyy').format(selectedDate);
+    lcValidDate.text = DateFormat('yyyy-MM-dd').format(selectedDate);
     emit(CustomerDateChanged());
   }
+
 
   addCustomerQuotation(List<ItemCode> items) async {
     try {
@@ -132,7 +134,7 @@ class CustomerCubit extends Cubit<CustomerState> {
 
   saveOrder(List<ItemCode> items) async {
     try {
-      emit(CustomerSaveQuotationLoading());
+      emit(CustomerSaveOrderLoading());
 
       final item = items
           .map(
@@ -176,24 +178,23 @@ class CustomerCubit extends Cubit<CustomerState> {
         "LANG": "ENG"
       };
 
-      jsonEncode(body);
+      log(jsonEncode(body));
 
       final response = await ApiService.slicPostData(body);
 
       if (bool.parse(response['success'])) {
-        emit(CustomerSaveQuotationSuccess(
-            // message: response['message'].toString(),
-            message: niceJson(response),
-            docNo: response['DocNo'].toString(),
-            refNo: response['Ref-No/SysID'].toString()));
+        emit(CustomerSaveOrderSuccess(
+          // message: response['message'].toString(),
+          message: niceJson(response),
+        ));
       } else {
         if (response.containsKey("message") && response.containsKey("error")) {
-          emit(CustomerSaveQuotationError(
+          emit(CustomerSaveOrderError(
               message: "${response['message']} ${response['error']}"));
         } else if (response.containsKey("message")) {
-          emit(CustomerSaveQuotationError(message: response['message']));
+          emit(CustomerSaveOrderError(message: response['message']));
         } else if (response.containsKey("MESSAGE")) {
-          emit(CustomerSaveQuotationError(message: response['MESSAGE']));
+          emit(CustomerSaveOrderError(message: response['MESSAGE']));
         }
       }
     } catch (error) {
