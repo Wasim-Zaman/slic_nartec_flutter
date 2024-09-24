@@ -34,6 +34,7 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
 
   void _initializeData() async {
     await HomeCubit.get(context).getCustomers();
+    await HomeCubit.get(context).getSalesman();
     final goodsIssueCubit = GoodsIssueCubit.get(context);
     await goodsIssueCubit.getTransactionCodes(txnType: "SQUOT");
     setState(() {
@@ -220,23 +221,47 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildDropdown(
-                hintText: "Transaction",
-                title: "Transaction",
-                options: GoodsIssueCubit.get(context)
-                    .transactionCodes
-                    .where((element) =>
-                        element.listOfTransactionCod?.tXNNAME != null)
-                    .map((e) => e.listOfTransactionCod!.tXNCODE.toString())
-                    .toSet()
-                    .toList(),
-                defaultValue: cqCubit.transactionCode,
-                onChanged: (value) {
-                  setState(() {
-                    cqCubit.transactionCode = value;
-                  });
-                },
-              ),
+              Row(children: [
+                Expanded(
+                  child: _buildDropdown(
+                    hintText: "Transaction",
+                    title: "Transaction",
+                    options: GoodsIssueCubit.get(context)
+                        .transactionCodes
+                        .where((element) =>
+                            element.listOfTransactionCod?.tXNNAME != null)
+                        .map((e) => e.listOfTransactionCod!.tXNCODE.toString())
+                        .toSet()
+                        .toList(),
+                    defaultValue: cqCubit.transactionCode,
+                    onChanged: (value) {
+                      setState(() {
+                        cqCubit.transactionCode = value;
+                      });
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: _buildDropdown(
+                    hintText: "Salesman",
+                    title: "Salesman",
+                    options: HomeCubit.get(context)
+                        .salesmen
+                        .where((element) =>
+                            element.lISTOFSALESMANCODE?.sMCODE != null)
+                        .map((e) => e.lISTOFSALESMANCODE!.sMCODE.toString())
+                        .toSet()
+                        .toList(),
+                    defaultValue: cqCubit.salesman,
+                    onChanged: (value) {
+                      setState(() {
+                        cqCubit.salesman = value;
+                      });
+                    },
+                  ),
+                ),
+              ]),
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -291,30 +316,67 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              BlocBuilder<HomeCubit, HomeState>(
-                builder: (context, state) {
-                  return _buildDropdown(
-                    title: "Customer",
-                    options: HomeCubit.get(context)
-                        .customers
-                        .where((element) =>
-                            element.cUSTCODE != null &&
-                            element.cUSTNAME != null)
-                        .map((e) => "${e.cUSTCODE} -- ${e.cUSTNAME}")
-                        .toSet()
-                        .toList(),
-                    defaultValue: cqCubit.customerCode == null
-                        ? null
-                        : "${cqCubit.customerCode!} -- ${cqCubit.customerName!}",
-                    onChanged: (value) {
-                      setState(() {
-                        cqCubit.customerCode = value?.split(" -- ")[0];
-                        cqCubit.customerName = value?.split(" -- ")[1];
-                      });
+              Row(children: [
+                Expanded(
+                  flex: 2,
+                  child: BlocBuilder<HomeCubit, HomeState>(
+                    builder: (context, state) {
+                      return _buildDropdown(
+                        title: "Customer",
+                        options: HomeCubit.get(context)
+                            .customers
+                            .where((element) =>
+                                element.cUSTCODE != null &&
+                                element.cUSTNAME != null)
+                            .map((e) => "${e.cUSTCODE} -- ${e.cUSTNAME}")
+                            .toSet()
+                            .toList(),
+                        defaultValue: cqCubit.customerCode == null
+                            ? null
+                            : "${cqCubit.customerCode!} -- ${cqCubit.customerName!}",
+                        onChanged: (value) {
+                          setState(() {
+                            cqCubit.customerCode = value?.split(" -- ")[0];
+                            cqCubit.customerName = value?.split(" -- ")[1];
+                            HomeCubit.get(context)
+                                .getPaymentTerms(cqCubit.customerCode);
+                          });
+                        },
+                      );
                     },
-                  );
-                },
-              ),
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: BlocConsumer<HomeCubit, HomeState>(
+                    listener: (context, state) {},
+                    builder: (context, state) {
+                      if (state is HomeGetPaymentTermsLoading) {
+                        return const LoadingWidget();
+                      }
+                      return _buildDropdown(
+                        hintText: "Payment Term",
+                        title: "Payment Term",
+                        options: HomeCubit.get(context)
+                            .paymentTerms
+                            .where((element) =>
+                                element.lISTOFPAYMENTTERM?.cPTTERMCODE != null)
+                            .map((e) =>
+                                e.lISTOFPAYMENTTERM!.cPTTERMCODE.toString())
+                            .toSet()
+                            .toList(),
+                        defaultValue: cqCubit.paymentTerm,
+                        onChanged: (value) {
+                          setState(() {
+                            cqCubit.paymentTerm = value;
+                          });
+                        },
+                      );
+                    },
+                  ),
+                ),
+              ]),
+
               const SizedBox(height: 16),
               // Row(
               //   children: [
@@ -397,44 +459,49 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
               ),
               const SizedBox(height: 16),
 
-              TextFieldWidget(
-                hintText: "Remarks",
-                onChanged: (p0) {
-                  cqCubit.remarks = p0;
-                },
-              ),
+              Row(children: [
+                Expanded(
+                  child: TextFieldWidget(
+                    hintText: "Remarks",
+                    onChanged: (p0) {
+                      cqCubit.remarks = p0;
+                    },
+                  ),
+                ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: TextFieldWidget(
+                    hintText: "Fax No",
+                    onChanged: (p0) {
+                      cqCubit.faxNo = p0;
+                    },
+                  ),
+                ),
+              ]),
               const SizedBox(height: 16),
 
-              TextFieldWidget(
-                hintText: "Fax No",
-                onChanged: (p0) {
-                  cqCubit.faxNo = p0;
-                },
-              ),
-              const SizedBox(height: 16),
-
-              Row(
-                children: [
-                  Expanded(
-                    child: TextFieldWidget(
-                      hintText: "RefFromNo",
-                      onChanged: (p0) {
-                        cqCubit.refFromNo = p0;
-                      },
-                    ),
-                  ),
-                  const SizedBox(width: 8.0),
-                  Expanded(
-                    child: TextFieldWidget(
-                      hintText: "RefFrom",
-                      onChanged: (p0) {
-                        cqCubit.refFrom = p0;
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              const SizedBox(height: 16),
+              // Row(
+              //   children: [
+              //     Expanded(
+              //       child: TextFieldWidget(
+              //         hintText: "RefFromNo",
+              //         onChanged: (p0) {
+              //           cqCubit.refFromNo = p0;
+              //         },
+              //       ),
+              //     ),
+              //     const SizedBox(width: 8.0),
+              //     Expanded(
+              //       child: TextFieldWidget(
+              //         hintText: "RefFrom",
+              //         onChanged: (p0) {
+              //           cqCubit.refFrom = p0;
+              //         },
+              //       ),
+              //     ),
+              //   ],
+              // ),
+              // const SizedBox(height: 16),
 
               TextFieldWidget(
                 hintText: "Delivery After Days",
@@ -444,59 +511,6 @@ class _CustomerQuotationScreenState extends State<CustomerQuotationScreen> {
               ),
               const SizedBox(height: 16),
 
-              Row(
-                children: [
-                  Expanded(
-                    child: _buildTextField(
-                      title: "Box Quantity",
-                      initialValue:
-                          GoodsIssueCubit.get(context).boxQuantity.toString(),
-                      onChanged: (value) {
-                        setState(() {
-                          GoodsIssueCubit.get(context).boxQuantity =
-                              int.tryParse(value) ?? 1;
-                        });
-                      },
-                    ),
-                  ),
-                  // const SizedBox(width: 16),
-                  // Expanded(
-                  //   child: _buildTextField(
-                  //     title: "Size",
-                  //     initialValue: goodsIssueCubit.size.toString(),
-                  //     onChanged: (value) {
-                  //       setState(() {
-                  //         goodsIssueCubit.size = int.tryParse(value) ?? 1;
-                  //       });
-                  //     },
-                  //   ),
-                  // ),
-                  // const SizedBox(width: 16),
-                  // Expanded(
-                  //   child: Column(
-                  //     crossAxisAlignment: CrossAxisAlignment.start,
-                  //     children: [
-                  //       const Text("Type"),
-                  //       DropdownButtonFormField<String>(
-                  //         value: goodsIssueCubit.type,
-                  //         items: <String>['U'].map((String value) {
-                  //           return DropdownMenuItem<String>(
-                  //             value: value,
-                  //             child: Text(value),
-                  //           );
-                  //         }).toList(),
-                  //         onChanged: (String? newValue) {
-                  //           setState(() {
-                  //             goodsIssueCubit.type = newValue!;
-                  //           });
-                  //         },
-                  //       ),
-                  //     ],
-                  //   ),
-                  // ),
-                ],
-              ),
-              const SizedBox(height: 16),
               TextFieldWidget(
                 hintText: "Search GTIN number",
                 filledColor: ColorPallete.accent.withOpacity(0.6),

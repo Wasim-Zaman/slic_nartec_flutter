@@ -9,6 +9,7 @@ import 'package:slic/models/item_sys_id_model.dart';
 import 'package:slic/models/pos_invoice_model.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
+import 'package:slic/utils/shared_storage.dart';
 
 part 'sales_return_states.dart';
 
@@ -196,7 +197,7 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": data,
         "COMPANY": "SLIC",
-        "USERID": "SYSADMIN",
+        "USERID": "${SharedStorage.getEmail()}",
         "APICODE": "InvoiceToSR",
         "LANG": "ENG"
       };

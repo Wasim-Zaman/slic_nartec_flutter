@@ -5,6 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
+import 'package:slic/utils/shared_storage.dart';
 
 part 'stock_transfer_states.dart';
 
@@ -92,7 +93,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
             "ItemCode": ic,
             "Size": "${e.productSize}",
             "Qty": "${e.itemQty}",
-            "UserId": "SYSADMIN"
+            "UserId": "${SharedStorage.getEmail()}"
           };
         },
       ).toList();
@@ -105,7 +106,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
             "TransactionCode": transactionCode.toString(),
             "FromLocation-Code": "$fromLocationCode",
             "ToLocation-Code": "$toLocationCode",
-            "UserId": "SYSADMIN",
+            "UserId": "${SharedStorage.getEmail()}",
             // "CustomerName": "ABC",
             // "MobileNo": 805630,
             // "Remarks": "good",
@@ -113,7 +114,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
           }
         ],
         "COMPANY": "SLIC",
-        "USERID": "SYSADMIN",
+        "USERID": "${SharedStorage.getEmail()}",
         "APICODE": "STOCKTRANSFER",
         "LANG": "ENG"
       };

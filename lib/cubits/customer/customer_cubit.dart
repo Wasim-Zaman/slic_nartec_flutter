@@ -6,6 +6,7 @@ import 'package:intl/intl.dart';
 import 'package:nice_json/nice_json.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/services/api_service.dart';
+import 'package:slic/utils/shared_storage.dart';
 
 part 'customer_states.dart';
 
@@ -39,6 +40,8 @@ class CustomerCubit extends Cubit<CustomerState> {
       customerCode,
       salesLocation,
       salesLocationCode,
+      salesman,
+      paymentTerm,
       deliverAfterDays;
 
   int quantity = 1, size = 1;
@@ -53,6 +56,7 @@ class CustomerCubit extends Cubit<CustomerState> {
   addCustomerQuotation(List<ItemCode> items) async {
     try {
       emit(CustomerSaveQuotationLoading());
+
       final body = {
         "keyword": "Quotation",
         "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
@@ -69,11 +73,13 @@ class CustomerCubit extends Cubit<CustomerState> {
             "Remarks": "$remarks",
             "FaxNo": "$faxNo",
             "TransactionCode": "$transactionCode",
-            "RefFromNo": "$refFromNo",
-            "RefFrom": "$refFrom",
+            "RefFromNo": "1",
+            "RefFrom": "D",
             "CustCode": "$customerCode",
             "SalesLocn": "$salesLocationCode",
             "DeliveryAfterDays": "$deliverAfterDays",
+            "Salesman": "$salesman",
+            "PaymentTerm": "$paymentTerm",
             "Item": items
                 .map(
                   (i) => {
@@ -87,7 +93,7 @@ class CustomerCubit extends Cubit<CustomerState> {
           }
         ],
         "COMPANY": "SLIC",
-        "USERID": "SYSADMIN",
+        "USERID": "${SharedStorage.getEmail()}",
         "APICODE": "QUOTATIONCREATE",
         "LANG": "ENG"
       };
@@ -120,26 +126,28 @@ class CustomerCubit extends Cubit<CustomerState> {
   saveOrder(List<ItemCode> items) async {
     try {
       emit(CustomerSaveQuotationLoading());
-      final body = {
+
+      final abc = {
         "keyword": "SALESORDER",
         "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": [
           {
-            "DeliveryLocationCode": "$deliveryLocationCode",
-            "SalesLocationCode": "$salesLocationCode",
+            "DeliveryLocationCode": "FG101",
+            "SalesLocationCode": "FG101",
             "Company": "SLIC",
             "UserId": "SYSADMIN",
-            "TransactionCode": "$transactionCode",
-            "CustomerCode": "$customerCode",
-            "DeliveryInstruction": "$deliveryInstruction",
-            "PackingInstruction": "$packingInstruction",
-            "BillingInstruction": "$billingInstruction",
+            "TransactionCode": "LDCO",
+            "CustomerCode": "CL100199",
+            "DeliveryInstruction": "SELFCOLLECTION",
+            "PackingInstruction": "BOX",
+            "BillingInstruction": "NA",
             "OtherDetails": "NA",
-            "CustRefNo": "$custRefNo",
-            "ModeOfDelivery": "$modeOfDelivery",
-            "DeliveryContact": "$deliveryContact",
-            "DeliveryDate": deliveryDate.text,
-            "LPONumber": "$lpoNumber",
+            "CustRefNo": "CASH123456789",
+            "ModeOfDelivery": "0",
+            "DeliveryContact": "TEST123456",
+            "DeliveryDate": "2024-09-24",
+            "LcNo": "1",
+            "LcValidDate": "2024-09-24",
             "Item": [
               {
                 "Rate": 275,
@@ -153,6 +161,44 @@ class CustomerCubit extends Cubit<CustomerState> {
         ],
         "COMPANY": "SLIC",
         "USERID": "SYSADMIN",
+        "APICODE": "SALESORDERCREATE",
+        "LANG": "ENG"
+      };
+      final body = {
+        "keyword": "SALESORDER",
+        "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
+        "data": [
+          {
+            "DeliveryLocationCode": "$deliveryLocationCode",
+            "SalesLocationCode": "$salesLocationCode",
+            "Company": "SLIC",
+            "UserId": "${SharedStorage.getEmail()}",
+            "TransactionCode": "$transactionCode",
+            "CustomerCode": "$customerCode",
+            "DeliveryInstruction": "$deliveryInstruction",
+            "PackingInstruction": "$packingInstruction",
+            "BillingInstruction": "$billingInstruction",
+            "OtherDetails": "NA",
+            "CustRefNo": "$custRefNo",
+            "ModeOfDelivery": "$modeOfDelivery",
+            "DeliveryContact": "$deliveryContact",
+            "DeliveryDate": deliveryDate.text,
+            "LPONumber": "$lpoNumber",
+            "Item": items
+                .map(
+                  (i) => {
+                    "Item-Code": "${i.itemCode}",
+                    "Size": "${i.productSize}",
+                    "Rate": "${i.rate}",
+                    "Qty": "${i.itemQty}",
+                    "UserId": "${SharedStorage.getEmail()}"
+                  },
+                )
+                .toList()
+          }
+        ],
+        "COMPANY": "SLIC",
+        "USERID": "${SharedStorage.getEmail()}",
         "APICODE": "SALESORDERCREATE",
         "LANG": "ENG"
       };

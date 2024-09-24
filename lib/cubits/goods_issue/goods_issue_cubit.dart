@@ -7,6 +7,7 @@ import 'package:nice_json/nice_json.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
+import 'package:slic/utils/shared_storage.dart';
 
 part 'goods_issue_state.dart';
 
@@ -86,7 +87,7 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
                 "Item-Code": e.itemCode.toString(),
                 "Size": "${e.productSize}",
                 "Qty": "${e.itemQty}",
-                "UserID": "SYSADMIN"
+                "UserID": "${SharedStorage.getEmail()}"
               })
           .toList();
 
@@ -96,16 +97,16 @@ class GoodsIssueCubit extends Cubit<GoodsIssueState> {
         "data": [
           <String, Object>{
             "Company": "SLIC",
-            "UserId": "SYSADMIN",
+            "UserId": "${SharedStorage.getEmail()}",
             "TransactionCode": transactionCode.toString(),
             "LocationCode": fromLocationCode.toString(),
-            "UserID": "SYSADMIN",
+            "UserID": "${SharedStorage.getEmail()}",
             "ProductionDate": date.text.trim().toString(),
             "item": bodyList,
           }
         ],
         "COMPANY": "SLIC",
-        "USERID": "SYSADMIN",
+        "USERID": "${SharedStorage.getEmail()}",
         "APICODE": "PRODUCTIONWO",
         "LANG": "ENG"
       };

@@ -8,6 +8,7 @@ import 'package:slic/models/slic_line_item_model.dart';
 import 'package:slic/models/slic_po_model.dart';
 import 'package:slic/models/so_line_item_model.dart';
 import 'package:slic/services/api_service.dart';
+import 'package:slic/utils/shared_storage.dart';
 
 part 'line_item_states.dart';
 
@@ -172,7 +173,7 @@ class LineItemCubit extends Cubit<LineItemState> {
         "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": itemList,
         "COMPANY": "SLIC",
-        "USERID": "SYSADMIN",
+        "USERID": "${SharedStorage.getEmail()}",
         "APICODE": "POTOGRN",
         "LANG": "ENG"
       };
@@ -249,7 +250,7 @@ class LineItemCubit extends Cubit<LineItemState> {
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
         "data": itemList,
         "COMPANY": "SLIC",
-        "USERID": "SYSADMIN",
+        "USERID": "${SharedStorage.getEmail()}",
         "APICODE": "SOTOINV",
         "LANG": "ENG"
       };
