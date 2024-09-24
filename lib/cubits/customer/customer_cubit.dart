@@ -42,7 +42,8 @@ class CustomerCubit extends Cubit<CustomerState> {
       salesLocationCode,
       salesman,
       paymentTerm,
-      deliverAfterDays;
+      deliverAfterDays,
+      lcNo;
 
   int quantity = 1, size = 1;
 
@@ -127,43 +128,18 @@ class CustomerCubit extends Cubit<CustomerState> {
     try {
       emit(CustomerSaveQuotationLoading());
 
-      final abc = {
-        "keyword": "SALESORDER",
-        "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
-        "data": [
-          {
-            "DeliveryLocationCode": "FG101",
-            "SalesLocationCode": "FG101",
-            "Company": "SLIC",
-            "UserId": "SYSADMIN",
-            "TransactionCode": "LDCO",
-            "CustomerCode": "CL100199",
-            "DeliveryInstruction": "SELFCOLLECTION",
-            "PackingInstruction": "BOX",
-            "BillingInstruction": "NA",
-            "OtherDetails": "NA",
-            "CustRefNo": "CASH123456789",
-            "ModeOfDelivery": "0",
-            "DeliveryContact": "TEST123456",
-            "DeliveryDate": "2024-09-24",
-            "LcNo": "1",
-            "LcValidDate": "2024-09-24",
-            "Item": [
-              {
-                "Rate": 275,
-                "Size": "43",
-                "Qty": 1,
-                "Item-Code": "79479",
-                "UserId": "SYSADMIN"
-              }
-            ]
-          }
-        ],
-        "COMPANY": "SLIC",
-        "USERID": "SYSADMIN",
-        "APICODE": "SALESORDERCREATE",
-        "LANG": "ENG"
-      };
+      final item = items
+          .map(
+            (i) => {
+              "Item-Code": "${i.itemCode}",
+              "Size": "${i.productSize}",
+              "Rate": "${i.rate}",
+              "Qty": "${i.itemQty}",
+              "UserId": "${SharedStorage.getEmail()}"
+            },
+          )
+          .toList();
+
       final body = {
         "keyword": "SALESORDER",
         "secret-key": "2bf52be7-9f68-4d52-9523-53f7f267153b",
@@ -178,23 +154,14 @@ class CustomerCubit extends Cubit<CustomerState> {
             "DeliveryInstruction": "$deliveryInstruction",
             "PackingInstruction": "$packingInstruction",
             "BillingInstruction": "$billingInstruction",
-            "OtherDetails": "NA",
+            "OtherDetails": "$otherDetails",
             "CustRefNo": "$custRefNo",
             "ModeOfDelivery": "$modeOfDelivery",
             "DeliveryContact": "$deliveryContact",
-            "DeliveryDate": deliveryDate.text,
-            "LPONumber": "$lpoNumber",
-            "Item": items
-                .map(
-                  (i) => {
-                    "Item-Code": "${i.itemCode}",
-                    "Size": "${i.productSize}",
-                    "Rate": "${i.rate}",
-                    "Qty": "${i.itemQty}",
-                    "UserId": "${SharedStorage.getEmail()}"
-                  },
-                )
-                .toList()
+            "DeliveryDate": "2024-09-24",
+            "LcNo": "$lcNo",
+            "LcValidDate": "2024-09-24",
+            "Item": item,
           }
         ],
         "COMPANY": "SLIC",
