@@ -118,7 +118,7 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                       DataCell(Text(e.itemQty.toString())),
                       DataCell(
                         IconButton(
-                          icon: Icon(Icons.delete, color: Colors.red),
+                          icon: const Icon(Icons.delete, color: Colors.red),
                           onPressed: () {
                             setState(() {
                               ItemCodeCubit.get(context).itemCodes.remove(e);
@@ -225,52 +225,50 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              if (homeCubit.slicLocations.isNotEmpty)
-                _buildDropdown(
-                  title: "From Location",
-                  hintText: "select location",
-                  options: homeCubit.slicLocations
-                      .where((element) =>
-                          element.locationMaster?.lOCNNAME != null &&
-                          element.locationMaster?.lOCNCODE != null)
-                      .map((e) =>
-                          "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
-                      .toSet()
-                      .toList(),
-                  defaultValue: homeCubit.fromLocation == null
-                      ? null
-                      : "${homeCubit.locationCode} -- ${homeCubit.location}",
-                  onChanged: (value) {
-                    setState(() {
-                      homeCubit.fromLocationCode =
-                          value?.split(" -- ")[0].toString();
-                      homeCubit.fromLocation =
-                          value?.split(" -- ")[1].toString();
-                    });
-                  },
-                ),
+              _buildDropdown(
+                title: "From Location",
+                hintText: "select location",
+                options: homeCubit.slicLocations
+                    .where((element) =>
+                        element.locationMaster?.lOCNNAME != null &&
+                        element.locationMaster?.lOCNCODE != null)
+                    .map((e) =>
+                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
+                    .toSet()
+                    .toList(),
+                defaultValue: homeCubit.fromLocation == null
+                    ? null
+                    : "${homeCubit.locationCode} -- ${homeCubit.location}",
+                onChanged: (value) {
+                  setState(() {
+                    homeCubit.fromLocationCode =
+                        value?.split(" -- ")[0].toString();
+                    homeCubit.fromLocation = value?.split(" -- ")[1].toString();
+                  });
+                },
+              ),
               const SizedBox(height: 16),
-              if (homeCubit.slicLocations.isNotEmpty)
-                _buildDropdown(
-                  title: "To Location",
-                  hintText: homeCubit.location ?? '',
-                  options: homeCubit.slicLocations
-                      .where(
-                          (element) => element.locationMaster?.lOCNNAME != null)
-                      .map((e) =>
-                          "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
-                      .toSet()
-                      .toList(),
-                  defaultValue: homeCubit.toLocation == null
-                      ? null
-                      : "${homeCubit.locationCode} -- ${homeCubit.location}",
-                  onChanged: (value) {
-                    setState(() {
-                      homeCubit.toLocation = value?.split(" -- ")[1];
-                      homeCubit.toLocationCode = value?.split(" -- ")[0];
-                    });
-                  },
-                ),
+              _buildDropdown(
+                title: "To Location",
+                hintText: "Select Location",
+                options: homeCubit.slicLocations
+                    .where(
+                        (element) => element.locationMaster?.lOCNNAME != null)
+                    .map((e) =>
+                        "${e.locationMaster!.lOCNCODE} -- ${e.locationMaster!.lOCNNAME}")
+                    .toSet()
+                    .toList(),
+                defaultValue: homeCubit.toLocation == null
+                    ? null
+                    : "${homeCubit.locationCode} -- ${homeCubit.location}",
+                onChanged: (value) {
+                  setState(() {
+                    homeCubit.toLocationCode =
+                        value?.split(" -- ")[0].toString();
+                    homeCubit.toLocation = value?.split(" -- ")[1].toString();
+                  });
+                },
+              ),
               const SizedBox(height: 16),
               Row(
                 children: [
@@ -341,22 +339,14 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                           context: context,
                           builder: (context) {
                             return AlertDialog(
-                              title: Text(
-                                state
-                                    .message, // Display the message from the state
+                              title: const Text(
+                                "Success",
                                 textAlign: TextAlign.center,
                               ),
                               content: Column(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   Text(state.message),
-                                  // ...[
-                                  //   const SizedBox(height: 16),
-                                  //   if (state.docNo != null)
-                                  //     Text("DOC NO: ${state.docNo}"),
-                                  //   if (state.refNo != null)
-                                  //     Text("Ref No: ${state.refNo}"),
-                                  // ],
                                 ],
                               ),
                               actions: [

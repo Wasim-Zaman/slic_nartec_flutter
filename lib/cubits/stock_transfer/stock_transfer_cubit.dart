@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:developer';
 
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:nice_json/nice_json.dart';
 import 'package:slic/models/item_code.dart';
 import 'package:slic/models/transaction_code_model.dart';
 import 'package:slic/services/api_service.dart';
@@ -124,7 +125,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
       if (response['success'] == "true") {
         //  {"Transaction Code":"LDTO","success":"true","Company Code":"SLIC","message":"Stock Transfer Out Created succcessfully","Ref-No/SysID":5074407,"Document No":"2024000103"}
         emit(StockTransferPostSuccess(
-          message: response.toString(),
+          message: niceJson(response),
           // refNo: response["Ref-No/SysID"].toString(),
           // docNo: response["Document No"].toString(),
         ));
