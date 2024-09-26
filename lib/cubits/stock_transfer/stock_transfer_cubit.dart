@@ -137,7 +137,6 @@ class StockTransferCubit extends Cubit<StockTransferState> {
         }
       }
     } catch (e) {
-      print(e);
       emit(StockTransferPostError(
           errorMessage: "Error occurred while transfering stock!"));
     }
