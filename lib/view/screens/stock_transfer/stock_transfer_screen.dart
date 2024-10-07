@@ -260,12 +260,11 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                     .toList(),
                 defaultValue: homeCubit.toLocation == null
                     ? null
-                    : "${homeCubit.locationCode} -- ${homeCubit.location}",
+                    : "${homeCubit.toLocationCode} -- ${homeCubit.toLocation}",
                 onChanged: (value) {
                   setState(() {
-                    homeCubit.toLocationCode =
-                        value?.split(" -- ")[0].toString();
-                    homeCubit.toLocation = value?.split(" -- ")[1].toString();
+                    homeCubit.toLocationCode = value?.split(" -- ")[0];
+                    homeCubit.toLocation = value?.split(" -- ")[1];
                   });
                 },
               ),
