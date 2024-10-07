@@ -10,6 +10,7 @@ import 'package:slic/view/screens/customer_quotation/customer_quotation_screen.d
 import 'package:slic/view/screens/foreign_po/foreign_po_screen_v3.dart';
 import 'package:slic/view/screens/goods_issue/goods_issue_screen.dart';
 import 'package:slic/view/screens/home_screen_v2.dart';
+import 'package:slic/view/screens/logs_viewer_screen.dart';
 import 'package:slic/view/screens/sales_order/sales_order_screen_v3.dart';
 import 'package:slic/view/screens/sales_return/sales_return_invoice_screen_v2.dart';
 import 'package:slic/view/screens/stock_transfer/stock_transfer_screen.dart';
@@ -185,6 +186,11 @@ class _MainScreenState extends State<MainScreen>
                       'Customer Order',
                       AppAssets.customerOrder,
                       const CustomerOrderScreen(),
+                    ),
+                    MenuInfo(
+                      'Logs',
+                      AppAssets.wearhouseBanner,
+                      const LogViewerScreen(),
                     ),
                   ])
                     AnimatedBuilder(

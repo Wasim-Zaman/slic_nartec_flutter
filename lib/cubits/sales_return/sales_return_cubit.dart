@@ -126,13 +126,10 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
 
   void updateInvoiceTemp(String? itemSysID, String? itemCode) async {
     try {
-      print(itemSysID);
-      print(itemCode);
-      selectedInvoices?.invoiceDetails?.forEach((element) {
+      selectedInvoices.invoiceDetails?.forEach((element) {
         if (element.itemSysID == itemSysID && element.itemSKU == itemCode) {
           element.returnQty = returnQty;
           // emit new state
-          print("changed");
           emit(SalesReturnChangedItemSysId());
         }
       });
@@ -140,7 +137,6 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
         if (element.itemSysID == itemSysID && element.itemSKU == itemCode) {
           element.returnQty = returnQty;
           // emit new state
-          print("changed");
           emit(SalesReturnChangedItemSysId());
         }
       });
@@ -239,13 +235,9 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
         itemSysIds.add(ItemSysIdModel.fromJson(item));
       });
 
-      print(invoiceDetails?.invoiceDetails?.length);
-      print(itemSysIds.length);
-
       invoiceDetails?.invoiceDetails?.forEach((element) {
         for (var item in itemSysIds) {
           if (element.itemSKU == item.iNVOICEITEMDETAILS?.iNVIITEMCODE) {
-            print("changed");
             element.itemSysID = item.iNVOICEITEMDETAILS?.iNVISYSID.toString();
             element.changed = true;
           }
@@ -253,18 +245,18 @@ class SalesReturnCubit extends Cubit<SalesReturnState> {
         emit(SalesReturnChangedItemSysId());
       });
     } catch (error) {
-      print(error);
+      emit(SalesReturnError(errorMessage: error.toString()));
     }
   }
 
   // Method to add an invoice to the selected list
   void addSelectedInvoice(InvoiceDetails invoice) {
-    selectedInvoices?.invoiceDetails?.add(invoice);
+    selectedInvoices.invoiceDetails?.add(invoice);
   }
 
   // Method to remove an invoice from the selected list
   void removeSelectedInvoice(InvoiceDetails invoice) {
-    selectedInvoices?.invoiceDetails
+    selectedInvoices.invoiceDetails
         ?.removeWhere((element) => element.id == invoice.id);
   }
 

@@ -36,6 +36,12 @@ final class SalesReturnSaveInvoiceSuccess extends SalesReturnState {
 
 final class SalesReturnChangedItemSysId extends SalesReturnState {}
 
+final class SalesReturnError extends SalesReturnState {
+  final String errorMessage;
+
+  SalesReturnError({required this.errorMessage});
+}
+
 //! Error
 
 final class SalesReturnTransactionCodesError extends SalesReturnState {

@@ -82,7 +82,6 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
           if (state is ForeignPoGetItemCodeByItemSKULoading) {
             return const LoadingWidget();
           }
-          final data = ForeignPoCubit.get(context).data;
           return Form(
             key: _formKey,
             autovalidateMode: AutovalidateMode.onUserInteraction,
@@ -129,7 +128,7 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
                     TextFieldWidget(
                       // initialValue: "${data?.itemQty ?? ''}",
                       initialValue:
-                          "${widget.lineItem?.listOfPOItem?.pOQTY ?? ''}",
+                          "${widget.lineItem.listOfPOItem?.pOQTY ?? ''}",
                       // controller: poQtyController,
                       // hintText: "PO Quantity",
                       readOnly: true,
@@ -138,7 +137,7 @@ class _UpdateLineItemScreenState extends State<UpdateLineItemScreen> {
                     TextFieldWidget(
                       // initialValue: "${data?.itemQty ?? ''}",
                       initialValue:
-                          "${widget.lineItem?.listOfPOItem?.pOQTY ?? ''}",
+                          "${widget.lineItem.listOfPOItem?.pOQTY ?? ''}",
                       // controller: balanceQtyController,
                       // hintText: "Balance Quantity",
                       readOnly: true,
