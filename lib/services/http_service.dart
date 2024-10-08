@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:nice_json/nice_json.dart';
 import 'package:slic/config/app_config.dart';
+import 'package:slic/models/log.dart';
 import 'package:slic/services/log_service.dart';
 
 class HttpService {
@@ -22,9 +23,18 @@ class HttpService {
   }) async {
     var uri = Uri.parse('$_baseUrl$url');
     try {
-      await LogService.log('API Request: $method $uri');
+      await LogService.log(Log(
+        timestamp: DateTime.now().toIso8601String(),
+        type: 'GENERAL',
+        message: 'API Request: $method $uri',
+      ));
+
       if (body != null) {
-        await LogService.log('Request Body: ${niceJson(body)}');
+        await LogService.log(Log(
+          timestamp: DateTime.now().toIso8601String(),
+          type: 'GENERAL',
+          message: 'Request Body: ${niceJson(body)}',
+        ));
       }
 
       http.Response response;
@@ -46,12 +56,21 @@ class HttpService {
           break;
       }
 
-      await LogService.log('API Response: ${response.statusCode}');
-      await LogService.log('Response Body: ${response.body}');
+      await LogService.logApiCall(
+        url: uri.toString(),
+        method: method,
+        statusCode: response.statusCode,
+        responseBody: response.body,
+      );
 
       return response;
     } catch (e) {
-      await LogService.log('API Error: $method $uri - $e');
+      await LogService.log(Log(
+        timestamp: DateTime.now().toIso8601String(),
+        type: 'GENERAL',
+        message: 'API Error: $method $uri - $e',
+        error: e.toString(),
+      ));
       rethrow;
     }
   }
@@ -69,35 +88,67 @@ class HttpService {
       );
       return _processResponse(response);
     } catch (e) {
-      await LogService.log('Request Error: $endpoint - $e');
+      await LogService.log(Log(
+        timestamp: DateTime.now().toIso8601String(),
+        type: 'GENERAL',
+        message: 'Request Error: $endpoint - $e',
+        error: e.toString(),
+      ));
       rethrow;
     }
   }
 
   dynamic _processResponse(http.Response response) async {
-    await LogService.log('Response from ${response.request!.url}');
-    await LogService.log('Response status: ${response.statusCode}');
-    await LogService.log('Response body: ${response.body}');
+    await LogService.log(Log(
+      timestamp: DateTime.now().toIso8601String(),
+      type: 'GENERAL',
+      message: 'Response from ${response.request!.url}',
+    ));
+    await LogService.log(Log(
+      timestamp: DateTime.now().toIso8601String(),
+      type: 'GENERAL',
+      message: 'Response status: ${response.statusCode}',
+    ));
+    await LogService.log(Log(
+      timestamp: DateTime.now().toIso8601String(),
+      type: 'GENERAL',
+      message: 'Response body: ${response.body}',
+    ));
 
     try {
+      await LogService.logApiCall(
+        method: response.request!.method,
+        url: "${response.request!.url}",
+        statusCode: response.statusCode,
+        responseBody: response.body,
+      );
+
       final data = json.decode(response.body);
 
       if (response.statusCode == 200 ||
           response.statusCode == 201 ||
           data['success'] == true) {
-        await LogService.log('Successful response: $data');
+        await LogService.log(Log(
+          timestamp: DateTime.now().toIso8601String(),
+          type: 'GENERAL',
+          message: 'Successful response: $data',
+        ));
         return data;
       } else {
         String errorMessage = data['message'] ??
             data['error'] ??
             data['ERROR'] ??
             'Unknown error';
-        await LogService.log('Error response: $errorMessage');
+
         throw Exception(errorMessage);
       }
     } catch (e) {
-      await LogService.log('Failed to process response: ${response.body}');
-      await LogService.log('Error details: $e');
+      await LogService.log(Log(
+        timestamp: DateTime.now().toIso8601String(),
+        type: 'GENERAL',
+        message: 'Failed to process response: ${response.body}',
+        error: e.toString(),
+      ));
       throw Exception('Failed to process response: $e');
     }
   }
