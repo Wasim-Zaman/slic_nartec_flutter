@@ -70,34 +70,27 @@ class StockTransferCubit extends Cubit<StockTransferState> {
   }) async {
     emit(StockTransferPostLoading());
     try {
-      //: TODO: In PITO transaction, i will include the type prefix
-      //: If prefix is U, then we have to pass only U
-      // : otherwise if it is not U then we have to pass suffix also
-
-      /* SuFFIX
-        * 
-      */
-
       final item = itemCodes.map(
         (e) {
           String? ic;
           if (transactionCode == "PITO") {
-            if (type != "U") {
-              ic = "U${e.itemCode}$type";
-            } else {
+            if (type == "U") {
               ic = "U${e.itemCode}";
+            } else {
+              ic = "U${e.itemCode}$type";
             }
           } else {
             ic = e.itemCode;
           }
           return {
-            "ItemCode": ic,
+            "ItemCode": "$ic",
             "Size": "${e.productSize}",
             "Qty": "${e.itemQty}",
             "UserId": "${SharedStorage.getEmail()}"
           };
         },
       ).toList();
+
       final body = {
         "_keyword_": "LTO",
         "_secret-key_": "2bf52be7-9f68-4d52-9523-53f7f267153b",
@@ -108,9 +101,6 @@ class StockTransferCubit extends Cubit<StockTransferState> {
             "FromLocation-Code": "$fromLocationCode",
             "ToLocation-Code": "$toLocationCode",
             "UserId": "${SharedStorage.getEmail()}",
-            // "CustomerName": "ABC",
-            // "MobileNo": 805630,
-            // "Remarks": "good",
             "Item": item,
           }
         ],
@@ -123,11 +113,8 @@ class StockTransferCubit extends Cubit<StockTransferState> {
       log(jsonEncode(body));
       final response = await ApiService.slicPostData(body);
       if (response['success'] == "true") {
-        //  {"Transaction Code":"LDTO","success":"true","Company Code":"SLIC","message":"Stock Transfer Out Created succcessfully","Ref-No/SysID":5074407,"Document No":"2024000103"}
         emit(StockTransferPostSuccess(
           message: niceJson(response),
-          // refNo: response["Ref-No/SysID"].toString(),
-          // docNo: response["Document No"].toString(),
         ));
       } else {
         if (response.containsKey("error")) {
@@ -138,7 +125,7 @@ class StockTransferCubit extends Cubit<StockTransferState> {
       }
     } catch (e) {
       emit(StockTransferPostError(
-          errorMessage: "Error occurred while transfering stock!"));
+          errorMessage: "Error occurred while transferring stock!"));
     }
   }
 }

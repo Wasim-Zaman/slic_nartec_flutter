@@ -353,7 +353,6 @@ class _StockTransferScreenState extends State<StockTransferScreen> {
                                   onPressed: () {
                                     Navigation.pop(context);
                                     Navigation.pop(context);
-                                    Navigation.pop(context);
                                   },
                                   child: const Text("OK"),
                                 ),

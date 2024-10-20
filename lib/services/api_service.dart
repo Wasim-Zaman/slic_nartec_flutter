@@ -329,6 +329,19 @@ class ApiService {
     );
   }
 
+  static Future<ApiResponse> getItemCodesByItemCode(String itemCode) async {
+    final endpoint = "/itemCodes/v1/findByItemCode?itemCode=$itemCode";
+    final response = await HttpService().request(
+      endpoint,
+      method: "GET",
+    );
+
+    return ApiResponse.fromJson(
+      response,
+      (data) => ItemCode.fromJson(response['data']),
+    );
+  }
+
   static Future<ApiResponse> getItemCodeByItemCode(String itemCode) async {
     final endpoint = "/itemCodes/v1/findByItemCode?itemCode=$itemCode";
     final response = await HttpService().request(

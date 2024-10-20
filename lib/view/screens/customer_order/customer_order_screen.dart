@@ -177,7 +177,7 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
             TextButton(
               onPressed: () {
                 Navigator.pop(context);
-                ItemCodeCubit.get(context).getItemCodeByGtin(
+                ItemCodeCubit.get(context).getItemCodeByItemCode(
                   qty: cqCubit.quantity,
                   size: cqCubit.size,
                 );
@@ -509,10 +509,10 @@ class _CustomerOrderScreenState extends State<CustomerOrderScreen> {
 
               const SizedBox(height: 16),
               TextFieldWidget(
-                hintText: "Search GTIN number",
+                hintText: "Search Item Code",
                 filledColor: ColorPallete.accent.withOpacity(0.6),
                 onChanged: (value) {
-                  ItemCodeCubit.get(context).gtin = value;
+                  ItemCodeCubit.get(context).itemCode = value;
                 },
                 onEditingComplete: () => _showQuantityDialog(context),
               ),
