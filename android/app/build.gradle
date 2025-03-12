@@ -31,12 +31,12 @@ android {
     productFlavors {
         dev {
             dimension "flavor-type"
-            applicationId "com.nartec.slic.dev"
+            applicationId "com.nartec.slic-dev"
             resValue "string", "app_name", "SLIC DEV"
         }
         prod {
             dimension "flavor-type"
-            applicationId "com.nartec.slic.prod"
+            applicationId "com.nartec.slic"
             resValue "string", "app_name", "SLIC"
         }
     }

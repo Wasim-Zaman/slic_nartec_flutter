@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:slic/core/color_pallete.dart';
 import 'package:slic/cubits/auth/auth_cubit.dart';
+import 'package:slic/flavors.dart';
 import 'package:slic/utils/assets.dart';
 import 'package:slic/utils/navigation.dart';
 import 'package:slic/utils/shared_storage.dart';
@@ -29,6 +31,7 @@ class LoginScreen extends StatelessWidget {
             Image.asset(
               AppAssets.logo,
               height: 100,
+              color: F.appFlavor == Flavor.prod ? null : ColorPallete.primary,
             ),
             const SizedBox(height: 16.0),
             const Text(
