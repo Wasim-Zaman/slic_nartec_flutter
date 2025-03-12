@@ -47,6 +47,7 @@ dependencies:
   flutter_dotenv: ^5.1.0
   path_provider: ^2.1.4
   share_plus: ^10.0.2
+  shorebird_code_push: ^1.1.6
 
 dev_dependencies:
   flutter_test:
@@ -59,6 +60,7 @@ dev_dependencies:
   # rules and activating additional ones.
   flutter_lints: ^3.0.0
   flutter_launcher_icons: "^0.13.1"
+  flutter_flavorizr: ^2.2.3
 
 flutter_launcher_icons:
   android: "launcher_icon"
@@ -78,6 +80,29 @@ flutter_launcher_icons:
     generate: true
     image_path: "assets/images/icon.png"
 
+
+flavorizr:
+  ide: "vscode"
+  flavors:
+    dev:
+      app:
+        name: "SLIC DEV"
+      
+      android:
+        applicationId: "com.nartec.slic-dev"
+      ios:
+        bundleId: "com.nartec.slic-dev"
+    
+    prod:
+      app:
+        name: "SLIC"
+      
+      android:
+        applicationId: "com.nartec.slic"
+      ios:
+        bundleId: "com.nartec.slic"
+    
+  
 # For information on the generic Dart part of this file, see the
 # following page: https://dart.dev/tools/pub/pubspec
 

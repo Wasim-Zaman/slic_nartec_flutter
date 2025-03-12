@@ -1,7 +1,8 @@
 class AppAssets {
   // * Images
-  static const String logo = 'assets/images/im_logo.png';
-  static const String wearhouseBanner = 'assets/images/im_warehouse_banner.png';
+  static const logo = 'assets/images/im_logo.png';
+  static const wearhouseBanner = 'assets/images/im_warehouse_banner.png';
+  static const icon = 'assets/images/icon.png';
 
   // * Icons
   static const barcode = "assets/icons/ic_barcode.png";

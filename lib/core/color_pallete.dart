@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:slic/flavors.dart';
 
 class ColorPallete {
-  static const Color primary = Colors.indigo;
+  // Flavors
+  static Flavor appFlavor = F.appFlavor!;
+
+  static Color primary = appFlavor == Flavor.dev ? Colors.green : Colors.indigo;
   static const Color secondary = Color(0xFF4B0082);
   static const Color background = Color(0xFFFFFFFF);
   static const Color accent = Color(0xFFFFC107);

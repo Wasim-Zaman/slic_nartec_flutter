@@ -434,6 +434,7 @@ class _GoodsIssueScreenState extends State<GoodsIssueScreen> {
                       return AppButton(
                         text: "Save & Submit",
                         onPressed: _handleSubmit,
+                        isLoading: state is GoodsIssuePostLoading,
                       );
                     },
                   ),

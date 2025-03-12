@@ -7,16 +7,16 @@ class CustomSnackbar {
     required String message,
     String? actionLabel,
     VoidCallback? onActionPressed,
-    Color backgroundColor = ColorPallete.primary,
-    Color textColor = ColorPallete.background,
+    Color? backgroundColor,
+    Color? textColor,
     Duration duration = const Duration(seconds: 3),
   }) {
     ScaffoldMessenger.of(context).showSnackBar(SnackBar(
       content: Text(
         message,
-        style: TextStyle(color: textColor),
+        style: TextStyle(color: textColor ?? ColorPallete.background),
       ),
-      backgroundColor: backgroundColor,
+      backgroundColor: backgroundColor ?? ColorPallete.primary,
       duration: duration,
       action: onActionPressed == null
           ? null
